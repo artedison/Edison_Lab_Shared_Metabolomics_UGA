@@ -1,0 +1,28 @@
+##TITLE= Audit trail, TOPSPIN		Version 3.0
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= Frank Schroeder
+$$ H:/Yevgeniy/ok693-19-cosy.fid/1/pdata/1/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2010-12-03 15:23:33.385 -0500>,<Frank Schroeder>,<CARYA>,<vconv>,<TOPSPIN 3.0>,
+      <vconv created from
+       H:\Yevgeniy\Steve\ok693\ok693-19-cosy.fid
+       data hash MD5: 7636 * 1200
+       F1 68 2A 6A DA 06 66 8F FC DE DD 0F E8 84 0C 94>)
+(   2,<2011-04-26 22:45:21.760 -0400>,<Frank Schroeder>,<CARYA>,<proc2d>,<TOPSPIN 3.0>,
+      <Start of raw data processing
+       xfb F2: TDeff = 3818 SI = 2K BC_mod = 2 WDW = 4 SSB = 0 FT_mod = 6 PKNL = 0 REVERSE PHC0 = 85 PHC1 = -44 F1: SI = 2K WDW = 4 SSB = 0 FT_mod = 6 REVERSE PHC0 = -0 PHC1 = 0 MC2 = 3
+       data hash MD5: 2K * 2K
+       C9 D1 62 B9 32 04 01 7D C6 7C A1 55 6B 86 EA 48>)
+(   3,<2011-04-26 22:45:26.666 -0400>,<Frank Schroeder>,<CARYA>,<proc2d>,<TOPSPIN 3.0>,
+      <mc2 mc1 F2: PH_mod = 2 F1: PH_mod = 2
+       data hash MD5: 2K * 2K
+       AC DE DC 13 66 ED EF 0F 1C F5 C0 0E 3E E6 E8 15>)
+(   4,<2011-04-26 22:50:25.510 -0400>,<Frank Schroeder>,<CARYA>,<dirdata>,<TOPSPIN 3.0>,
+      <wrpa from 1 1 "ok693-19-cosy.fid" "H:/Yevgeniy/Steve/Topspin"
+       data hash MD5: 2K * 2K
+       AC DE DC 13 66 ED EF 0F 1C F5 C0 0E 3E E6 E8 15>)
+##END=
+
+$$ hash MD5
+$$ 71 74 29 07 86 A6 5F 1F 77 F4 76 77 87 B5 69 23

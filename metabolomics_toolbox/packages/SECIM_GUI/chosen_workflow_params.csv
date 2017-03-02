@@ -1,0 +1,2 @@
+toolbox_version,bl_noise,bl_fitting,normalization_method,normalization_feature,align_method,scaling_method,water_region_1,water_region_2,ref_threshold,spectral_parameter,ends_1,ends_2,region_removed_1,region_removed_2,ref_thresh_1,ref_thresh_2,dimensions,align_represent,align_function,normalization_represent
+1,50000,0.1,Total,NA,PAFFT,scale_method,4.4,4.6,[0.1681 9.638],[0 0],1,10,0,0,-0.35,-0.24,1,mean,Star,Integral

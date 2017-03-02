@@ -1,0 +1,19 @@
+##TITLE= Audit trail, TOPSPIN		Version 3.0
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= Frank Schroeder
+$$ H:/Yevgeniy/ok693-21-cosy.fid/1/audita.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2010-12-03 15:23:55.917 -0500>,<Frank Schroeder>,<CARYA>,<vconv>,<TOPSPIN 3.0>,
+      <vconv created from
+       H:\Yevgeniy\Steve\ok693\ok693-21-cosy.fid
+       data hash MD5: 7636 * 1200
+       85 99 E7 B1 AD 3E 28 82 39 AB 01 0F 68 7C 96 21>)
+(   2,<2011-04-26 22:50:31.323 -0400>,<Frank Schroeder>,<CARYA>,<dirdata>,<TOPSPIN 3.0>,
+      <wrpa from 1 1 "ok693-21-cosy.fid" "H:/Yevgeniy/Steve/Topspin"
+       data hash MD5: 7636 * 1200
+       85 99 E7 B1 AD 3E 28 82 39 AB 01 0F 68 7C 96 21>)
+##END=
+
+$$ hash MD5
+$$ A5 64 08 31 34 A8 4E 7D 15 CB 0A 66 F9 DB A5 67

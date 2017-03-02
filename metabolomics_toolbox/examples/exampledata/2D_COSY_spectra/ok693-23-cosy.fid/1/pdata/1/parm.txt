@@ -1,0 +1,30 @@
+
+Current Data Parameters
+NAME     ok693-23-cosy.fid              
+EXPNO                 1              
+PROCNO                1              
+
+F1 - Acquisition parameters
+TD                 1200              
+SFO1           599.4989 MHz          
+FIDRES         4.544732 Hz           
+SW                9.097 ppm          
+FnMODE        undefined              
+
+F2 - Processing parameters
+SI                 4096              
+SF          599.4959960 MHz          
+WDW                SINE              
+SSB      0              
+LB       0 Hz           
+GB       0              
+PC                 1.40              
+
+F1 - Processing parameters
+SI                 2048              
+MC2                  QF              
+SF          599.4959960 MHz          
+WDW                                  
+SSB      0              
+LB       0 Hz           
+GB       0              

@@ -1,0 +1,28 @@
+##TITLE= Parameter file, TOPSPIN		Version 3.0
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 1	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= Frank Schroeder
+$$ 2011-04-26 22:49:58.526 -0400  Frank Schroeder@CARYA
+$$ H:/Yevgeniy/m130-15-cosy.fid/1/pdata/1/clevels
+$$ process C:\Bruker\TopSpin3.0\prog\mod\dirdata.exe
+##$LEVELS= (0..255)
+-20470188.989952 -11372327.21664 -6317959.5648 -3509977.536 -1949987.52
+-1083326.4 -601848 -334360 334360 601848 1083326.4 1949987.52 3509977.536
+6317959.5648 11372327.21664 20470188.989952 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+##$LEVSIGN= 3
+##$MAXLEV= 8
+##$METHOD= 0
+##$NEGBASE= -334360
+##$NEGINCR= 1.8
+##$POSBASE= 334360
+##$POSINCR= 1.8
+##END=

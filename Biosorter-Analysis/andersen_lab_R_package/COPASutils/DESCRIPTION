@@ -1,0 +1,22 @@
+Package: COPASutils
+Title: Tools for processing COPAS large-particle flow cytometer data
+Version: 0.1.6
+Author: Tyler Shimko <TShimko126@gmail.com>, Erik Andersen
+    <erik.andersen@northwestern.edu>
+Maintainer: Erik Andersen <erik.andersen@northwestern.edu>
+Description: A logical workflow for the reading, processing, and visualization
+    of data obtained from the Union Biometrica Complex Object Parametric
+    Analyzer and Sorter (COPAS) platform large-particle flow cytometers and a
+    powerful suite of functions for the rapid processing and analysis of large
+    high-throughput screening data sets. It combines the speed of dplyr with
+    the elegance of ggplot2 to make analysis of COPAS data fast and painless.
+Depends: R (>= 3.0), ggplot2 (>= 0.9), reshape2 (>= 1.0)
+Imports: dplyr (>= 0.2), kernlab (>= 0.9), stringr (>= 0.6), knitr (>=
+        1.6)
+License: GPL (>= 2)
+LazyData: TRUE
+VignetteBuilder: knitr
+Packaged: 2015-01-15 02:13:07 UTC; tylershimko
+NeedsCompilation: no
+Repository: CRAN
+Date/Publication: 2015-01-15 06:47:49

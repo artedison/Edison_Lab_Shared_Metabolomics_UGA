@@ -1,0 +1,11 @@
+##TITLE= Parameter file, TOPSPIN		Version 3.0
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 1	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= Frank Schroeder
+$$ 2011-04-26 22:49:13.213 -0400  Frank Schroeder@CARYA
+$$ H:/Yevgeniy/N2-7-cosy.fid/1/pdata/1/assocs
+$$ process C:\Bruker\TopSpin3.0\prog\mod\dirdata.exe
+##$MULTDISP= <>
+##END=

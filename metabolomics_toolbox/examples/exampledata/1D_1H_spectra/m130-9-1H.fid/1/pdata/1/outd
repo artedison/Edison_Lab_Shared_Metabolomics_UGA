@@ -1,0 +1,12 @@
+##TITLE= Parameter file,  XWIN-NMR
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+$$ Sat Nov 11 11:11:11 1995
+##$CURPLOT= <hplj3p>
+##$CURPRIN= <$hplj3p>
+##$DFORMAT= <normdp>
+##$LAYOUT= <+/1D_H.xwp>
+##$LFORMAT= <normlp>
+##$PFORMAT= <normpl>
+##$SURQMSG= 1 
+##END=
