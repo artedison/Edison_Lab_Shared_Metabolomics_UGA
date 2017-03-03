@@ -1,9 +1,18 @@
-<<<<<<< HEAD
-# Edison_lab_UGA (MTJ)
-Edison lab metabolomics toolbox for MATLAB (CCRC/UGA)
-and scripts for processing metabolomics data.
-(This is Michael Judge's version of the toolbox.)
-=======
-# matlab_metab_toolbox
-Edison lab MATLAB toolbox (main)
->>>>>>> 6e83467fd50ee74fb76ef1f3b1a023a0e477707a
+<p align="center">
+### EDISON LAB METABOLOMICS
+</p>
+
+This is the GitHub page for the Edison lab at UGA. A lot of this is still under development. New changes will be added along with comments in the near future. 
+If you are using all or part of the packages included here, please make sure you keep up to date with all the new updates being made to this site.
+Each directory will be provided with a README.md file that includes a brief description of what the directory includes and how it is organized.
+
+## Directory Structure
+
+* [metabolomics_toolbox](https://github.com/artedison/Edison_lab_UGA/tree/master/metabolomics_toolbox)
+	* [code](https://github.com/artedison/Edison_lab_UGA/tree/master/metabolomics_toolbox/code) - contains all the basic functions for processing, visualization and statistical analyses of NMR data. 
+	* [examples](https://github.com/artedison/Edison_lab_UGA/tree/master/metabolomics_toolbox/examples)
+	* [license](https://github.com/artedison/Edison_lab_UGA/tree/master/metabolomics_toolbox/license)
+	* [packages](https://github.com/artedison/Edison_lab_UGA/tree/master/metabolomics_toolbox/packages)
+	* [tutorial](https://github.com/artedison/Edison_lab_UGA/tree/master/metabolomics_toolbox/tutorial)
+* [nmrPipe_macros](https://github.com/artedison/Edison_lab_UGA/tree/master/nmrPipe_macros)
+* [Biosorter_Analysis]
