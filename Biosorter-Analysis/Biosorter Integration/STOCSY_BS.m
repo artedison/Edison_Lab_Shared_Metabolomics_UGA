@@ -111,16 +111,16 @@ if any(strcmp(figdisply,{'1d','all'}))
     set(gca,'XDir','rev')
     xlabel('Chemical Shift (ppm)')
     if length(x)==1
-        ylabel(['Covariance with signal at ',num2str(x,'%15.2f'),' ppm'])
+        ylabel(['Covariance with target'])
     else
         ylabel('Covariance with Y vector')
     end
-    title(['STOCSY, target: ',num2str(x,'%15.2f'),' ppm'])
+    
     
     colormap(jet);
     t=colorbar;
     if length(x)==1
-        set(get(t,'ylabel'),'String', ['Correlation with signal at ',num2str(x,'%15.2f'),' ppm']);
+        set(get(t,'ylabel'),'String', ['Correlation with target']);
     else
         set(get(t,'ylabel'),'String', ['Correlation with Y vector']);
     end
@@ -144,11 +144,11 @@ if any(strcmp(figdisply,{'2d','all'}))
     
     xlabel('TOF');
     ylabel('log EXT');
-    title(['STOCSY, target: ',num2str(x,'%15.2f'),' ppm'])
+    
     colormap(jet);
     t=colorbar;
     if length(x)==1
-        set(get(t,'ylabel'),'String', ['Correlation with signal at ',num2str(x),' ppm']);
+        set(get(t,'ylabel'),'String', ['Correlation with target']);
     else
         set(get(t,'ylabel'),'String', ['Correlation with Y vector']);
     end
