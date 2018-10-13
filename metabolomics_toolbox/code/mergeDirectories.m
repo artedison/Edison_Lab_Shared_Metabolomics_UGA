@@ -1,17 +1,18 @@
 function [commonFiles,filesToCopy] = mergeDirectories(dependencies,localpath,destination)
 
 %% Set up params, etc.
-    localpath = '/Users/mjudge/';
-    destination = '/Users/mjudge/Edison_Lab_Shared_Metabolomics_UGA/metabolomics_toolbox/code/HR_MAS';
-    dependencies = resfilelist;
-%     flist=matlab.codetools.requiredFilesAndProducts({'STEP_1_processing_combine_samples.m','STEP_2_ridge_tracing.m','STEP_3_combining_ridges.m','STEP_4_plotting.m'});
-%     dependencies={};
-%     for i=1:length(flist)
-%       if ~any(regexp(flist{i},'.mat'))
-%         dependencies{end+1}=strrep(flist{i},'/home/yuewu/Documents/github/github.code/clone','');
-%       end
-%     end
-%     dependencies{end+1}='/Edison_lab_UGA/metabolomics_toolbox/Test_NEWThings/yuewu/filesys_cons.m';    
+%     localpath = '/Users/mjudge/';
+%     destination = '/Users/mjudge/Edison_Lab_Shared_Metabolomics_UGA/metabolomics_toolbox/code/HR_MAS';
+%     dependencies = resfilelist;
+
+% %     flist=matlab.codetools.requiredFilesAndProducts({'STEP_1_processing_combine_samples.m','STEP_2_ridge_tracing.m','STEP_3_combining_ridges.m','STEP_4_plotting.m'});
+% %     dependencies={};
+% %     for i=1:length(flist)
+% %       if ~any(regexp(flist{i},'.mat'))
+% %         dependencies{end+1}=strrep(flist{i},'/home/yuewu/Documents/github/github.code/clone','');
+% %       end
+% %     end
+% %     dependencies{end+1}='/Edison_lab_UGA/metabolomics_toolbox/Test_NEWThings/yuewu/filesys_cons.m';    
     
 %% Compare dependencies to the existing files in the specified repository
     existingFiles = dir('**/*.m');
