@@ -4,6 +4,7 @@
 %load('compounds_22JUN2018.mat')
 %save('compounds_26SEP2018.mat')
 % load('compounds_26SEP2018.mat')
+load('sampleData.mat')
 load('compounds.mat')
 
 %% Plot the means of the scaled ridges by condition
