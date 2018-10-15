@@ -4,12 +4,14 @@
 %load('compounds_22JUN2018.mat')
 %save('compounds_26SEP2018.mat')
 % load('compounds_26SEP2018.mat')
-load('sampleData.mat')
 load('compounds.mat')
+load('sampleData.mat')
 
 %% Plot the means of the scaled ridges by condition
-mkdir('AllPlots_updated_26SEP2018_scaled')
-cd('AllPlots_updated_26SEP2018_scaled')
+% mkdir('AllPlots_updated_26SEP2018_scaled')
+% cd('AllPlots_updated_26SEP2018_scaled')
+mkdir('AllPlots_updated_scaled')
+cd('AllPlots_updated_scaled')
 
 % Plot the trajectories of the different compounds as a function of time
 %     mkdir('compounds_plots_relativeQuant')
@@ -56,8 +58,10 @@ end
 cd ..
 
 %% Plot the means of the shifted ridges by condition
-mkdir('AllPlots_updated_26SEP2018_shifted')
-cd('AllPlots_updated_26SEP2018_shifted')
+% mkdir('AllPlots_updated_26SEP2018_shifted')
+% cd('AllPlots_updated_26SEP2018_shifted')
+mkdir('AllPlots_updated_shifted')
+cd('AllPlots_updated_shifted')
 % Plot the trajectories of the different compounds as a function of time
 %     mkdir('compounds_plots_relativeQuant')
 %     cd('compounds_plots_relativeQuant')
@@ -102,8 +106,10 @@ end
 cd ..
 
 %% Plot the means of the raw ridges by condition
-mkdir('AllPlots_updated_26SEP2018_raw')
-cd('AllPlots_updated_26SEP2018_raw')
+% mkdir('AllPlots_updated_26SEP2018_raw')
+% cd('AllPlots_updated_26SEP2018_raw')
+mkdir('AllPlots_updated_raw')
+cd('AllPlots_updated_raw')
 % Make the colors
 blue = [0,.3,1];
 yellow = [1    0.7490    0.0510];%
