@@ -103,7 +103,7 @@ end
 figure, plot(mean(q2),'r')
 hold on; plot(mean(r2),'g')
 hold on; plot(mean(pervarexp))
-legend('Q2','R2','Percent Variance in X',1);
+legend('Q2','R2','Percent Variance in X');
 xlabel('Number of PLS components');
 
 numcomponents=input('Select best number of components: ');
