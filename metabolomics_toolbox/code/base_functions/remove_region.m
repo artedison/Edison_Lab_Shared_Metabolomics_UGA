@@ -1,7 +1,7 @@
 function XR=remove_region(X,ppm,shift1,shift2)
 
 % XR=remove_region(X,ppm,shift1,shift2)
-% 
+%
 % Removes region between ppm value of "shift1" and ppm value of "shift2"
 % such as water region. You can put Inf or -Inf to specify "to the end".
 %
@@ -13,6 +13,8 @@ function XR=remove_region(X,ppm,shift1,shift2)
 %
 % Return Values:
 % XR                   Spectral matrix, with region removed
+% MJ
+% YW documeted 10/10/2018
 
 if shift1>shift2 %flip them
     d=shift2;

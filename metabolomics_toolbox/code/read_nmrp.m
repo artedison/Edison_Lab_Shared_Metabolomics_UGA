@@ -43,5 +43,6 @@ elseif(number_args_in == 1)
 	halfnum_dims = floor(num_dims/2);
 
 	axes_info(27,:) = [ones(1,halfnum_dims) -1*ones(1,4-halfnum_dims)];
-end
+end    
+    fclose(spectrum_in);    % MJ added 3JAN2018. Too many files left open without this; Matlab will crash with ~270 spectra
 end

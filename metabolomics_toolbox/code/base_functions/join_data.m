@@ -1,8 +1,8 @@
 function [newX,newPpm] = join_data(X,ppm,varargin)
 
 % Author: Rahil Taujale
-% Version: 0.1
-% Date: 01/30/2017
+% Version: 0.2
+% Date: 06/26/2017
 
 % Description:
 %       Simulates a Gaussian curve for each data point so that each data 
@@ -23,10 +23,13 @@ function [newX,newPpm] = join_data(X,ppm,varargin)
 %       A new ppm axis where simulated ppm values are added for every new 
 %       data point added. 
 %
+% Log:
+%       Ver 0.2 - changed peak widht spacing from 50 to 10 for simulated
+%       Gaussian peaks.
 %
 % Example run: [JointX,JointPpm]=join_data_new(XALN,ppmR,new_peaks);
 
-    x=-24:1:25;
+    x=-9:1:10;
     y=gaussmf(x,[3,0]);
     newX=X;
     [A,B]=size(X);

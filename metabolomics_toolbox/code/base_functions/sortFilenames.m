@@ -3,8 +3,11 @@ function filenames_new=sortFilenames(filenames)
 % Sort by leading digits, separated from text by an underscore
 % For example filenames = {'1_a','11_a','2_a'}
 % If encounters an error, return the input unchanged
-
-if ~isempty(str2num(filenames{1}(1))) 
+% filenames: input file names
+% filenames_new: sorted file names
+% MJ
+% YW document 10/10/2018
+if ~isempty(str2num(filenames{1}(1)))
     %First character in first file is a number
     try
         for i = 1:length(filenames)

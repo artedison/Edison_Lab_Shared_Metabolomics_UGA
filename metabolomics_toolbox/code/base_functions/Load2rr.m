@@ -2,6 +2,9 @@
 %
 % Load Bruker NMR data from the processed 2rr file at 'path'.
 %
+% RT Log: Extracts titles
+% Date: 28 Sept 2017
+%
 % Arguments:
 % path                 Path to the 2rr files to be loaded.
 %
@@ -26,6 +29,8 @@ realFilePath = [pathstr, '2rr'];
 % procs file path
 procs1Path = [pathstr, 'procs'];
 procs2Path = [pathstr, 'proc2s'];
+% title file path
+titleFilePath = fullfile(pathstr, 'title');
 
 % Now extract first dimension perameters from the procs file, modified from
 % Jake T.M. Pearce, Imperial College London
@@ -87,7 +92,11 @@ fclose(procs1);
 procs.swp = procs.sw / procs.sf;
 procs.dppm = procs.swp / (procs.si - 1);
 spectra.ppm1 = flipud(procs.offset : -procs.dppm : (procs.offset-procs.swp));
-spectra.Title=path;
+%spectra.Title=path;
+
+fid=fopen(titleFilePath);
+spectra.Title=fgetl(fid);
+fclose(fid);
 
 % Now extract second dimension perameters from the procs file.
 proc2s2 = fopen(procs2Path,'rt');

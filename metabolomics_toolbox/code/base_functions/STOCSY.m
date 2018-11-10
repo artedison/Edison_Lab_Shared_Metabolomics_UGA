@@ -72,7 +72,7 @@ else
 end
 
 
-t=colorbar;
+t=colorbar('colormap',jet(100));
 if length(target)==1
     set(get(t,'ylabel'),'String', ['Correlation with signal at ',num2str(target),' ppm']);
 else

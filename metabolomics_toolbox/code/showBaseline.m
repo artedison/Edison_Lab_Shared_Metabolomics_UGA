@@ -8,6 +8,7 @@ function [A,S] = showBaseline(X, ppm, A, S)
 % A: Smoothing Factor. lower = fit more closely, higher = fit less (smoother)
 
 % GSS, May 5, 2014
+% MJ edit 8NOV2017: added titles to the figures
 
 if nargin == 1 % if only 1 input, use defaults
     A=5e-9*size(X,2)^4;
@@ -27,7 +28,10 @@ figure,h1=subplot(2,1,1);
 plot(ppm,X(1,:)), hold
 plot(ppm,bd,'r')
 set(gca,'XDir','reverse')
+title('Baseline (red) on spectrum')
 h2=subplot(2,1,2);
 plot(ppm,X(1,:)-bd')
 set(gca,'XDir','reverse')
 linkaxes([h1, h2]);
+title('Corrected spectrum')
+suptitle(['A = ',num2str(A),'; S = ',num2str(S)])

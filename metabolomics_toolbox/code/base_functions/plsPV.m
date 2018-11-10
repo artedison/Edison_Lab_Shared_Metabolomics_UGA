@@ -38,6 +38,9 @@ function PLS=plsPV(X,Y,nfold,type,permutations,method)
 % PLS.q2          Fit of model to test data
 % PLS.variance    Variance in X for each component
 
+% Edits:
+%       MJ 14NOV2017 legend call had extra parameter "1". Removed. 
+
 if isempty(ver('stats'))==1
     error('This function requires the Matlab Statistics Toolbox')
 end
@@ -156,7 +159,8 @@ figure, plot(mean(q2),'r')
 hold on; plot(mean(r2),'g')
 hold on; plot(cumsum(mean(pervarexpX)),'m')
 hold on; plot(cumsum(mean(pervarexpY)),'k')
-legend('Q2','R2','Percent Variance in X','Percent Variance in Y',1);
+legend('Q2','R2','Percent Variance in X','Percent Variance in Y');
+%legend('Q2','R2','Percent Variance in X','Percent Variance in Y',1);
 xlabel('Number of PLS components');
 
 numcomponents=input('Select best number of components');

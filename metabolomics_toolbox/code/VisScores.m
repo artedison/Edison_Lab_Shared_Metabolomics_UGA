@@ -1,8 +1,10 @@
 function M = VisScores(X,model,components,varargin)
 
 % Author : Edison lab
-% Ver : 1.2 
-% VisScores(X,model,components,Y)
+% Ver : 1.3 
+% VisScores(X,model,components,'Y',Yvec)
+% VisScores(X,model,components,'Y',Yvec,'conf_ellipse','true')
+% VisScores(X,model,components,'Y',Yvec,'conf_ellipse','true','showlegend',labels)
 %
 % Displays PCA or PLS model scores plots for 1-3 components specified in vector
 %"components" 
@@ -14,11 +16,16 @@ function M = VisScores(X,model,components,varargin)
 % components   a vector containing desired components: at least 1
 %              component, but no more than 3.  eg: [1], [1 4], or [1 2 3].
 % Y            Optional: if response vector Y is known, use it to color the scores plot
+%                ** MJ 3OCT2017: currently, Yvec values have an effect on
+%                the actual colors used. e.g., if Yvec is
+%                [0,0,1001,1002,0,1002,1001,0,0], the zeros will be
+%                distinct from 1001 and 1002, but the latter are not
+%                distinct in color. See line 56.
 % showlabels   Optional: Label the scores plot by the row idx. Default: false
 % mahalanobis  Optional: [1x2] Group numbers in Y to calculate mahalanobis distance. 
-%              Only for 2 components. Defulat: false
+%              Only for 2 components. Default: false
 % conf_ellipse Optional: if true, plot 95% confidence ellipses. Default: true
-% showlegend   Optional: Provide a list of labels corresponding to each
+% showlegend   Optional: Provide a list of labels as a cell array corresponding to each
 %                   sample
 
 % Edited by: Rahil Taujale
@@ -26,9 +33,10 @@ function M = VisScores(X,model,components,varargin)
 % Added distinguishable colors function to generate colors
 % Changed labels to Y
 % Added option to show legends
+% Ver  : 1.3
+% Skip error ellipse drawing for groups with 1 or 2 samples.
 
-
-default_arguments = struct('Y',NaN,'showlabels',false,'mahalanobis',false,'conf_ellipse',true,'showlegend',nan);
+default_arguments = struct('Y',NaN,'showlabels',false,'mahalanobis',false,'conf_ellipse',false,'showlegend',nan);
 args=parse_args(default_arguments, varargin);
 
 if sum(logical(args.mahalanobis)) && length(components)~=2
@@ -42,36 +50,32 @@ if isnan(args.Y)
     args.Y=zeros(size(X,1),1);
     Ycolor=ones(size(X,1),1);
 else
-    Ycolor=args.Y
+    Ycolor=args.Y;
 %     Ycolor=ceil(([(args.Y-mean(args.Y))/(2.01*max(abs(args.Y-mean(args.Y))))]+.5)*100);
 end
-cmap=distinguishable_colors(100);
-
+cmap=distinguishable_colors(max(Ycolor)+1); % currently, the actual integers have an effect on the colors chosen
 figure, hold on
 set(gca,'fontsize',14)
 sample_name=cell(0);
 add_col=[];
 label_ax=[];
-% Ycolor
 fmt='%0.2f';
 if length(components)==1
-    for k=1:size(model.scores,1);
-        plot(model.scores(k,components(1)),Y(k),'o','LineWidth',1,'MarkerEdgeColor','k','MarkerFaceColor',cmap(Ycolor(k),:),'MarkerSize',8)
+    for k=1:size(model.scores,1)
+        plot(model.scores(k,components(1)),Y(k),'o','LineWidth',1,'MarkerEdgeColor','k','MarkerFaceColor',cmap(Ycolor(k)+1,:),'MarkerSize',8);
     end
-    xlabel(['Component ',num2str(components(1)),', ', num2str(model.variance(components(1))*100, fmt),'% of Variance'])
+    xlabel(['Component ',num2str(components(1)),', ', num2str(model.variance(components(1))*100, fmt),'% of Variance']);
    
 elseif length(components)==2
-    for k=1:size(model.scores,1);
-        ax(k)=plot(model.scores(k,components(1)),model.scores(k,components(2)),'o','LineWidth',1,'MarkerEdgeColor','k','MarkerFaceColor',cmap(Ycolor(k),:),'MarkerSize',8);
+    for k=1:size(model.scores,1)
+        ax(k)=plot(model.scores(k,components(1)),model.scores(k,components(2)),'o','LineWidth',1,'MarkerEdgeColor','k','MarkerFaceColor',cmap(Ycolor(k)+1,:),'MarkerSize',8);
         if iscell(args.showlegend) && ~any(Ycolor(k)==add_col)
             label_ax(end+1)=ax(k);
             sample_name(end+1)=args.showlegend(k);
             add_col(end+1)=Ycolor(k);
         end
-%         Ycolor(k)
-%         sample_name(end+1:end+D)=T.Sample_ID(strcmp(T.Sample_grp, sel(f)));
         if args.showlabels
-            text(model.scores(k,components(1)),model.scores(k,components(2)),[int2str(args.Y(k))],'fontsize',10,'HorizontalAlignment','left','VerticalAlignment','bottom')
+            text(model.scores(k,components(1)),model.scores(k,components(2)),strcat(int2str(args.Y(k)),{'-'},int2str(k)),'fontsize',10,'HorizontalAlignment','left','VerticalAlignment','bottom')
         end
     end
     xlabel(['Component ',num2str(components(1)),', ', num2str(model.variance(components(1))*100, fmt),'% of Variance'])
@@ -79,21 +83,23 @@ elseif length(components)==2
     
     if args.conf_ellipse
     %plot 95% confidence ellipses
-        Ygrp=grp2idx(args.Y)
+        Ygrp=grp2idx(args.Y);
         Ycolorgrp=grp2idx(Ycolor);
         for i=1:max(Ygrp)
             D=[model.scores(Ygrp==i,components(1)),model.scores(Ygrp==i,components(2))];
             mu = mean(D);
             Dm = bsxfun(@minus,D,mu);
-            e=error_ellipse(cov(Dm),'conf',0.95,'mu',mu);
-            plot(e(:,1),e(:,2),'color',cmap(unique(Ycolor(Ycolorgrp==i)),:),'linewidth',2)
+            [M,N]=size(Dm);
+            if (M>1 && N>1)
+                e=error_ellipse(cov(Dm),'conf',0.95,'mu',mu);
+                plot(e(:,1),e(:,2),'color',cmap(unique(Ycolor(Ycolorgrp==i))+1,:),'linewidth',2)
+            end
         end
     end
     
     if any(args.mahalanobis)
-    %
         if ~all(ismember(args.mahalanobis,args.Y))
-            error('Check that your groups numbers are in Y')
+            error('Check that your groups'' numbers are in Y')
         end
         scores=model.scores(:,components);
         M=mahalanobis(args.mahalanobis,args.Y,scores);
@@ -104,7 +110,7 @@ elseif length(components)==2
    
 elseif length(components)==3
     for k=1:size(model.scores,1);
-        plot3(model.scores(k,components(1)),model.scores(k,components(2)),model.scores(k,components(3)),'o','LineWidth',1,'MarkerEdgeColor','k','MarkerFaceColor',cmap(Ycolor(k),:),'MarkerSize',8)
+        plot3(model.scores(k,components(1)),model.scores(k,components(2)),model.scores(k,components(3)),'o','LineWidth',1,'MarkerEdgeColor','k','MarkerFaceColor',cmap(Ycolor(k)+1,:),'MarkerSize',8)
     end
     view(3)
     xlabel(['Component ',num2str(components(1)),', ', num2str(model.variance(components(1))*100, fmt),'% of Variance'])

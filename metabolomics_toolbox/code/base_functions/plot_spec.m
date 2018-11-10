@@ -1,8 +1,8 @@
 function plot_spec(X,ppm,T,sel,varargin)
 
 % Author: Rahil Taujale
-% Version: 0.2
-% Date: 01/30/2017
+% Version: 0.4
+% Date: 03/21/2017
 
 % Description:
 %       plot_spec plots a set of chemical shift values on a set of 1D
@@ -31,14 +31,15 @@ function plot_spec(X,ppm,T,sel,varargin)
 %                   : 'mean' to show only the mean plots
 %           'color' : 'mean' (Default) Label and color plots based on means
 %                   : 'all' Label each sample with separate color
-%           'xlabel': Cell array with additional labels to add to peaks
-%                     from joined data
 %
 % Output: 
 %       A plot of the 1D spectra.
 %
 % Log:
 %       Ver 0.2: Added secondary labels to label added peaks.
+%       Ver 0.3: Removed secondary labels option. Use data_cursor_labels.m
+%       function
+%       Ver 0.4: When plotting, does not use the black color anymore.
 %
 % Example run: plot_spec(XALN,ppmR,T,selected_sets,'Yvec','n','show','mean','color','mean')
 
@@ -62,8 +63,11 @@ function plot_spec(X,ppm,T,sel,varargin)
         sel=unique(T.Yvec)';
         opt.Yvec='yes';
     end
-    [M,N]=size(sel);
-    CM = distinguishable_colors(N);
+    [~,N]=size(sel);
+    CM = distinguishable_colors(N+1);
+    if (N>3)
+        CM(4,:)=[];
+    end
     fig=[];
     ax=[];
     sample_name=cell(0);
@@ -72,14 +76,14 @@ function plot_spec(X,ppm,T,sel,varargin)
     for f=1:N
         if strncmpi(opt.Yvec, 'yes',1)
             Xsel=X(T.Run_ID(T.Yvec==sel(f)),:);
-            [D,E]=size(Xsel);
+            [D,~]=size(Xsel);
             sample_name(end+1:end+D)=T.Sample_ID(T.Yvec==sel(f));
             for i=1:N
                 sel2{i}=char(unique(T.Sample_grp(T.Yvec==sel(i))));
             end
         else
             Xsel=X(T.Run_ID(strcmp(T.Sample_grp, sel(f))),:);
-            [D,E]=size(Xsel);
+            [D,~]=size(Xsel);
             sample_name(end+1:end+D)=T.Sample_ID(strcmp(T.Sample_grp, sel(f)));
             sel2=sel;
         end
@@ -113,26 +117,6 @@ function plot_spec(X,ppm,T,sel,varargin)
         legend(ax,sample_name);
     elseif strcmpi(opt.color, 'mean')
         legend(ax(m),sample_name(m));
-    end
-    
-    if isa(opt.xlabel,'cell')
-        [M,N]=size(opt.xlabel);
-        [A,B]=size(ppm);
-        xT=double.empty(0,N);
-        addPt=B-(50*N);
-        for i=N:-1:1
-            st=addPt+(50*i);
-            en=addPt+(50*(i-1));
-            tick=(ppm(st)+ppm(en))/2;
-            xT(i)=tick;
-        end
-        new_ax(1)=gca;
-        a=get(gca,'Position');
-        new_ax(2) = axes('Position',a,'XAxisLocation','top','YAxisLocation','right','Color','none','XColor','k','YColor','k','XDir','reverse');
-        set(gca,'box','off','ytick',[],'ycolor','w');
-        linkaxes(new_ax,'xy');
-        xA={'L1' 'L2' 'L3' 'L4' 'Ad'};
-        set(gca,'xtick',xT,'xticklabel',opt.xlabel);
     end
     hold off;
 end

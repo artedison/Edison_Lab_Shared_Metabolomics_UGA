@@ -11,6 +11,8 @@ function spectra = ref_spectra_manual(spectra, ppmrange, ppm, thresh)
 % Author: Greg Stupp May 2014
 % modified by Chaevien: added ppm in case you don't want to reference to
 % zero
+% MJ edit 2JAN2018: Happy New Year! Print progress to Command Window (Line
+%                   29)
 
 
 if ~exist('ppmrange','var')
@@ -26,6 +28,7 @@ if ~exist('ppm','var')
 end
 
 for i=1:length(spectra);
+    fprintf(['\n\t\tReferencing Spectrum ',num2str(i),'/',num2str(length(spectra))])
     threshI = thresh*abs(median(spectra(i).real));
     peaks=peakpick(spectra(i).real,30,threshI);
     plot(spectra(i).ppm,spectra(i).real,'k'), hold,

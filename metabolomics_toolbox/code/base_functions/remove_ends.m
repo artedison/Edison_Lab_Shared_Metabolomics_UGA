@@ -1,8 +1,8 @@
 function [XR,ppmR]=remove_ends(X,ppm,shift1,shift2)
 
 % [XR,ppmR]=remove_ends(X,ppm,shift1,shift2)
-% 
-% Removes region between -Inf and ppm value of "shift1" ,and 
+%
+% Removes region between -Inf and ppm value of "shift1" ,and
 % region between ppm value of "shift2" and Inf.
 %
 % Arguments:

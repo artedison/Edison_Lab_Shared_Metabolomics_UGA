@@ -8,6 +8,7 @@ function [XN,factors]=normalize(X,ppmH,method,features)
 % 
 % X               N x P matrix of spectral features for each sample
 % method          'total' for Total Area, 'PQN' for Probablistic Quotient,
+%                 'quantile' for Quantile Normalization,
 %                 'intensity' for normalization to single feature,
 %                 'integral' for normalization to sum of set of features
 % features        only required for 'intensity' or 'integral'.  For
@@ -15,6 +16,9 @@ function [XN,factors]=normalize(X,ppmH,method,features)
 %                 to - e.g. [10] for X(:,10).  For 'integral', the range of
 %                 features in X that span the peak to normalize to - eg
 %                 [-.05,0.05]
+%                 You can also use this input as an option for the 'quantile'
+%                  method: set as 'median' to take median of the ranked
+%                  values instead of the mean.
 %
 % Outputs:
 % XN              N x P matrix of normalized data
@@ -58,6 +62,11 @@ switch lower(method)
             factors(i)=trapz(X(i,feature(1):feature(2)));
             XN(i,:)=X(i,:)./factors(i);
         end
-        
+    case 'quantile'
+        if exist('features','var');
+            XN = transpose(quantilenorm(X',features,'true'));
+        else
+            XN = transpose(quantilenorm(X'));
+        end           
 end
 end

@@ -63,6 +63,7 @@ if disp(1)=='c'
     set(gca,'XDir','rev')
     xlabel('F2 (ppm)')
     ylabel('F1 (ppm)');
+    colormap(jet);
     t=colorbar;
 set(get(t,'ylabel'),'String', 'Correlations/Loadings');
 caxis([min(loadings) max(loadings)])

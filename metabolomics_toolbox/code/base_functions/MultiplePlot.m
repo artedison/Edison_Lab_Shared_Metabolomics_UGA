@@ -18,6 +18,7 @@ function MultiplePlot(varargin)
 % Output:
 %       A plot with all the fig files shown side by side.
 %
+% MJ edit 9OCT2017: Line 41: add the title for each plot
 
 
 K=varargin{1};
@@ -37,8 +38,9 @@ K=varargin{1};
         xlab=get(get(ax(i),'xlabel'),'string');
         ylab=get(get(ax(i),'ylabel'),'string');
         xlabel(xlab);ylabel(ylab);
+        title(ax(i).Title.String)
         hold on
     end
-    linkaxes(s, 'x');
+    linkaxes(s, 'xy');
     set(s,'xdir','reverse');
 end

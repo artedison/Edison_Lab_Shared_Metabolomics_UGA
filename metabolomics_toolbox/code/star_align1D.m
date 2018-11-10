@@ -12,7 +12,7 @@ function XAL=star_align1D(X,ppm,represent,alignment_method,Seg_ppm,MaxShift_ppm,
 % represent              representative spectrum of spectral set- can be
 %                        'mean','median','max', 'min', 'var', or an interger for the index of
 %                        the spectrum in the full stack
-% alignment_method       string, either 'CCOW','ICOSHIFT','RAFFT','PAFFT'
+% alignment_method       string, either 'CCOW','PARCCOW','ICOSHIFT','RAFFT','PAFFT'
 %
 % Optional Arguments:
 %
@@ -55,6 +55,8 @@ NumSegs=round(size(X,2)/SegLength);
 switch upper(alignment_method);
     case('CCOW')
         XAL=CCOW(X,reference,'SegLength',SegLength,'maxPeakShift',MaxShift,'Slack',slack);
+        case('PARCCOW')
+        XAL=parCCOW(X,reference,'SegLength',SegLength,'maxPeakShift',MaxShift,'Slack',slack);
     case('ICOSHIFT')
         XAL=icoshift(reference,X,NumSegs,MaxShift);
     case('RAFFT')

@@ -73,6 +73,8 @@ for aligndex=1:size(m,1)
     switch upper(alignment_method);
        case('CCOW')
             XALg([align{num1},align{num2}],:)=CCOW([XALg(align{num1},:);XALg(align{num2},:)],reference,'SegLength',SegLength,'maxPeakShift',MaxShift,'Slack',slack);
+       case('PARCCOW')
+           XALg([align{num1},align{num2}],:)=parCCOW([XALg(align{num1},:);XALg(align{num2},:)],reference,'SegLength',SegLength,'maxPeakShift',MaxShift,'Slack',slack);
         case('ICOSHIFT')
             XALg([align{num1},align{num2}],:)=icoshift(reference,[XALg(align{num1},:);XALg(align{num2},:)],NumSegs,MaxShift);
         case('RAFFT')
