@@ -12,13 +12,13 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
 %     ppmWeight = 1;
 %     intensityWeight = 1;
 %
-% 
+%
 %     [ridges] = ridgeTracing_PeakPick1D(matrix,ppm,timepoints,ROI,peakPickThreshold,numberOfRidges,timeWeight,ppmWeight,intensityWeight);
 
 % MJ and YW 20APR2018
-            
+
 %% Trace the ridges
-        
+
         peakInds = input.peakInds;
         window = input.window;
         windowPPMs = input.windowPPMs;
@@ -41,7 +41,7 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
         ridgePoints = [(rows/max(rows)/timeWeight)',(cols/max(cols)/ppmWeight)',((heights/max(heights))/intensityWeight)'];
         % Count Ridges
             %numberOfRidges = ceil(median(cellfun(@length,col))*1.25);
-            
+
         clusters = clusterdata(ridgePoints,numberOfRidges);%'Distance','euclidean','Linkage','single');
         %figure,scatter3(cols,rows,heights,100,clusters,'filled')
 % Transform clusters to ridges
@@ -60,37 +60,37 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
             ridges(i).ColumnInds = cols(inds) + matchPPMs(min(windowPPMs),ppm);
             ridges(i).WindowIndices = sub2ind(size(window),ridges(i).RowInds,cols(inds)); % in terms of the window
         % Get the ridge info (matrix context)
-            ridges(i).ppms = windowPPMs(cols(inds));          
+            ridges(i).ppms = windowPPMs(cols(inds));
             ridges(i).times = timepoints(ridges(i).RowInds);
             ridges(i).intensities = window(ridges(i).WindowIndices);
-        % Record other relevant info 
-            ridges(i).inputs.outputs_ridgeTracing_PeakPick1D = inputLittleVars; % (did this in ridgeTracing_PeakPick1D)              
-            ridges(i).inputs.timeWeight = 1;
-            ridges(i).inputs.ppmWeight = .05;
-            ridges(i).inputs.intensityWeight = 30;
-          
+        % Record other relevant info
+            ridges(i).inputs.outputs_ridgeTracing_PeakPick1D = inputLittleVars; % (did this in ridgeTracing_PeakPick1D)
+            ridges(i).inputs.timeWeight = timeWeight;
+            ridges(i).inputs.ppmWeight = ppmWeight;
+            ridges(i).inputs.intensityWeight = intensityWeight;
+
         % Remove spurious ridges (not necessary)
              % Second derivative filter in ppm dimension
-             
+
              % Filter out ridges for which there are two datapoints at a
                 % single timepoint (THIS IS NECESSARY)
-                
+
              %
     end
 
 % Plot the resulting ridges, and select the desired ridges by clicking.
     % The highlighted ones get selected.
-    % Click once to select. Click again to de-select 
+    % Click once to select. Click again to de-select
     %fig = plotRidges(window,ppm,ROIinds,timepoints,ridges,'Interactive Ridge Picking. Press any key to get menu.');
 %         f2 = figure; hold on
 %             surf(ppm(ROIinds(1:end)),timepoints,window,'FaceColor','Interp');%,hold on
 %             shading interp
-%             set(gca,'xdir','reverse') 
+%             set(gca,'xdir','reverse')
 %             xlabel('ppm')
 %             zlabel('Scaled Intensity')
-%             ylabel('Time (h)')  
+%             ylabel('Time (h)')
 %             %title(titleStr)
-%             for i = 1:length(ridges) 
+%             for i = 1:length(ridges)
 %                 h(i) = plot3(ridges(i).ppms,ridges(i).times,ridges(i).intensities,'LineWidth',4);
 %             end
 
@@ -101,17 +101,17 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
                 answer = menu('Interactive Ridge Picking Menu','Pick Clusters to Join','Pick Final Clusters','Delete Ridge(s)','Cancel');
                 % Globals MUST be cleaned up after each iteration and
                 % initialized ONCE in the code.
-                    global clickedRidges; 
+                    global clickedRidges;
                         clickedRidges = [];
                     global lineNumber;
-                        lineNumber = 1; 
+                        lineNumber = 1;
                 switch answer
                     case 1
                         % Get the ridges to join:
                             title('Select two ridges to join by clicking on them, then hit Return (follows maxima between the points):')
                                 clickedRidges = [];
-                                lineNumber = 1;                    
-                            selectLine(gcf)   
+                                lineNumber = 1;
+                            selectLine(gcf)
                             pause()
                         % Convert to useful indices
                         % variables set automatically?)
@@ -121,7 +121,7 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
                             clear('clickedRidges','lineNumber')
                                 ridgesToConnect = unique(inds(find(mod(sum(inds==inds'),2))));
                                         newRidge = joinRidges(ridges,ridgesToConnect,input,window);
-% Testing                                        
+% Testing
     plotRidges(window,input.ppm,input.ROIinds,input.times,ridges(ridgesToConnect),'test');
     a = [29732,29714,29706,29718,29779,29709,29709,29718,29775,29805,29830,29861,29885,29904];
     b = [2,3,4,5,6,7,8,9,10,11,12,13,14,15];
@@ -138,8 +138,8 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
                                         % structure:
                                             ridges = [ridges newRidge];
                                         % Get rid of the old ridges
-                                            ridges(ridgesToConnect) = [];                                
-                                
+                                            ridges(ridgesToConnect) = [];
+
                     case 2
                         % Pick the final ridges
                             title('Select the final ridges by clicking on them, then hit Return')
@@ -147,15 +147,15 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
                                 lineNumber=1;
                             selectLine(gcf)
                             pause()
-                              
-                        % Save them 
+
+                        % Save them
                             inds = clickedRidges;
                             inds = inds(inds~=1)-1;  % shift (surface plot = 1)
                             % Count the number of odd ridges
                                 oddRidges = inds(find(mod(sum(inds==inds'),2)));
                             ridges = ridges(oddRidges);
-                              
-                    case 3 
+
+                    case 3
                         % Delete ridge(s):
                             title('Select the final ridges by clicking on them, then hit Return')
                                 clickedRidges=[];
@@ -168,10 +168,10 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
                                 oddRidges = inds(find(mod(sum(inds==inds'),2)));
                             ridges(oddRidges) = [];
                             ridgePoints(oddRidges,:) = [];
-                            % Redo the clustering 
+                            % Redo the clustering
                             clusters = clusterdata(ridgePoints,numberOfRidges);%'Distance','euclidean','Linkage','single');
                             %clusters = clusterdata(ridgePoints,numberOfRidges-length(oddRidges));%'Distance','euclidean','Linkage','single');
-                            % Remake ridges structure? 
+                            % Remake ridges structure?
 %                                 ridges = struct();
 %                                 for i = 1:length(clusterNumbers)
 %                                     % Get the indices in 'window'
@@ -181,26 +181,26 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
 %                                         ridges(i).ColumnInds = cols(inds) + matchPPMs(min(windowPPMs),ppm);
 %                                         ridges(i).WindowIndices = sub2ind(size(window),ridges(i).RowInds,cols(inds)); % in terms of the window
 %                                     % Get the ridge info (matrix context)
-%                                         ridges(i).ppms = windowPPMs(cols(inds));          
+%                                         ridges(i).ppms = windowPPMs(cols(inds));
 %                                         ridges(i).times = timepoints(ridges(i).RowInds);
 %                                         ridges(i).intensities = window(ridges(i).WindowIndices);
-%                                     % Record other relevant info 
-%                                         ridges(i).inputs.outputs_ridgeTracing_PeakPick1D = inputLittleVars; % (did this in ridgeTracing_PeakPick1D)              
+%                                     % Record other relevant info
+%                                         ridges(i).inputs.outputs_ridgeTracing_PeakPick1D = inputLittleVars; % (did this in ridgeTracing_PeakPick1D)
 %                                         ridges(i).inputs.timeWeight = 1;
 %                                         ridges(i).inputs.ppmWeight = .05;
 %                                         ridges(i).inputs.intensityWeight = 30;
-% 
+%
 %                                     % Remove spurious ridges (not necessary)
 %                                          % Second derivative filter in ppm dimension
-% 
+%
 %                                          % Filter out ridges for which there are two datapoints at a
 %                                             % single timepoint (THIS IS NECESSARY)
-% 
+%
 %                                          %
 %                                 end
-                            
-                            
-                    case 4 
+
+
+                    case 4
                         % Quit without plotting
                             close(gcf)
                         break
@@ -215,28 +215,28 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
 
             end
 
-    function [h] = plotRidges(window,ppm,ROIinds,timepoints,ridges,titleStr)    
+    function [h] = plotRidges(window,ppm,ROIinds,timepoints,ridges,titleStr)
         h = figure; hold on
             surf(ppm(ROIinds(1:end)),timepoints,window,'FaceColor','Interp');%,hold on
             shading interp
-            set(gca,'xdir','reverse') 
+            set(gca,'xdir','reverse')
             xlabel('ppm')
             zlabel('Smoothed Intensity')
-            ylabel('Time (h)')  
+            ylabel('Time (h)')
                 set(gcf, 'InvertHardCopy', 'off');
                 set(gca,'fontsize',20)
                 set(gca,'box','off')
                 title('Clustered peaks on Gaussian-smoothed spectra')
             title(titleStr)
-            for i = 1:length(ridges) 
+            for i = 1:length(ridges)
                 h(i) = plot3(ridges(i).ppms,ridges(i).times,ridges(i).intensities,'LineWidth',5);
             end
     end
-    
+
 %     function [ridgeNumber] = pickRidges
 %         clickedRidges = [];
-%         lineNumber = 1;                    
-%         selectLine(gcf)   
+%         lineNumber = 1;
+%         selectLine(gcf)
 %         pause()
 %         % Convert to useful indices
 %         % variables set automatically?)
@@ -248,7 +248,7 @@ function [newRidge] = joinRidges(ridges,ridgesToConnect,input,window)
     figure,hold on,surf(input.ppm(input.ROIinds),input.times,window),shading interp
             scatter3(input.ppm(v1(2,:)),input.times(v1(1,:)),v1(3,:),'r')
             scatter3(input.ppm(v2(2,:)),input.times(v2(1,:)),v2(3,:),'y')
-    
+
 %% This is behaving as expected
 %     v2 = v1(:,1:5);
 %     v1 = v1(:,6:15);
@@ -259,29 +259,29 @@ function [newRidge] = joinRidges(ridges,ridgesToConnect,input,window)
 %             scatter3(input.ppm(v1(2,1)),input.times(v1(1,1)),v1(3,1),'r')
 %             scatter3(input.ppm(v2(2,end)),input.times(v2(1,end)),v2(3,end),'y')
 
-    % Find points where the ridges are closest. Get the indices of those points.            
+    % Find points where the ridges are closest. Get the indices of those points.
             allRidgePointDistances = pdist2(v1',v2');
             %[allRidgePointDistances,minLinearInd] = pdist2(v1',v2','euclidean','Smallest',1); % pdist2 will return the smallest distance and its index
         [~,minLinearInd] = min(allRidgePointDistances(1:end));
-        [v1Ind,v2Ind] = ind2sub(size(allRidgePointDistances),minLinearInd); % these index the points on each respective ridge 
+        [v1Ind,v2Ind] = ind2sub(size(allRidgePointDistances),minLinearInd); % these index the points on each respective ridge
 %%
-    % Define a window by the closest points of the current ridges 
+    % Define a window by the closest points of the current ridges
             ridges(ridgesToConnect(1)).ppms(v1Ind)
             ridges(ridgesToConnect(2)).ppms(v2Ind)
-            
+
         connectWindowPPMBounds = sort([,]);
             connectWindowPPMBoundInds = matchPPMs(connectWindowPPMBounds,input.ppm);
-            
+
             ridges(ridgesToConnect(1)).RowInds(v1Ind)
             ridges(ridgesToConnect(2)).RowInds(v2Ind)
         [connectWindowTimeBounds,timeSort] = sort([,]);
-        
+
             % *** timeSort is used to ensure that the ridges are ordered correctly when concatenated later on
     figure,hold on,surf(input.ppm(input.ROIinds),input.times,window),shading interp
             scatter3(input.ppm(v1(2,:)),input.times(v1(1,:)),v1(3,:),'r')
             scatter3(input.ppm(v2(2,:)),input.times(v2(1,:)),v2(3,:),'y')
-            
- %% Positive control for the correct region:            
+
+ %% Positive control for the correct region:
     a = [29732,29714,29706,29718,29779,29709,29709,29718,29775,29805,29830,29861,29885,29904];
     b = [2,3,4,5,6,7,8,9,10,11,12,13,14,15];
 %     figure,hold on,surf(input.ppm(a),input.times(b),input.matrix(b,a),'FaceColor','Interp');
@@ -290,10 +290,10 @@ function [newRidge] = joinRidges(ridges,ridgesToConnect,input,window)
     aa = matchPPMs(input.ppm(a),input.ppm(input.ROIinds));
     figure,hold on,surf(input.ppm(a),input.times(b),window(b,aa),'FaceColor','Interp');
     %scatter3(input.ppm(windowCols(newPointsWindowInds)),input.times(windowRows),newPointsIntensities,'*r');
-   %%         
+   %%
     % If the ridges are adjacent in the ppm or time dimension, simply combine
     % them. Otherwise, follow the highest ridge between them.
-    
+
         if or(abs(connectWindowTimeBounds(1)-connectWindowTimeBounds(2))<=1    ,   abs(connectWindowPPMBoundInds(1)-connectWindowPPMBoundInds(2))<=1)
             % Concatenate and re-sort the ridges. No Window necessary.
 
@@ -304,7 +304,7 @@ function [newRidge] = joinRidges(ridges,ridgesToConnect,input,window)
                 % (We can certainly have two points on the same ppm, but not the same
                 % timepoint.)
                 windowCols = connectWindowPPMBoundInds(1):connectWindowPPMBoundInds(2);
-             % Make the window   
+             % Make the window
                 %connectWindow = input.matrix(windowRows,windowCols); %this is not the right matrix
                 connectWindow = window(windowRows,matchPPMs(input.ppm(windowCols),input.ppm(windowCols)));
              % Find the maximum of each row in that window
@@ -321,10 +321,10 @@ function [newRidge] = joinRidges(ridges,ridgesToConnect,input,window)
                 % the points such that they
                 % follow a single line?
                     % We collect all the points
-                    % into a vector (just the 
+                    % into a vector (just the
                     % rows), then sort them and
-                    % 
-                        %newRidge.RowInds = unique(ridges(ridgesToConnect(1)).RowInds);  
+                    %
+                        %newRidge.RowInds = unique(ridges(ridgesToConnect(1)).RowInds);
                 newRidge = struct();
                 newRidge.RowInds = [ridges(ridgesToConnect(timeSort(1))).RowInds,...
                                     windowRows,...
@@ -348,26 +348,26 @@ function [newRidge] = joinRidges(ridges,ridgesToConnect,input,window)
         end
 end
 
-% function [newRidge] = expandRidge(ridges,input)        
+% function [newRidge] = expandRidge(ridges,input)
 %     answer = 0;
 %     while answer~=3
 %         % Regenerate the figure with the expanded ridge
 %         plotRidges(window,ppm,ROIinds,timepoints,ridges,'Interactive Ridge Picking');
 %         answer = menu('Interactive Ridge Picking Menu','Pick Clusters to Join','Pick Final Clusters','Delete Ridge(s)','Cancel');
 %         % Draw the ROI
-%         
+%
 %         % Get the indices of that region in terms of whole matrix
-%         
+%
 %         % Calculate the maxima
-%         
+%
 %         % Figure out which ridge is being added to
-%         
+%
 %         % Add the maxima to the ridge
-%         
+%
 %         % Sort by row index
-%         
+%
 %         close(gcf)
 %     end
 
-    
+
 %end
