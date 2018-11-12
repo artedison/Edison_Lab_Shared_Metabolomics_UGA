@@ -12,21 +12,11 @@
 %     - really want to do this? ppms might be different?
 %     - this is done in this script. Not included in the shorter ones
 % 'HRMAS_ncrassa_paper_Sample_[samples]_1h1d_short.m'
-%
-% Before running, add the following to the Matlab path:
-% HRMAS_ncrassa_paper_Sample_4
-% HRMAS_ncrassa_paper_Sample_5
-% HRMAS_ncrassa_paper_Sample_6
-% HRMAS_ncrassa_paper_Sample_7
-% HRMAS_ncrassa_paper_Sample_8
-% HRMAS_ncrassa_paper_Sample_10
-% HRMAS_ncrassa_paper_Sample_11
-% HRMAS_ncrassa_paper_Sample_12
-% HRMAS_ncrassa_paper_Sample_14
-% HRMAS_ncrassa_paper_testingTimeAveraging
-% meta_analysis_1
 
-% The following is an example of how to add the Edison Lab toolbox to the
+% Before running, add the following to the Matlab path:
+% path of datafolder (analysis folder)
+
+% The following is an example of how to add the Edison Lab shared toolbox (Edison_Lab_Shared_Metabolomics_UGA) to the
 % local path (REQUIRED).
     % addpath(genpath('/Users/mjudge/Edison_lab_UGA'))
 
@@ -34,15 +24,19 @@
 % media. Same conidia over the course of ~3wks
 
 %% Orient in Directory
-cd('/home/yuewu/Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/archive/test.code/analysis/')
+toolboxfolder='/Users/yuewu/Documents/GitHub/Edison_Lab_Shared_Metabolomics_UGA/';
+addpath(genpath(toolboxfolder));%%the path for toolbox
+anafolder='/Users/yuewu/Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/archive/test.code/analysis/';
+cd(anafolder);
+addpath(genpath(anafolder)); %% the path for datafolder
 thisFile='STEP_1_processing_combine_samples.m';
-wd= which(thisFile);cd(wd(1:end-length(thisFile)-1));clear('wd')
+wd=which(thisFile);cd(wd(1:end-length(thisFile)-1));clear('wd');
 meta_directory=cd();
 % mkdir('results')
 cd 'results', results_directory=cd();
 
 %% Reprocess data manually (if necessary)
-samples=[4,5,6,10,11,12];
+samples=[4,5,6,10,11,12]; %here only 6 replicates are processed for example, while in the dataset we provided, there are 9 replicates.
 sampleKey={'aerobic',	'aerobic',	'aerobic',	'oxygen-limited',	'oxygen-limited',	'oxygen-limited'};
 %Open all processing files in Matlab (for editing)
 % for s = samples

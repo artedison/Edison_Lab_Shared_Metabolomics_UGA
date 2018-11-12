@@ -5,8 +5,7 @@
 %save('compounds_26SEP2018.mat')
 % load('compounds_26SEP2018.mat')
 load('compounds.mat')
-load('sampleData.mat')
-
+load('sampleData.mat')%the dataset we provided
 %% Plot the means of the scaled ridges by condition
 % mkdir('AllPlots_updated_26SEP2018_scaled')
 % cd('AllPlots_updated_26SEP2018_scaled')
