@@ -1,4 +1,4 @@
-function [newRidges] = ridgeCorrection(matrix,currentppm,newRidges,windowWidth,viewWidth,figs)
+function [newRidges,adjustedRidges] = ridgeCorrection(matrix,currentppm,newRidges,windowWidth,viewWidth,figs)
 
 if ~strcmp(figs,'plotFigs')
      set(0,'DefaultFigureVisible','off');
@@ -53,7 +53,7 @@ end
             %        set(0,'DefaultFigureVisible','on')
                     
             % Sort the fields:   
-                [newRidges(ridgenumber).Adjusted.RowInds,sortOrder] = sort(newRidge_RowInds);  
+                [adjustedRidges(ridgenumber).RowInds,sortOrder] = sort(newRidge_RowInds);  
 
                 newRidgeLinearInds = newRidgeLinearInds(sortOrder);
                 newRidge_ColInds = newRidge_ColInds(sortOrder);       
@@ -66,20 +66,20 @@ end
                 newRidge_intensities(newRidge_RowInds(1):newRidge_RowInds(end)) = intensities;    % don't forget to concatenate the middle values, which are the actual measured values
                 newRidge_intensities(newRidge_RowInds(end):length(fullTimes)) = intensities(end); % fill to the end with the last value
             % Assign to struct:   
-                %[newRidges(ridgenumber).Adjusted.RowInds,sortOrder] = sort(newRidge_RowInds); 
-                newRidges(ridgenumber).Adjusted.RidgeName = '';
-                newRidges(ridgenumber).Adjusted.Annotation = '';
-                newRidges(ridgenumber).Adjusted.windowWidth = windowWidth;
-                newRidges(ridgenumber).Adjusted.viewWidth = viewWidth;
-                newRidges(ridgenumber).Adjusted.LinearInds = newRidgeLinearInds;
-                newRidges(ridgenumber).Adjusted.ColumnInds = newRidge_ColInds;
-                newRidges(ridgenumber).Adjusted.RowInds = newRidge_RowInds;   
-                newRidges(ridgenumber).Adjusted.ppms = currentppm(newRidge_ColInds); 
-                newRidges(ridgenumber).Adjusted.ExtendedIntensities = newRidge_intensities;  
-                newRidges(ridgenumber).Adjusted.Intensities = intensities;  
-                newRidges(ridgenumber).Times = fullTimes(newRidge_RowInds)';  
-                newRidges(ridgenumber).FilledGapInds = newRidge_gapInds; % these correspond to the row number (not the point number), so no sorting necessary
-                newRidges(ridgenumber).EndPointsAdded = setdiff(1:length(fullTimes),newRidge_RowInds); % these should be correct
+                %[adjustedRidges(ridgenumber).RowInds,sortOrder] = sort(newRidge_RowInds); 
+                adjustedRidges(ridgenumber).RidgeName = '';
+                adjustedRidges(ridgenumber).Annotation = '';
+                adjustedRidges(ridgenumber).windowWidth = windowWidth;
+                adjustedRidges(ridgenumber).viewWidth = viewWidth;
+                adjustedRidges(ridgenumber).LinearInds = newRidgeLinearInds;
+                adjustedRidges(ridgenumber).ColumnInds = newRidge_ColInds;
+                adjustedRidges(ridgenumber).RowInds = newRidge_RowInds;   
+                adjustedRidges(ridgenumber).ppms = currentppm(newRidge_ColInds); 
+                adjustedRidges(ridgenumber).ExtendedIntensities = newRidge_intensities;  
+                adjustedRidges(ridgenumber).Intensities = intensities;  
+                adjustedRidges(ridgenumber).Times = fullTimes(newRidge_RowInds)';  
+                adjustedRidges(ridgenumber).FilledGapInds = newRidge_gapInds; % these correspond to the row number (not the point number), so no sorting necessary
+                adjustedRidges(ridgenumber).EndPointsAdded = setdiff(1:length(fullTimes),newRidge_RowInds); % these should be correct
     end     
 
     set(0,'DefaultFigureVisible','on');
