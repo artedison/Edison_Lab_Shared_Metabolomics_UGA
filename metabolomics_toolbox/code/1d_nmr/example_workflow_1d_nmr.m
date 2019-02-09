@@ -4,6 +4,8 @@
     % We recommend that you put the toolbox in some location on your local
     % computer that github syncs the toolbox too. Add all the folders and
     % subfolders to your path from that github directory.
+    
+%% Get the data:
 %     You will need to get the processed NMR data from this location:
 %     'Dropbox (Edison_Lab@UGA)/Projects/education/Fall_2018/bioinformatics/data/processed_data/NMRPipe/1D_processing'
 
