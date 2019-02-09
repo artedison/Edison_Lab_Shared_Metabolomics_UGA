@@ -1,23 +1,50 @@
 function  loadStudyFTdata( csvFileName )
-%loads all .ft data files for a study from different paths specified by a separate 
-%CSV file
-% All .ft files should contain data of same dimensions and sizes
-FilePathColumn=1;
-FileNameColumn=2;
+% Author: Edison Lab
+% Version: 0.1
+% Date: 30NOV2018
+%
+% Description:
+%       Loads all .ft data files for a study from different paths specified by a separate 
+%       CSV file. All .ft files should contain data of same dimensions and
+%       sizes.
+%       NOTE: this function is obsolete. loadallft is preferred.
+%
+% Input:
+%       csvFileName:    The path/name of a .csv file with two columns:
+%                         dir: paths to the .ft file
+%                         filename: filenames for the .ft file
+%                         For example, see:
+%                         Dropbox (Edison_Lab@UGA)/Projects/education/Fall_2018/bioinformatics/NMR_info/1D_noesypr1d_path.csv
+%
+% Output:
+%       spectra:        Structure containing fields:
+%                             real : the 1d vector of intensities for a given spectrum
+%                             ppm : the 1d vector of ppm values corresponding to each intensity in real
+%                             Title : the name of the .ft file
+% Log:
+%       Ver 0.1 : RT, MTJ, YW annotated and checked
+%
+% Example run:
+%
+%       loadStudyFTdata('../NMR_info/1D_noesypr1d_path.csv');
 
-ftFiles=read_mixed_csv(csvFileName,','); %Delimiter could be an input
-ftFilesList=ftFiles(2:end, FilePathColumn); % 2 is just for skipping the column names of csv file
+% 
+    FilePathColumn=1;
+    FileNameColumn=2;
 
-for i=1:length(ftFilesList)
-    ftFilesList(i)=fullfile(ftFiles(i+1,FilePathColumn),ftFiles(i+1,FileNameColumn));
-end
+    ftFiles=read_mixed_csv(csvFileName,','); %Delimiter could be an input
+    ftFilesList=ftFiles(2:end, FilePathColumn); % 2 is just for skipping the column names of csv file
+
+    for i=1:length(ftFilesList)
+        ftFilesList(i)=fullfile(ftFiles(i+1,FilePathColumn),ftFiles(i+1,FileNameColumn));
+    end
 %disp(ftFilesList)
 %disp(ftFilesList{2})
 %class(ftFilesList{2})
-for i=1:length(ftFilesList)
-    spectra(i)=pipe2matlab(ftFilesList{i});
-end
-assignin('caller', 'spectra', spectra)
+    for i=1:length(ftFilesList)
+        spectra(i)=pipe2matlab(ftFilesList{i});
+    end
+    assignin('caller', 'spectra', spectra)
 end
 
 function lineArray = read_mixed_csv(fileName, delimiter)
