@@ -7,7 +7,7 @@
     
 %% Get the data:
 %     You will need to get the processed NMR data from this location:
-%     'Dropbox (Edison_Lab@UGA)/Projects/education/Fall_2018/bioinformatics/data/processed_data/NMRPipe/1D_processing'
+%     'Dropbox (Edison_Lab@UGA)/Resources/code_review/1d_nmr/MATLAB_analysis'
 
 %% Define path
     % We recommend keeping your workflow (this file) in the directory that you
