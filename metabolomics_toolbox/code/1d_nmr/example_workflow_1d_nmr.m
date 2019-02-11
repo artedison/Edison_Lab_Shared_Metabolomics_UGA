@@ -83,19 +83,20 @@
     % The second command below that automatically references DSS works well if
     % the DSS is similar in every spectrum.
     %spectra = ref_spectra_manual(spectra, [-0.02, 0.01], 0)
-
+    
     spectra = ref_spectra(spectra,-0.02);
-    ref_spectra(spectra,0.04,0,'testThreshold');
 
 %% IMPORTANT NOTE: After refrencing you have to repeat the setup step
 
-[X,ppm,Xtitle]=Setup1D(spectra);
+    [X,ppm,Xtitle]=Setup1D(spectra);
+    
 %% Check spectra to make sure all are referenced correctly
 % You should zoom into the DSS region to verify that it is correctly
 % referenced to 0.00 ppm and is similar in intensity and has good and
 % symmetric linewidths.
 
-displaypeak1D(X,ppm,0,GroupID);
+    displaypeak1D(X,ppm,0,GroupID);
+
 %% Removing ends,solvent regions and any other regions you don't want 
 % This step is a "blunt hammer". Essentially, any empty or misbehaving regions can be replaced by zeros. 
 % This should be done cautiously, but it is important to prevent highly variable regions from dominating the analysis.
@@ -372,3 +373,4 @@ VisLoadings1D(XALN,PLS.loadings(2,:),ppmR)
 % is to take peaks from loadings in PCA or PLS-DA and STOCSY these to see
 % what they are correlated with. These can then be searched in a database.
 STOCSY(7.099,XALN,ppmR);
+%% Test pushes
