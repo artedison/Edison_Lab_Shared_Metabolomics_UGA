@@ -1,3 +1,12 @@
+%% Switch to public toolbox
+
+    rmpath(genpath('/Users/mjudge/Edison_lab_UGA'))
+    addpath(genpath('/Users/mjudge/Edison_Lab_Shared_Metabolomics_UGA'))
+
+%% Switch to private toolbox
+
+    rmpath(genpath('/Users/mjudge/Edison_Lab_Shared_Metabolomics_UGA'))
+    addpath(genpath('/Users/mjudge/Edison_lab_UGA'))
 
 %% Before you begin, make certain that the Edison Lab MATLAB metabolomics toolbox and its subfolders is added to your path. 
     % You can obtain the current version of this for free from https://github.com/artedison/Edison_Lab_Shared_Metabolomics_UGA
