@@ -1,28 +1,39 @@
-function XALg=guide_align1D(X,ppm,cluster_method,alignment_method)
+function XALg=guide_align1D(X,ppm,distance_metric,alignment_method)
 
-% XALg=guide_align1D(X,ppm,cluster_method,alignment_method)
-% 
-% Calculates guided alignment using hierarchical clustering and an
-% alignment method of your choice - default is PAFFT
-%
-% Arguments:
-% 
-% X                      Data matrix of spectra
-% ppm                    chemical shift vector
-% cluster_method         string, either 'correlation' or 'spearman'
-% alignment_method       string, either 'CCOW','ICOSHIFT','RAFFT','PAFFT'
-%
-% Return Values:
-% XALg         Guide-aligned spectra
-%
-% Steven L Robinette 
+    % Author: Steven L Robinette
+    % Ver 0.1
+    % Tested on Matlab Version R2017b
+    % Date: 25FEB2019
+    %
+    %
+    % Description:
+    %   Calculates guided alignment using hierarchical clustering and an
+    %   alignment method of your choice - default is PAFFT. For mention of
+    %   "guide" vs. "star" alignment, see Anal Chem. 2011 Mar 1; 83(5): 1649?1657.
+    %
+    % Input:
+    %   X: Data matrix of spectra
+    %   ppm: chemical shift vector
+    %   distance_metric: string, either 'correlation' or 'spearman'
+    %   alignment_method: string, either 'CCOW','ICOSHIFT','RAFFT','PAFFT'
+
+    % Output:
+    %   XALg: Guide-aligned spectra    
+    %
+    % Log:
+    %   Edited by : MTJ,LM,YW,SZ
+    %   Date      : 25FEB2019
+    %   Ver       : 0.1
+    %       renamed "clustering_method" -> "distance_metric"
+    % Example run:
+    %
 
 
 XALg=X;
 XALg(isnan(XALg))=0;
 
 if exist('cluster_method')~=1
-    cluster_method='correlation';
+    distance_metric='correlation';
 end
 if exist('alignment_method')~=1
     alignment_method='PAFFT';
@@ -40,13 +51,14 @@ for k=1:size(XALg,1)
 end
     
 for ind1=1:size(XALg,1)
-align{ind1}=ind1;
+    align{ind1}=ind1;
 end
 
-m=linkage(Xbucket,'weighted',cluster_method);
-figure, h=dendrogram(m,0);
-sample_order=str2num(get(gca,'XTickLabel'));
-tic
+% Cluster the binned data 
+    m=linkage(Xbucket,'weighted',distance_metric);
+    figure, h=dendrogram(m,0);
+    sample_order=str2num(get(gca,'XTickLabel'));
+    tic
 
 SegLength_range=[round(0.02/(ppm(2)-ppm(1))):(round(0.1/(ppm(2)-ppm(1))-round(0.02/(ppm(2)-ppm(1)))))/(100-1):round(0.1/(ppm(2)-ppm(1)))]; % range from 0.03 to 0.2, increase as less similar
 MaxShift_range=[round(0.02/(ppm(2)-ppm(1))):(round(0.06/(ppm(2)-ppm(1))-round(0.02/(ppm(2)-ppm(1)))))/(100-1):round(0.06/(ppm(2)-ppm(1)))]; % should go from 0.01 to 0.03, increase as less similar

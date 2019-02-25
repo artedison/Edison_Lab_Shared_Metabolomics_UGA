@@ -19,7 +19,7 @@ function [X,ppm,XTitles]=Setup1D(spectra,shiftpoints,resolution)
 %
 %
 % Output:
-%       X:  Spectral matrix, aligned and normalized if specified
+%       X:  Spectral matrix
 %       ppm:    Chemical shift vector
 %       Titles: Titles of NMR spectra
 %
@@ -30,33 +30,36 @@ function [X,ppm,XTitles]=Setup1D(spectra,shiftpoints,resolution)
 %
 %   [X,ppm,XTitles]=Setup1D(spectra,shiftpoints,resolution)
 %
-
+    % Get the first and last ppm values for each spectrum, as well as the
+    % resolution.
     if nargin==1
-
-        for ind=1:size(spectra,2)
-            last(ind)=[spectra(ind).ppm(1)];
-            first(ind)=[spectra(ind).ppm(length(spectra(ind).ppm))];
-            spectres(ind)=length(spectra(ind).real);
+        % For each spectrum
+        for ind=1:size(spectra,2)           
+            last(ind)=[spectra(ind).ppm(1)]; % get the max ppm value
+            first(ind)=[spectra(ind).ppm(length(spectra(ind).ppm))]; % get min ppm value
+            spectres(ind)=length(spectra(ind).real);    % get the number of data points
         end
-
-        shiftpoints=[max(first), min(last)];
-        resolution=max(spectres);
+        
+        shiftpoints=[max(first), min(last)]; % get the intersection of ppm values across all spectra
+        resolution=max(spectres);   % get the highest number of datapoints across all spectra
     end
-
+    
+    % Calculate a common ppm vector based on those parameters
     disp('Constructing spectral dataset')
     X=zeros(size(spectra,2),resolution);
     ppm=shiftpoints(2):(shiftpoints(1)-shiftpoints(2))/(resolution-1):shiftpoints(1);
     XTitles=cell(size(spectra,2),1);
     
+    % Interpolate the data for each spectrum based on this new ppm vector:
     for k=1:size(spectra,2)
-        clear h k1 k2
+        clear h k1 k2 
         [h,k1]=min(abs(spectra(k).ppm-shiftpoints(2)));
         [h,k2]=min(abs(spectra(k).ppm-shiftpoints(1)));
-
+        
         X(k,:)=interp1(spectra(k).ppm(k1:k2),spectra(k).real(k1:k2),ppm,'spline','extrap');
         XTitles(k)=cellstr(spectra(k).Title);
     end
-    
+    % Reverse the ppm order
     ppm=ppm(length(ppm):-1:1);
     X=X(:,length(ppm):-1:1);
 

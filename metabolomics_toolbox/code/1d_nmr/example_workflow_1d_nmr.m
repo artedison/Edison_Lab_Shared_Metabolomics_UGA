@@ -108,17 +108,14 @@
 % IMPORTANT: If you decide to skip this step, you will need to rename
 % your X vector to XR3 (XR3=X) before the Alignment step below.
 % Alternatively, you can change the XR3 in the "align1D" command to X.
-[~,k1]=min(abs(ppm--0.12));
-XR=X(:,k1:end);
-ppmR=ppm(k1:end);
-[~,k2]=min(abs(ppmR-10.0));
-XR1=XR(:,1:k2);
-ppmR=ppmR(1:k2);
-XR2=remove_region(XR1,ppmR,4.71,4.8);
-XR3=remove_region(XR2,ppmR,3.37,3.3);
+
+    [XR1,ppmR] = remove_ends(X,ppm,-0.12,10.0);
+    XR2=remove_region(XR1,ppmR,4.71,4.8);
+    XR3=remove_region(XR2,ppmR,3.37,3.3);
 
 %% This will show the resulting spectra with the areas defined above removed.
-displaypeak1D(XR3,ppmR,0,GroupID);
+
+    displaypeak1D(XR3,ppmR,0,GroupID);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ALIGNMENT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Alignment is a "messy" step, is never perfect, and sometimes hard to even
@@ -130,11 +127,11 @@ displaypeak1D(XR3,ppmR,0,GroupID);
 % We offer several different alignment options through this toolbox: 
 % Wong J.W.H., Durante C., Cartwright H.M. Application of fast Fourier
 % transform cross-correlationfor the alignment of large chromatographic 
-% and spectral datasets. Analytical Chemistry 2005;77:5655?5661.
+% and spectral datasets. Analytical Chemistry 2005;77:5655-5661.
 %
 % Nielsen N.P.V., Carstensen J.M., Smedsgaard J. (1998) Aligning of single 
 % and multiple wavelength chromatographic profiles for chemometric data 
-% analysis using correlation optimised warping. J. Chromatogr. A. 805, 17?35.
+% analysis using correlation optimised warping. J. Chromatogr. A. 805, 17-35.
 % 
 %% The alignment (PAFFT) using 'correlation' seems to perform better than the other one listed below
 % However, this one is not perfect. You should always explore options and

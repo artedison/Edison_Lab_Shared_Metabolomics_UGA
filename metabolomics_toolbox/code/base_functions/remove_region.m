@@ -1,20 +1,32 @@
 function XR=remove_region(X,ppm,shift1,shift2)
 
-% XR=remove_region(X,ppm,shift1,shift2)
-%
-% Removes region between ppm value of "shift1" and ppm value of "shift2"
-% such as water region. You can put Inf or -Inf to specify "to the end".
-%
-% Arguments:
-% X                    Data matrix of spectra
-% ppm                  Chemical shift vector corresponding to X
-% shift1               upfield ppm of region to be removed
-% shift2               downfield ppm of region to be removed
-%
-% Return Values:
-% XR                   Spectral matrix, with region removed
-% MJ
-% YW documeted 10/10/2018
+    % Author: Edison Lab
+    % Ver 0.1
+    % Tested on Matlab Version R2017b
+    % Date: 25FEB2019
+    %
+    %
+    % Description:
+    %   Removes region between ppm value of "shift1" and ppm value of "shift2"
+    %   such as water region. You can put Inf or -Inf to specify "to the end".
+    %
+    % Input:
+    %   X: Data matrix of spectra
+    %   ppm: Chemical shift vector corresponding to X
+    %   shift1: upfield ppm of region to be removed
+    %   shift2: downfield ppm of region to be removed
+    %
+    % Output:
+    %   XR: Spectral matrix, with region removed (ppm vector not modified)
+    %
+    % Log:
+    %   Edited by : MTJ,LM,YW,SZ
+    %   Date      : 25FEB2019
+    %   Ver       : 0.1
+    %   YW documented 10/10/2018
+    % Example run:
+    %
+
 
 if shift1>shift2 %flip them
     d=shift2;
