@@ -21,7 +21,7 @@
 Samples=Samples2;
 samples=[1,2,3,7,8,9]; % maps j to correct index in sampleData
 
-%% Adjust the time vectors according to inoculation-start time lag
+%% 1. Adjust the time vectors according to inoculation-start time lag
 % Sample #, time lag (days), sampleData index
 lags = [4   0.013194444 1
         5   0.011805556 2
@@ -38,7 +38,7 @@ for s=1:length(Samples)
     end
 end
 
-%% Set up the ridge-compound peaks map. Assign each ridge a name and compound.
+%% 2. Set up the ridge-compound peaks map. Assign each ridge a name and compound.
 sampleKey={'aerobic','aerobic','aerobic','anaerobic','anaerobic','anaerobic'};
 ridgeNames={'unknown-179','valine 1' 'valine 2' 'valine 3' 'valine 4' 'isoleucine 1' 'isoleucine 2' 'alanine 1' 'alanine 2' 'lactate 1' 'lactate 2' 'arginine 1' 'arginine 2' 'arginine 3' 'arginine 4' 'arginine 5' 'arginine 6' 'arginine 7' 'arginine 8' 'uracil 1' 'uracil 2' 'glucose-1-phosphate 1' 'glucose-1-phosphate 2' 'glucose-1-phosphate 3' 'glucose-1-phosphate 4' 'adenosine 3' 'adenosine 4' 'tyrosine 1' 'tyrosine 2' 'phenylalanine 1' 'phenylalanine 2' 'uridine 1' 'uridine 2' 'choline' 'trehalose 1' 'trehalose 2' 'guanosine' 'citrate 1' 'citrate 2' 'citrate 3' 'citrate 4' 'succinate' 'glutamate' 'fumarate' 'formate' 'glucose 1' 'glucose 2'  'glucose 3' 'glucose 4'  'glucose 5' 'glucose 6' 'glucose 7' 'glucose 8' 'ethanol 1' 'ethanol 2' 'ethanol 3' 'ethanol 4' 'ethanol 5' 'ethanol 6' 'ethanol 7' };
 ind=[179 75 76 79 80 77 78 91 92 86 87 95 97 98 99 100 101 102 103 55 56 64 65 66 67 14 16 41 42 32 33 23 24 151 152 153 154 158 159 160 161 162 163 164 13 166 167 168 169 170 171 156 157 172 173 174 175 176 177 178];
