@@ -1,4 +1,4 @@
-function HRMAS_nmr_processAndStoreData2(dirName,saveData,local)
+function HRMAS_nmr_processAndStoreData3(dirName,saveData,local)
 %dirName = 'HRMAS_ncrassa_paper_Sample_4'
 %saveData = 'save';
 %local=false;

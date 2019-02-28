@@ -1,4 +1,4 @@
-function constructHRMASDirectory(goaldir,datadir,sampledir)
+function constructHRMASDirectory_defineType(goaldir,datadir,sampledir,dataTypeKey)
   %
   % filesys_cons(goaldir,datadir,sampledir)
   % this function construct the template folder for systematically arrange NMR data
@@ -22,10 +22,8 @@ function constructHRMASDirectory(goaldir,datadir,sampledir)
   % copyfile(strcat(sampledir,'*.txt'),'./');
   % Locate the data files and their names
       dirs=dir(datadir);
-        % Get the name of the sample
-            %sampleName = 
+      dirs=dirs(~contains({dirs.name},{'.','..','.DS_Store','.tar.gz'}));
       dirsname={dirs.name};
-      dirsname=dirsname(~contains(dirsname,{'.','..','.DS_Store','.tar.gz'}));
       % What is the point of this?
           existsname=dir(strcat(goaldir,'sampleGroup'));
           existsname={existsname.name};
@@ -83,33 +81,31 @@ function constructHRMASDirectory(goaldir,datadir,sampledir)
                     clear('expType','pfile','filedata');
                     
                    % Find types of experiments from that list
-%                         expTypes = unique({paramFiles.experimentType});
-%                         [~,key] = ismember({paramFiles.experimentType},expTypes);
-                            dataTypeKey = {'HSQCETGPSISP','13c1d';...
-                                           'NOESYPR1D'   ,'1h1d' };
+                        expTypes = unique({paramFiles.experimentType});
+                        [~,key] = ismember({paramFiles.experimentType},expTypes);
+%                             dataTypeKey = {'HSQCETGPSISP','13c1d';...
+%                                            'NOESYPR1D'   ,'1h1d' };
                         dataFiles = dir([datadir,dirsname{:}]);
                             dataFiles(ismember({dataFiles.name},{'.','..'})) = []; % remove dirs                                            
                         
-%                     for t = 1:length(expTypes)
-%                         % Find the file indices for this type
-%                             %inds = find(key == t);
-%                             inds = key == t;
-%                         % Make the directory for this type
-%                             mkdir(expTypes{t})
-%                         % Copy over the files that are of this type
-%                             % not the best way to do this, but it should
-%                             % work:
-%                             copyfile(cell2mat(strcat(datadir,dirsname(i),'/*')),expTypes{t}); % copy all files over                            
-%                             cd(expTypes{t})
-%                             eval(sprintf('rmdir %s',['''',strjoin({dataFiles(~inds).name},[''' ','''']),'''']   )) % delete those we don't want
-% %                             for f = 1:length(inds)
-% %                                 %[{dataFiles(inds).folder}',repmat({'/'},length(inds),[]),{dataFiles(inds).name}'];
-% %                                 copyfile([dataFiles(inds(f)).folder,'/',dataFiles(inds(f)).name],expTypes{t});                        
-% %                             end
-%                     end
-            % source: all files (*) in the data directory,
-            % destination: ./ (present directory)
-            copyfile(cell2mat(strcat(datadir,dirsname(i),'/*')),'./');
+                    for t = 1:length(expTypes)
+                        % Find the file indices for this type
+                            %inds = key == find(strcmp(expTypes,dataTypeKey));
+                            inds = key == find(strcmp(expTypes,dataTypeKey));
+                        % Make the folder for that type
+                            cd([expdir,'/data/raw'])
+                                mkdir(expTypes{t}) 
+                        % Use system commands to copy the files of that type
+                            cd([datadir,'/',expname]);
+                            % use escape characters for dropbox path
+                                cmdLineExpdir = regexprep(expdir,' ','\\ ');
+                                cmdLineExpdir = regexprep(cmdLineExpdir,'(','\\(');
+                                cmdLineExpdir = [regexprep(cmdLineExpdir,')','\\)'),'/data/raw/',expTypes{t}];
+                            cmd = ['cp -R ', sprintf('%s ',dataFiles(inds).name), cmdLineExpdir];
+                            system(cmd);
+                    end
+            cd([expdir,'/data/raw'])
+    
         % Copy over the scripts from the template directory
             cd(expdir);
             cd('./scripts');
@@ -139,11 +135,11 @@ function constructHRMASDirectory(goaldir,datadir,sampledir)
 
             
         %% Edit the nmrPipe file(s): 13C1d 
-            dataType = dataTypeKey(4); % hardcode (temp)
+            dataType = dataTypeKey; % hardcode (temp)
             %if strcmp(dataType,'13c1d')
             if strcmp(dataType,'1h1d')
                 % Run bruker on first timepoint
-                    cd ../data/raw/2    % hardcode (temp)
+                    cd(['../data/raw/',2])    % hardcode (temp)
                     ! bruker
 
                 % Read the Parameters from fid.com file

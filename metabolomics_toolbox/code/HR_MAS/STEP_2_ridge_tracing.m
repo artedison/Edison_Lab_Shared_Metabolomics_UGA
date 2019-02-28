@@ -80,14 +80,14 @@
 %   YW 10/04/2018
 
 
-%% 1. Setup
+%% Setup
 % load('sampleData.mat')
 samples=[1,2,3,7,8,9]; % list of sample numbers from study
 Samples=initiateSamples(samples);
 
-%% 2. Smoothing and Peak Picking
+%% Smoothing and Peak Picking
 sample=1; % index of "samples"
-smoothingFilter='imgaussfilt(window,[1,10])';
+smoothingFilter='imgaussfilt(window,[10,1])';
 peakPickThreshold=0;  % can be negative or positive; thresh = mean+(peakPickThreshold*sd)
 
 % Run for different regions (get what you can out of them)
@@ -95,24 +95,24 @@ ppm=sampleData(samples(sample)).ppmR_1h1d;
 matrix=sampleData(samples(sample)).Xcollapsed_1h1d;
 times=sampleData(samples(sample)).timesCollapsed_1h1d;
 %ROI = [5.45,5.7]; % in ppm units
-ROI=[2.5,2.8];
+ROI=[2.0,3.0];
 %ROI = [2.0,2.5];
 
 [output]=ridgeTracing_PeakPick1D(matrix,ppm,times,ROI,smoothingFilter,peakPickThreshold);
 
-%% 3. Clustering
-numberOfRidges=13; % this needs to be relatively high for noisy regions
-timeWeight=1;     % increasing this makes clusters reach across time
-ppmWeight=2;     % increasing this makes clusters reach across the ppm dimension
-intensityWeight=500;  % increasing this flattens the curves down to 2D (like the peakpick image)
+%% Clustering
+numberOfRidges=50; % this needs to be relatively high for noisy regions
+timeWeight=.01;     % increasing this makes clusters reach across time
+ppmWeight=.001;     % increasing this makes clusters reach across the ppm dimension
+intensityWeight=1;  % increasing this flattens the curves down to 2D (like the peakpick image)
 [newRidges]=ridgeTracing_clusterPeaks_interactive_2(output,numberOfRidges,timeWeight,ppmWeight,intensityWeight);
 
-%% 4. Apply Ridge Corrections
+%% Apply Ridge Corrections
 matrix=sampleData(samples(sample)).Xcollapsed_1h1d;
 currentppm=sampleData(samples(sample)).ppmR_1h1d;
 windowWidth=5;
 viewWidth=0.1; % in ppms around ridge extrema
-[newRidges adjustedRidges]=ridgeCorrection(matrix,currentppm,newRidges,windowWidth,viewWidth,'plotFigs'); % 'plotFigs' to view them
+[newRidges]=ridgeCorrection(matrix,currentppm,newRidges,windowWidth,viewWidth,'plotFigs'); % 'plotFigs' to view them
 
 %% Store current batch of ridges: comment one of the following linew
 %% for the first one

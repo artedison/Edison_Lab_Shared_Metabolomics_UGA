@@ -44,7 +44,7 @@ currentppm = currentppm - horzshift * size(matrix,1);
     if isempty(plotTitle)
         title('Stack Plot')
     else 
-        title(plotTitle)
+        title(plotTitle,'Interpreter','none')
     end
     xlabel('Chemical Shift (ppm)')
     ylabel('Signal Intensity')

@@ -11,7 +11,7 @@ function HRMAS_nmr_processAndStoreData3(sampleName,fileName,saveData,local)
     %localdir=cd(fileName);
 
 %% Take care of filepath stuff
-    cd(sampleName)       
+    cd(fileName)       
     project_directory = cd();
     cd scripts
         scripts_directory = cd();
