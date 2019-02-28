@@ -1,6 +1,6 @@
 function constructHRMASDirectory(goaldir,datadir,sampledir)
   %
-  % filesys_cons(goaldir,datadir,sampledir)
+  % A new version for filesys_cons(goaldir,datadir,sampledir)
   % this function construct the template folder for systematically arrange NMR data
   % It will copy the raw data to the folder structure
   % it will also copy useful script to the folder
@@ -9,7 +9,7 @@ function constructHRMASDirectory(goaldir,datadir,sampledir)
   % datadir: the location to fetch data; the folder is expected to have multiple samples which contains multiple time points
   % sampledir: the location that the sample script is from
   %%yue wu revise 10/10/2018
-  
+
   % the function will move new folders that does not exist there.
   cd(goaldir);
   mkdir 'sampleGroup';
@@ -41,7 +41,7 @@ function constructHRMASDirectory(goaldir,datadir,sampledir)
     mkdir('nmrpipe');mkdir('raw');
     cd('./nmrpipe');
     mkdir('fid');mkdir('ft');
-    cd('../raw'); 
+    cd('../raw');
     copyfile(cell2mat(strcat(datadir,dirsname(i),'/*')),'./');
     cd(expdir);
     cd('./scripts');
