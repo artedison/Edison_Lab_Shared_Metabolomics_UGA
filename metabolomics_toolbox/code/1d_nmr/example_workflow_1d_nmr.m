@@ -141,9 +141,12 @@
 % below use XALn (n=1,9). If you want to use one of these others in the
 % workflow below this step, it will need to be renamed XAL. For example, if
 % 'CCOW' with 'spearman' works the best, you will need to run the command
-% 'XAL=XAL6' to get the right inputfile for normalization below.
+% 'XAL=XAL6' to get the right inputfile for normalization below. 'star'
+% alignment lines spectra up with a reference (often the max or mean
+% spectrum). Guide align leverages HCA of the spectra, for 
+% datasets where presence/absence differences are expected between groups.
 %
-XAL=guide_align1D(XR3,ppmR,'correlation','PAFFT');
+    XAL=guide_align1D(XR3,ppmR,'spearman','PAFFT');
 %
 %% These other options can be tested by uncommenting the lines that start with 'XALn=...'
 %

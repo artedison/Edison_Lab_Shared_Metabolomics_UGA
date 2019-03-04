@@ -16,7 +16,8 @@ function XALg=guide_align1D(X,ppm,distance_metric,alignment_method)
     %   ppm: chemical shift vector
     %   distance_metric: string, either 'correlation' or 'spearman'
     %   alignment_method: string, either 'CCOW','ICOSHIFT','RAFFT','PAFFT'
-
+    %   NOTE: 'ICOSHIFT' does not run correctly.
+    %
     % Output:
     %   XALg: Guide-aligned spectra    
     %
@@ -24,7 +25,8 @@ function XALg=guide_align1D(X,ppm,distance_metric,alignment_method)
     %   Edited by : MTJ,LM,YW,SZ
     %   Date      : 25FEB2019
     %   Ver       : 0.1
-    %       renamed "clustering_method" -> "distance_metric"
+    %       -renamed "clustering_method" -> "distance_metric"
+    %       -ICOSHIFT method pops an error
     % Example run:
     %
 
