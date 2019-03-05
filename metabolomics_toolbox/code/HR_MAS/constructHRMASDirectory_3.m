@@ -95,18 +95,6 @@ for s = 1:length(newDataDirs)
                         cmd = ['mv ', sprintf('%s ',dataFiles(inds).name), cmdLineExpdir];
                         system(cmd);                
                         
-                        % Clean up the empty directory
-                            cmdLineExpdir = regexprep(sampleSourceDir,' ','\\ ');
-                            cmdLineExpdir = regexprep(cmdLineExpdir,'(','\\(');
-                            cmdLineExpdir = regexprep(cmdLineExpdir,')','\\)');
-                            cmd = ['rm -R ', sprintf('%s ',cmdLineExpdir)];
-                            system(cmd);                
-                        
-                    % Move the zipped file or tar file as well
-                        ind = contains({zipFiles.name},{sampleName});
-                        if ~isempty(ind)
-                            movefile([zipFiles(ind).folder,'/',zipFiles(ind).name],[sampleDestinationDir,'/data/raw'])
-                        end
                 end          
                 cd([sampleDestinationDir,'/data/raw/'])
                 
@@ -304,6 +292,7 @@ for s = 1:length(newDataDirs)
             open(newmFilename)
 
             end
+            
     % Run the .com files
         % For each 
             
@@ -314,6 +303,18 @@ for s = 1:length(newDataDirs)
     % Re-run the data in nmrPipe
     
 end
+    % Clean up the empty sample directory
+        cmdLineExpdir = regexprep(sampleSourceDir,' ','\\ ');
+        cmdLineExpdir = regexprep(cmdLineExpdir,'(','\\(');
+        cmdLineExpdir = regexprep(cmdLineExpdir,')','\\)');
+        cmd = ['rm -R ', sprintf('%s ',cmdLineExpdir)];
+        system(cmd);                
+
+    % Move the zipped file or tar file as well
+        ind = contains({zipFiles.name},{sampleName});
+        if ~isempty(ind)
+            movefile([zipFiles(ind).folder,'/',zipFiles(ind).name],[sampleDestinationDir,'/data/raw'])
+        end
     output = struct();
 
 end
