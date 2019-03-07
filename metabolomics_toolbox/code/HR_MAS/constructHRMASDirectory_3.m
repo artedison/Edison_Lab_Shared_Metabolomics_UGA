@@ -1,4 +1,4 @@
-function [output] = constructHRMASDirectory_2(destinationDir,newDataDir,templateDir)
+function [output] = constructHRMASDirectory_3(destinationDir,newDataDir,templateDir)
 % destinationDir = goaldir;
 % newDataDir = datadir;
 % templateDir = sampledir;
@@ -71,7 +71,7 @@ for s = 1:length(newDataDirs)
                     expTypes = unique({paramFiles.experimentType});
                     [~,key] = ismember({paramFiles.experimentType},expTypes);
                     dataFiles = dir(sampleSourceDir);
-                        dataFiles(ismember({dataFiles.name},{'.','..'})) = []; % remove unnecessary dirs                             
+                        dataFiles(ismember({dataFiles.name},{'.','..','.DS_Store'})) = []; % remove unnecessary dirs                             
 
         % Make a directory for each <experiment type> within "raw"
             cd([sampleDestinationDir,'/data/raw'])
@@ -147,13 +147,17 @@ for s = 1:length(newDataDirs)
                         for p = 1:length(pipepars)
                             % Locate the parameter and extract (as a string) the value that follows
                                 tmp = regexp(filedata,['(?<=',pipepars(p).name,'[\s]+)','[\S]+'],'match');
-                                numstr = str2double(tmp{:}); % returns nan if not just a number
-                            % Convert strings to numbers where appropriate
-                            % (make sure precision is maxed out)
-                                if ~isnan(numstr)
-                                    pipepars(p).value = numstr;
+                                if ~isempty(tmp)
+                                    numstr = str2double(tmp{:}); % returns nan if not just a number
+                                % Convert strings to numbers where appropriate
+                                % (make sure precision is maxed out)
+                                    if ~isnan(numstr)
+                                        pipepars(p).value = numstr;
+                                    else
+                                        pipepars(p).value = tmp{:};
+                                    end
                                 else
-                                    pipepars(p).value = tmp{:};
+                                    pipepars(p) = [];
                                 end
                         end                    
                 else
