@@ -126,56 +126,81 @@ for s = 1:length(newDataDirs)
             % if not, extract the necessary parameters from fid.com and store in a params sub struct		
                 if any(contains({templist.name},'fid.com'))
                     % Set up to read standard parameters:                  
+%                         pipepars = struct();
+%                             pipepars(1).name = '-xN';
+%                             pipepars(2).name = '-xT';
+%                             pipepars(3).name = '-xMODE';
+%                             pipepars(4).name = '-xSW';
+%                             pipepars(5).name = '-xOBS';
+%                             pipepars(6).name = '-xCAR';
+%                             pipepars(7).name = '-xLAB';
+%                             pipepars(8).name = '-ndim';
+%                             pipepars(9).name = '-grpdly';
+%                             pipepars(10).name = '-bad';
+%                             pipepars(11).name = '-decim';
+%                             pipepars(12).name = '-dspfvs';
+%                             pipepars(13).name = '-ws';
                         pipepars = struct();
-                            pipepars(1).name = '-xN';
-                            pipepars(2).name = '-xT';
-                            pipepars(3).name = '-xMODE';
-                            pipepars(4).name = '-xSW';
-                            pipepars(5).name = '-xOBS';
-                            pipepars(6).name = '-xCAR';
-                            pipepars(7).name = '-xLAB';
-                            pipepars(8).name = '-ndim';
-                            pipepars(9).name = '-grpdly';
-                            pipepars(10).name = '-bad';
-                            pipepars(11).name = '-decim';
-                            pipepars(12).name = '-dspfvs';
-                            pipepars(13).name = '-ws';
-                        
-                    % Read the parameters from fid.com:
+                            pipepars(1).name = 'bruk2pipeParamsGoHere';
+                            pipepars(2).name = '-grpdly';
+                            
+                    % Read the information as a string from fid.com so we can operate on it:
                         filedata = fileread('fid.com');
-
-                        for p = 1:length(pipepars)
+                    
+                    % Extract any parameters that we want to do things with. Their names will be in pipepars.
+                        for p = 2:length(pipepars) % skip the first one
                             % Locate the parameter and extract (as a string) the value that follows
                                 tmp = regexp(filedata,['(?<=',pipepars(p).name,'[\s]+)','[\S]+'],'match');
-                                if ~isempty(tmp)
+                                
+                                % Handle the case where the parameter cannot be found
+                                if ~isempty(tmp) 
+                                    
                                     numstr = str2double(tmp{:}); % returns nan if not just a number
-                                % Convert strings to numbers where appropriate
-                                % (make sure precision is maxed out)
-                                    if ~isnan(numstr)
-                                        pipepars(p).value = numstr;
-                                    else
-                                        pipepars(p).value = tmp{:};
-                                    end
+                                    
+                                    % Convert strings to numbers where appropriate (make sure precision is maxed out)
+                                        if ~isnan(numstr)
+                                            pipepars(p).value = numstr;
+                                        else
+                                            pipepars(p).value = tmp{:};
+                                        end
                                 else
+                                    fprintf(['\n\n\tParameter: "',pipepars(p).name,'" not found in the bruk2pipe result file. Skipping...\n\n\n'])
                                     pipepars(p) = [];
                                 end
-                        end                    
+                        end  
+                        
+                    % Copy the parameters as a block from the .com file
+                        % Locate the bounds of the block to be copied
+                            leader = 'bruk2pipe -in ./fid \';
+                                [~,blockStart] = regexp(filedata,leader);
+                                    blockStart = blockStart + 1;
+                            ender = '-out';
+                                [blockEnd,~] = regexp(filedata,ender);
+                                    blockEnd = blockEnd - 1;
+                        % Extract the text and store                      
+                            params_bruk2pipe = filedata(blockStart:blockEnd);
+                        
+                        % Get rid of the grdply parameter and value:
+                            [startInd,endInd,~] = regexp(params_bruk2pipe,['-grpdly','[\s]+','[\S]+','[\s]+'],'start','end','match');                            
+                            params_bruk2pipe(startInd:endInd) = '';
+                            
+                        % Store block as a parameter
+                            pipepars(contains({pipepars.name},'bruk2pipeParamsGoHere')).value = params_bruk2pipe;
+                            
                 else
-                    fprintf('\n\n\tNo fid.com file was found. \n\n')
+                    fprintf('\n\n\tNo fid.com file was found. Aborting. \n\n')
+                    return % kill the program
+                    
                 end
+                
             % Copy generic processing file, update it, write it to scripts directory 
 
                 % Read the file
                     cd(templateDir)
                         dotcomFilename = dir('*.com');
                         dotcomFilename = dotcomFilename.name; 
-                        newDotcomFile = [dotcomFilename,'_',expTypes{t},'.com'];
-                        
-             % Do the grpdly edit, and apply to phasing:
-                % Locate and extract the parameter
-                    %[startInd,endInd,tmp] = regexp(filedata,['(?<=','-grpdly','[\s]+)','[\w*]+'],'start','end','match');
-                    %regexprep(filedata,[' -grpdly','[\s]+','[\w*]+'],''); % in case it's there
-
+                        newDotcomFile = [dotcomFilename,'_',expTypes{t},'.com'];                    
+                
                 % Apply to phase corrections
                     pipepars(end+1).name = '-p1';
                     pipepars(end).value = pipepars(contains({pipepars.name},'-grpdly')).value * -360;                    
@@ -184,54 +209,7 @@ for s = 1:length(newDataDirs)
                                 
                 % Update the parameters
                     updateDotComFile(templateDir,dotcomFilename,[sampleDestinationDir,'/scripts'],newDotcomFile,pipepars)
-%{
-%                         % Do the grpdly edit, and apply to phasing:
-%                             % Locate and extract the parameter
-%                                 %[startInd,endInd,tmp] = regexp(filedata,['(?<=','-grpdly','[\s]+)','[\w*]+'],'start','end','match');
-%                                 %regexprep(filedata,[' -grpdly','[\s]+','[\w*]+'],''); % in case it's there
-% 
-%                             % Apply to phase corrections
-%                                 pipepars(end+1).name = '-p1';
-%                                 %pipepars(end).value = pipepars(~cellfun(@isempty,strfind({pipepars.name},'-grpdly'))).value * -360;                    
-%                                 pipepars(end).value = pipepars(contains({pipepars.name},'-grpdly')).value * -360;                    
-%                                 pipepars(end+1).name = '-p0';
-%                                 pipepars(end).value = 0;
-%                         % Temporarily remove second phasing command (for ditching
-%                         % imaginaries)
-%                             [phaseLineStart,phaseLineEnd,phaseLineText] = regexp(filedata,'| nmrPipe -fn PS -p0 0.0 -p1 0.0 -di \','start','end','match');
-%                             phaseLineText = phaseLineText{:};
-%                             filedata = [filedata(1:phaseLineStart-1),'phaseLineText',filedata(phaseLineEnd+1:end)];
-% 
-%                     % Transcribe the other parameters from bruk2pipe:
-% 
-%                         for p = 1:length(pipepars) % go through the parameters we have
-%                             %[startInd,endInd,tmp] = regexp(filedata,['(?<=',pipepars(p).name,'[\s]+)','[\w*]+'],'start','end','match');
-%                             [startInd,endInd,~] = regexp(filedata,['(?<=',pipepars(p).name,'[\s]+)','[\S]+'],'start','end','match');                                                     
-%                             if ~isempty(startInd)  % if the parameter was found
-%                                 % Before writing, all values must be strings
-%                                 if ~isa(pipepars(p).value,'string') % assume it's a number
-%                                     filedata  = [filedata(1:startInd-1),num2str(pipepars(p).value,8),filedata(endInd+1:end)];
-%                                 else 
-%                                     filedata  = [filedata(1:startInd-1),pipepars(p).value,filedata(endInd+1:end)];
-%                                 end
-%                             end
-%                         end              
-% 
-%                     % Add back the second phasing line
-%                         filedata = regexprep(filedata,'phaseLineText',phaseLineText);
-% 
-%                 % Write the new file to new scripts directory
-%                     cd([sampleDestinationDir,'/scripts'])
-%                     %           - "[filename]_[expType].com"
-%                             
-%                     f = fopen(newDotcomFile,'w');
-%                         fprintf(f,'%s',filedata);
-%                     fclose(f);
-% 
-%                 % Make executable 
-%                 
-%                     fileattrib(newDotcomFile,'+x','a');
-%}                        
+
                 % Run the file
                     % Do all the navigation from here, passed as arguments:
                         cd([sampleDestinationDir,'/scripts'])

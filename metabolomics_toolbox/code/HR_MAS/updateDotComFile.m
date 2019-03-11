@@ -11,8 +11,10 @@ function updateDotComFile(source,oldFilename,destination,newFilename,pipepars)
                 filedata = [filedata(1:phaseLineStart-1),'phaseLineText',filedata(phaseLineEnd+1:end)];
 
         % Transcribe the other parameters from bruk2pipe:
-
-            for p = 1:length(pipepars) % go through the parameters we have
+                block = regexprep(pipepars(contains({pipepars.name},'bruk2pipeParamsGoHere')).value,'\n  -','\n					-');
+                filedata = regexprep(filedata,'bruk2pipeParamsGoHere',block);
+                
+            for p = 2:length(pipepars) % go through the parameters we have, skipping the first one (bruk2pipe block)
                 %[startInd,endInd,tmp] = regexp(filedata,['(?<=',pipepars(p).name,'[\s]+)','[\w*]+'],'start','end','match');
                 [startInd,endInd,~] = regexp(filedata,['(?<=',pipepars(p).name,'[\s]+)','[\S]+'],'start','end','match');                                                     
                 if ~isempty(startInd)  % if the parameter was found
