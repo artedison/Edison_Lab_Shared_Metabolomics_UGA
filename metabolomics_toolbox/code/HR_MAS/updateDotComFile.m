@@ -10,9 +10,10 @@ function updateDotComFile(source,oldFilename,destination,newFilename,pipepars)
                 phaseLineText = phaseLineText{:};
                 filedata = [filedata(1:phaseLineStart-1),'phaseLineText',filedata(phaseLineEnd+1:end)];
 
-        % Transcribe the other parameters from bruk2pipe:
+        % Transcribe the other parameters from bruk2pipe (does not run if unless operating on template, which contains 'bruk2pipeParamsGoHere' ):
                 block = regexprep(pipepars(contains({pipepars.name},'bruk2pipeParamsGoHere')).value,'\n  -','\n					-');
-                filedata = regexprep(filedata,'bruk2pipeParamsGoHere',block);
+                    block = regexprep(block,'\','\\\'); % need this to cancel out escape characters with \ followed by \n:
+                    filedata = strrep(filedata,'bruk2pipeParamsGoHere',block);
                 
             for p = 2:length(pipepars) % go through the parameters we have, skipping the first one (bruk2pipe block)
                 %[startInd,endInd,tmp] = regexp(filedata,['(?<=',pipepars(p).name,'[\s]+)','[\w*]+'],'start','end','match');
@@ -29,7 +30,8 @@ function updateDotComFile(source,oldFilename,destination,newFilename,pipepars)
 
         % Add back the second phasing line
             filedata = regexprep(filedata,'phaseLineText',phaseLineText);
-
+            filedata = regexprep(filedata,'\\\','\'); % need this to replace \\\n with \\n in the text
+            
     % Write the new file to new scripts directory
         cd(destination)
         f = fopen(newFilename,'w');
