@@ -1,25 +1,28 @@
 function MultiplePlot(varargin)
 
-% Author: Rahil Taujale
-% Version: 0.1
-% Date: 08/23/2016
-
-% Description:
-%       MultiplePlot allows viewing multiple spectra plots saved as MATLAB
-%       .fig files side by side in one single plot. The axes are linked so
-%       that same zooming operation occurs in all panes for easier
-%       comparison of plots.
-%
-% Input:
-%       1st argument    : A number specifying the number of columns desired in
-%       the output
-%       2nd-nth argument: List of .fig files to be viewed
-%
-% Output:
-%       A plot with all the fig files shown side by side.
-%
-% MJ edit 9OCT2017: Line 41: add the title for each plot
-
+    % Author: Rahil Taujale
+    % Version: 0.1
+    % Date: 23AUG2016
+    %
+    % Description:
+    %       MultiplePlot allows viewing multiple spectra plots saved as MATLAB
+    %       .fig files side by side in one single plot. The axes are linked so
+    %       that same zooming operation occurs in all panes for easier
+    %       comparison of plots.
+    %
+    % Input:
+    %       1st argument: A number specifying the number of columns desired in
+    %                     the output.
+    %       2nd-nth argument: List of .fig files to be viewed
+    %
+    % Output:
+    %       A plot with all the fig files shown side by side.
+    %
+    % Log:
+    %       MJ edit 9OCT2017: Line 41: add the title for each plot
+    %
+    % Example Run:
+    %       MultiplePlot(2,'Fig1.fig','Fig2.fig');
 
 K=varargin{1};
     N=nargin-1;
