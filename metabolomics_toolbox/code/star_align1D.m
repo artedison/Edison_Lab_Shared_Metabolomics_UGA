@@ -21,7 +21,6 @@ function XAL=star_align1D(X,ppm,represent,alignment_method,Seg_ppm,MaxShift_ppm,
     %              datasets with spectrally distinct groups.
     %   alignment_method: string, either 'CCOW','PARCCOW','ICOSHIFT','RAFFT', or 'PAFFT'
     %   NOTE: 'ICOSHIFT' does not run correctly.
-    %   Optional:
     % Optional Arguments:
     %
     % Seg_ppm: Length of segment in ppm (default 0.08)

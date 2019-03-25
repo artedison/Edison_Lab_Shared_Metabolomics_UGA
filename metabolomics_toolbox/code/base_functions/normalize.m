@@ -1,29 +1,36 @@
 function [XN,factors]=normalize(X,ppmH,method,features)
 
-% [XN,factors]=normalize(X,method,features)
-%
-% Normalize spectral matrix X to total area, single feature, or integral of set of features. 
-%
-% Arguments:
-% 
-% X               N x P matrix of spectral features for each sample
-% method          'total' for Total Area, 'PQN' for Probablistic Quotient,
-%                 'quantile' for Quantile Normalization,
-%                 'intensity' for normalization to single feature,
-%                 'integral' for normalization to sum of set of features
-% features        only required for 'intensity' or 'integral'.  For
-%                 'intensity', the ppm of the feature in X to normalize
-%                 to - e.g. [10] for X(:,10).  For 'integral', the range of
-%                 features in X that span the peak to normalize to - eg
-%                 [-.05,0.05]
-%                 You can also use this input as an option for the 'quantile'
-%                  method: set as 'median' to take median of the ranked
-%                  values instead of the mean.
-%
-% Outputs:
-% XN              N x P matrix of normalized data
-% factors         N calculated normalization factors: XN = X / factors
-
+    % Author: Edison Lab
+    % Version: 0.1
+    % Tested on Matlab Version R2017b
+    % Date: 25MAR2019
+    %
+    % Description:
+    %       Normalize spectral matrix X to total area, single feature, or integral of set of features.        
+    %
+    % Input:
+    %       X        : stack of 1D spectra
+    %       ppmH     : chemical shift vector
+    %       method   : 'total' for Total Area, 
+    %                  'PQN' for Probablistic Quotient,
+    %                  'quantile' for Quantile Normalization,
+    %                  'intensity' for normalization to single feature,
+    %                  'integral' for normalization to sum of set of features
+    %       features : only required for 'intensity' or 'integral'.  
+    %                  For 'intensity', the ppm of the feature in X to normalize to - e.g. [10] for X(:,10).  
+    %                  For 'integral', the range of features in X that span the peak to normalize to - eg [-.05,0.05]
+    %
+    %                  If method is set to 'quantile',
+    %                  optionally set feature to 'median' to take median of the ranked values instead of the mean.
+    %
+    % Output:
+    %       XN      : N x P matrix of normalized data
+    %       factors : N calculated normalization factors: XN = X / factors
+    %
+    % Log:
+    %
+    % Example run:
+    % [XN,factors]=normalize(X,ppmR,'PQN');
 
 XN=zeros(size(X));
 
