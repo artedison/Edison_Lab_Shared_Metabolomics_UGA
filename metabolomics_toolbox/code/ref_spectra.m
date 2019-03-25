@@ -1,14 +1,47 @@
 function [spectra, offsetppm] = ref_spectra(spectra,thresh,offsetppm,varargin)
-% ************
-% Reference spectra.
-% Required arguments
-%     spectra - Structure array containing fields: real, ppm
-% Optional arguments:
-%     thresh - 0.01 (default)
-%     offsetppm - If set, don't manually pick the reference from the first spectra.
-%     Instead, pick the peak in each spectra closest to offsetppm.
-% OUTPUT: spectra and offsetppm of referenced spectral
-%% it is an initial function from the toolbox
+
+    % Author: Edison Lab
+    % Version: 0.2
+    % Tested on Matlab Version R2017b
+    % Date: 25MAR2019
+    %
+    % Description:
+    %       This function provides options for referencing NMR spectra
+    %       (e.g. to DSS or another chemical shift standard peak). NOTE:
+    %       referencing spectra requires interpolation of new ppm vectors.
+    %       This can result in slight variations in maximum peak height for
+    %       a peak, typically 1 ppm resolution unit difference in either
+    %       direction. 
+    %
+    % Input:
+    %   Required
+    %       spectra : structure output from Setup1D containing spectral
+    %                   data and ppm vectors for each spectrum
+    %   Optional
+    %       thresh : peak picking threshold. Default: 0.01.
+    %       offsetppm : Expected location of reference peak. Pick the peak 
+    %                   in each spectra closest to offsetppm. Providing 
+    %                   this suppresses manual picking of reference peak. 
+    %       varargin 
+    %       	'testThreshold' : providing this argument allows the result
+    %                               of peakpicking to be assessed in order
+    %                               to optimize thresh without having to
+    %                               pick any peaks/do the referencing
+    %                               calculation.
+    %
+    % Output:
+    %       spectra : the referenced spectra and adjusted ppm vectors
+    %       offsetppm: this facilitates iterative running for optimization
+    %                   purposes, as well as allows for recordkeeping.
+    %
+    % Log:
+    %       Ver 0.0: old toolbox function
+    %       Ver 0.1: MJ and YW edit 10/10/2018
+    %       Ver 0.2: testThreshold option added MJ FEB2019
+    %
+    % Example run:
+    %
+    
 %% MJ and YW edit it 10/10/2018
 % *******************
 %% Check to see if we are testing the threshold
@@ -60,6 +93,7 @@ end
             if ~exist('offsetppm','var') || isempty('offsetppm')
                 i=1;
                 peaks=peakpick(spectra(i).real,30,thresh*max(spectra(i).real));
+                figure, hold on
                 plot(spectra(i).ppm,spectra(i).real,'k'), hold,
                 plot(spectra(i).ppm(peaks),spectra(i).real(peaks),'ro')
                 set(gca,'xlim',[-.7,.7])
