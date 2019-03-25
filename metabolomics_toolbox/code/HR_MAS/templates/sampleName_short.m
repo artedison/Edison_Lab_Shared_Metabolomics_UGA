@@ -134,9 +134,9 @@
 %         matrix = expName.X;
 %         currentppm = expName.ppm;
 %         expName.NormMethod = 'maximum'; % alternative, 'integral'
-%         ROInorm = []; % empty indicates that the peak region will be selected 
+%         expName.ROInorm = []; % empty indicates that the peak region will be selected 
 % 
-%         [expName.XN,expName.ROInorm,~] = normalize_HRMASdata(matrix,currentppm,expName.NormMethod,ROInorm);
+%         [expName.XN,expName.ROInorm,~] = normalize_HRMASdata(matrix,currentppm,expName.NormMethod,expName.ROInorm);
 
      %% Collapse spectra        
         if isfield(expName,'XN')
@@ -173,8 +173,8 @@
 
         stackSpectra(matrix,currentppm,expName.horzshift,expName.vertshift,expName.plotTitle)
         set(gcf, 'InvertHardCopy', 'off');
-            set(gca,'xlim',expName.xlims)
-            set(gca,'ylim',expName.ylims)
+%             set(gca,'xlim',expName.xlims)
+%             set(gca,'ylim',expName.ylims)
         %xlim([0.5,5.2]) % in ppm, for auto-zoom to a region of interest
                       
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
