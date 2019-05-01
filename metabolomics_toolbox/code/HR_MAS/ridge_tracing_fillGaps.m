@@ -16,8 +16,7 @@ function [newRidge_rowInds,newRidge_times,newRidge_colInds,newRidge_PPMs,newRidg
                             %inds = inds(1:2);  % does order matter here? No.                                    
                         inds(1) = max(find(ridgeInds_row < gapInds(k))); % get next lower index in ridgeInds
                         inds(2) = min(find(ridgeInds_row > gapInds(k))); % get next higher index in ridgeInds
-                        notShaped = ridgeTimes(inds);
-                        closestPoints = [ppms(inds);notShaped(:)']';
+                        closestPoints = [ppms(inds);ridgeTimes(inds)']';
                     % Calculate the line between them
                         [p,S] = polyfit(closestPoints(:,2),closestPoints(:,1),1);
                         newPoints(k,3) = gapTimes(k);                           % this gets the gap times
@@ -33,7 +32,7 @@ function [newRidge_rowInds,newRidge_times,newRidge_colInds,newRidge_PPMs,newRidg
             
             newRidge_PPMs = [ppms,newPoints(:,1)'];
             newRidge_colInds = [matchPPMs(ppms,currentppm),newPoints(:,2)'];
-            newRidge_times = [ridgeTimes';newPoints(:,3)]';
+            newRidge_times = [ridgeTimes;newPoints(:,3)]';
             newRidge_rowInds = [ridgeInds_row';newPoints(:,4)]; 
                         
             % This one is for matrix values

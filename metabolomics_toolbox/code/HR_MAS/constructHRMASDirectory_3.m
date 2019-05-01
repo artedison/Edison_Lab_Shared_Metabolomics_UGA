@@ -4,10 +4,6 @@ function [output] = constructHRMASDirectory_3(destinationDir,newDataDir,template
 % templateDir = sampledir;
 % destinationDir = goaldir;
 % clear goaldir newDataDir sampledir
-% Adjust for lack of '/' on end of path
-    if ~strcmp(newDataDir(end),'/')
-        newDataDir = [newDataDir,'/'];
-    end
 
 % Next: don't overwrite existing files
 
@@ -299,8 +295,7 @@ end
     % Move the zipped file or tar file as well
         ind = contains({zipFiles.name},{sampleName});
         if ~isempty(ind)
-            %copyfile([zipFiles(ind).folder,'/',zipFiles(ind).name],[sampleDestinationDir,'/data/raw/',zipFiles(ind).name])
-            movefile([zipFiles(ind).folder,'/',zipFiles(ind).name],[sampleDestinationDir,'/data/raw/',zipFiles(ind).name])
+            movefile([zipFiles(ind).folder,'/',zipFiles(ind).name],[sampleDestinationDir,'/data/raw'])
         end
     output = struct();
 

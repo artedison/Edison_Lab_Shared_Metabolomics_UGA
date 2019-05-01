@@ -1,4 +1,4 @@
-function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
+function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle)
 %% stackSpectra
 %{
     This function plots spectra sequentially so that trends can be seen for
@@ -28,25 +28,16 @@ baseline = mean(matrix(end,:))-std(matrix(end,:)) - vertshift * size(matrix,1); 
 % Adjust ppm to match the first spectrum:
 currentppm = currentppm - horzshift * size(matrix,1);
 
-% Set up to deal with timePoints
-    % For each line, we use a multiplier (timepoints / max(timepoints)
-    % If 
-    if ~isempty(varargin)
-        varRow = strcmp(varargin,'timepoints'); 
-        if any(varRow)
-            varargin(varRow)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-        end
-    end
-
     figure('PaperType','<custom>','PaperSize',[24 24],'Color',[1 1 1]),hold on,
     for i = 1:size(matrix,1)
-        adjRow = matrix(i,:)-vertshift * multiplier(i) * i;
+        adjRow = matrix(i,:)-vertshift * i;
         adjRow(adjRow<baseline) = baseline;
-        ar = area(currentppm + horzshift * multiplier * i,adjRow,'BaseValue',baseline);%,'EdgeColor','flat');
+        ar = area(currentppm + horzshift * i,adjRow,'BaseValue',baseline);%,'EdgeColor','flat');
         lineColor = ar.FaceColor;
         ar.FaceColor = 'w';
         ar.EdgeColor = lineColor;
     end
+    
     
     
     set(gca,'XDir','reverse')

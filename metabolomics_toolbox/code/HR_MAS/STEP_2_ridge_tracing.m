@@ -82,30 +82,29 @@
 
 %% 1. Setup
 % load('sampleData.mat')
-samples=[1,2,3,4]; % list of sample numbers from study
+samples=[1,2,3,7,8,9]; % list of sample numbers from study
 Samples=initiateSamples(samples);
 
 %% 2. Smoothing and Peak Picking
-sample=4; % index of "samples"
+sample=1; % index of "samples"
 smoothingFilter='imgaussfilt(window,[1,10])';
 peakPickThreshold=0;  % can be negative or positive; thresh = mean+(peakPickThreshold*sd)
 
 % Run for different regions (get what you can out of them)
-ppm= ppm;
-matrix= matrixstr{sample};
-times=times;
+ppm=sampleData(samples(sample)).ppmR_1h1d;
+matrix=sampleData(samples(sample)).Xcollapsed_1h1d;
+times=sampleData(samples(sample)).timesCollapsed_1h1d;
 %ROI = [5.45,5.7]; % in ppm units
-ROI= ROIs{1};
-ROIs = {[1.7 1.8] [1.9 2.1] [2.22 2.31] [3.3 3.5] [3.7 3.85] [4.18 4.28] [4.75 4.95]};
+ROI=[2.5,2.8];
 %ROI = [2.0,2.5];
 
 [output]=ridgeTracing_PeakPick1D(matrix,ppm,times,ROI,smoothingFilter,peakPickThreshold);
 
 %% 3. Clustering
-numberOfRidges=20; % this needs to be relatively high for noisy regions
+numberOfRidges=13; % this needs to be relatively high for noisy regions
 timeWeight=1;     % increasing this makes clusters reach across time
-ppmWeight=1;     % increasing this makes clusters reach across the ppm dimension
-intensityWeight=1;  % increasing this flattens the curves down to 2D (like the peakpick image)
+ppmWeight=2;     % increasing this makes clusters reach across the ppm dimension
+intensityWeight=500;  % increasing this flattens the curves down to 2D (like the peakpick image)
 [newRidges]=ridgeTracing_clusterPeaks_interactive_2(output,numberOfRidges,timeWeight,ppmWeight,intensityWeight);
 
 %% 4. Apply Ridge Corrections

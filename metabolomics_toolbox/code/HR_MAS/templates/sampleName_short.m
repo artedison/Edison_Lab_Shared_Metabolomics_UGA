@@ -103,11 +103,10 @@
         % peak @ 1.6ppm
         expName.ref_threshold = .009;
         expName.ref_offset = 1.6;
-        expName.spectraRef = ref_spectra(expName.spectra,expName.ref_threshold);
-        %expName.spectraRef = ref_spectra(expName.spectra,expName.ref_threshold,expName.ref_offset);
+        expName.spectraRef = ref_spectra(expName.spectra,expName.ref_threshold,expName.ref_offset);
         %expName.spectraRef = ref_spectra(expName.spectra,expName.ref_threshold,expName.ref_offset,'testThreshold');
         close(gcf)
-        %expName.spectraRef = expName.spectra;
+        expName.spectraRef = expName.spectra;
         
     %% Make 2D matrix of 1D spectra using sorted spectra
 

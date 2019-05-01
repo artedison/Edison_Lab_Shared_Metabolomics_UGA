@@ -7,8 +7,7 @@ function [intensities,ridgeTimes,toDelete] = ridge_tracing_pruneRidge(intensitie
             for k = 1:length(repTimePts)
                  currentPts = find(ridgeTimes==fullTimes(repTimePts(k)) );
                  [~,b] = max(intensities( currentPts ));
-                 notShaped = currentPts(find([1:length(currentPts)]~=b));
-                 toDelete = [toDelete;notShaped(:)];
+                 toDelete = [toDelete;currentPts(find([1:length(currentPts)]~=b))];
             end
             intensities(toDelete) = [];      
             ridgeTimes(toDelete) = [];
