@@ -137,13 +137,13 @@ if any(strcmp(figdisply,{'2d','all'}))
     figure
     for k=1:size(cmap,1)
         [~,ind_findx,ind_findy]=ind2sub(size(lines_3(k,:,:)),find(~isnan(lines_3(k,:,:))));
-        plot(X(1,ind_findx),log(Y(ind_findy,1)),'.','Color',cmap(k,:),'MarkerSize',6)
+        plot(X(1,ind_findx),log10(Y(ind_findy,1)),'.','Color',cmap(k,:),'MarkerSize',6)
         hold on
     end
     hold off
     
     xlabel('TOF');
-    ylabel('log EXT');
+    ylabel('log10 EXT');
     
     colormap(jet);
     t=colorbar;
