@@ -32,9 +32,8 @@ function [corr,covar]=STOCSY_BS(dp,X,ppm,binsize,bslocation,UL,varargin)
 %                   spectrum to target chemical shift or response vector
 %       2nd figure: Plots correlation of worm distribution to driver peak 
 %                   or response vector on 2D biosorter map
-%       corr: correlation matrix to target driver peak or response vector
-%       covar: covariance matrix to target driver peak or response vector
-% Reference:?Cloarec, O., Dumas, M. E., Craig, A., Barton, R. H., Trygg, J., Hudson, J., ? Nicholson, J. (2005). Statistical total correlation spectroscopy: An exploratory approach for latent biomarker identification from metabolic 1H NMR data sets. Analytical Chemistry, 77(5), 1282?1289. https://doi.org/10.1021/ac048630x
+%       corr: Correlation matrix to target driver peak or response vector
+%       covar: Covariance matrix to target driver peak or response vector
 
 if size(dp,1)==1
     x=dp;

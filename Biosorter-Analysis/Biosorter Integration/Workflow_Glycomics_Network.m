@@ -74,3 +74,25 @@ labels = [names_Glycan, names_BS, names_NMR];
             % parameters
             
             [Rmat,Pmat,RmatT,PmatT] = correlationNetwork(matrix,Rthresh,Pthresh,filename,labels,RmatIn,PmatIn,'removeSelfEdges','both',[]);
+%% stack-plot of STOCSY responds to glycan
+Clear
+load('workspace_stackstocsy.mat')
+% Set the right and left boundries of NMR spectra to be presented
+rppm=4.146; 
+lppm=4.25;
+
+rb=matchPPMs(rppm,JointPpm);
+lb=matchPPMs(lppm,JointPpm);
+[~,~,lines_v3]=StackSTOCSYall_v3(JointPpm(size(XALNFinal,2)+20*(order_cluster1-1)+10),JointX,JointPpm,rb,lb);
+lines_stack_v3=lines_v3+permute(repmat(0.4*[0:1:size(lines_v3,3)-1],100,1,length(rb:lb)),[1,3,2]); % Change 0.4 for another number if needed
+
+figure, plot(JointPpm(rb:lb),squeeze(lines_stack_v3(1,:,:))','Color',cmap(1,:), 'LineWidth',1.1)
+hold on
+for k=2:size(cmap,1)
+    plot(JointPpm(rb:lb),squeeze(lines_stack_v3(k,:,:))','Color',cmap(k,:), 'LineWidth',1.1);
+end
+set(gca,'XDir','rev')
+xlabel('Chemical Shift (ppm)')
+set(gca,'YTickLabel',[]);
+t=colorbar('colormap',jet(100));
+caxis([-1 1])
