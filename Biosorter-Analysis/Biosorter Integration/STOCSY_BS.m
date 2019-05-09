@@ -1,6 +1,6 @@
 function [corr,covar]=STOCSY_BS(dp,X,ppm,binsize,bslocation,UL,varargin)
 
-% Author:Sicong Zhang
+% Author: Sicong Zhang, modified from function STOCSY.m
 % Date: 10/07/2018
 
 % STOCSY_BS(5.19,Jointdata,Jointppm,1,15601,1600,'thresh',0.9,'figdisply',...
@@ -34,6 +34,7 @@ function [corr,covar]=STOCSY_BS(dp,X,ppm,binsize,bslocation,UL,varargin)
 %                   or response vector on 2D biosorter map
 %       corr: correlation matrix to target driver peak or response vector
 %       covar: covariance matrix to target driver peak or response vector
+% Reference:?Cloarec, O., Dumas, M. E., Craig, A., Barton, R. H., Trygg, J., Hudson, J., ? Nicholson, J. (2005). Statistical total correlation spectroscopy: An exploratory approach for latent biomarker identification from metabolic 1H NMR data sets. Analytical Chemistry, 77(5), 1282?1289. https://doi.org/10.1021/ac048630x
 
 if size(dp,1)==1
     x=dp;
