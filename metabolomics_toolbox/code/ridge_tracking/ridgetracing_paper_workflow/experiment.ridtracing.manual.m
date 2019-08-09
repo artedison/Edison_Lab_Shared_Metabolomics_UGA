@@ -184,53 +184,53 @@ save([workdir 'tracing.newmeth.experiment.manual.mat'],'Sample')
 % close all;
 
 %%test plot for valine region [1.3 1.35] 0.000,0.02 [2.33 2.44] 0.0004,0.04 [3.15 3.3] 0.0004,0.04 [3.68 3.8] 0.0004,0.04
-close all;
-clear all;
-ppmregion=[3.68 3.8];%
-comp='/Users/yuewu/';%the computer user location
-workdir=[comp 'Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge_tracing_manuscript/analysis_res/result/experiment_quantification_manul/'];%%the working folder
-cd(workdir);
-% load([workdir 'tracing.newmeth.experiment.manual.mat']);
-% load('../../data/sampleData.mat');
-i=2;
-j=4;
-compname='region2';
-peakcell=Sample(i).ridges;
-matchcomppeak=length(peakcell);%number of peaks
-peaks=struct();
-ridgenumbers=2:length(peakcell);
-data=sampleData(j);
-mat=data.Xcollapsed_1h1d;
-ppm=data.ppm_1h1d;
-jm=1;
-peakshere=struct();
-for j=ridgenumbers
-  temppeak=peakcell(j).result;
-  ppmvec=temppeak.ppm';
-  if min(ppmvec)<ppmregion(1)|max(ppmvec)>ppmregion(2)
-    continue;
-  end
-  if ~isempty(temppeak)
-    peakshere(jm).Ridges=temppeak.ppm';
-    peakshere(jm).RowInds=temppeak.rowind';
-    peakshere(jm).RidgeIntensities=temppeak.intensity';
-    peakshere(jm).CompoundNames=temppeak.names;
-    peakshere(jm).quantifiable=temppeak.quanvec;
-  else
-    peakshere(jm).Ridges=[];
-    peakshere(jm).RowInds=[];
-    peakshere(jm).RidgeIntensities=[];
-    peakshere(jm).CompoundNames=[];
-    peakshere(jm).quantifiable=[];
-  end
-  jm=jm+1;
-end
-ppmrang=matchPPMs(ppmregion,ppm);
-ppmind=ppmrang(1):ppmrang(2);
-mathere=mat(:,ppmind);
-ppmrere=ppm(ppmind);
-namestr=[compname '.' num2str(ppmregion(1)) '.' num2str(ppmregion(2))];
-fig=stackSpectra_paintRidges_3return(mathere,ppmrere,0.0004,0.04,namestr,peakshere,10);
-saveas(fig,strcat(workdir,[namestr '.fig']));
-print(fig,[namestr '.pdf'],'-dpdf','-fillpage','-r2400','-painters');%'-painters','-fillpage',
-close(fig);
+% close all;
+% clear all;
+% ppmregion=[3.68 3.8];%
+% comp='/Users/yuewu/';%the computer user location
+% workdir=[comp 'Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge_tracing_manuscript/analysis_res/result/experiment_quantification_manul/'];%%the working folder
+% cd(workdir);
+% % load([workdir 'tracing.newmeth.experiment.manual.mat']);
+% % load('../../data/sampleData.mat');
+% i=2;
+% j=4;
+% compname='region2';
+% peakcell=Sample(i).ridges;
+% matchcomppeak=length(peakcell);%number of peaks
+% peaks=struct();
+% ridgenumbers=2:length(peakcell);
+% data=sampleData(j);
+% mat=data.Xcollapsed_1h1d;
+% ppm=data.ppm_1h1d;
+% jm=1;
+% peakshere=struct();
+% for j=ridgenumbers
+%   temppeak=peakcell(j).result;
+%   ppmvec=temppeak.ppm';
+%   if min(ppmvec)<ppmregion(1)|max(ppmvec)>ppmregion(2)
+%     continue;
+%   end
+%   if ~isempty(temppeak)
+%     peakshere(jm).Ridges=temppeak.ppm';
+%     peakshere(jm).RowInds=temppeak.rowind';
+%     peakshere(jm).RidgeIntensities=temppeak.intensity';
+%     peakshere(jm).CompoundNames=temppeak.names;
+%     peakshere(jm).quantifiable=temppeak.quanvec;
+%   else
+%     peakshere(jm).Ridges=[];
+%     peakshere(jm).RowInds=[];
+%     peakshere(jm).RidgeIntensities=[];
+%     peakshere(jm).CompoundNames=[];
+%     peakshere(jm).quantifiable=[];
+%   end
+%   jm=jm+1;
+% end
+% ppmrang=matchPPMs(ppmregion,ppm);
+% ppmind=ppmrang(1):ppmrang(2);
+% mathere=mat(:,ppmind);
+% ppmrere=ppm(ppmind);
+% namestr=[compname '.' num2str(ppmregion(1)) '.' num2str(ppmregion(2))];
+% fig=stackSpectra_paintRidges_3return(mathere,ppmrere,0.0004,0.04,namestr,peakshere,10);
+% saveas(fig,strcat(workdir,[namestr '.fig']));
+% print(fig,[namestr '.pdf'],'-dpdf','-fillpage','-r2400','-painters');%'-painters','-fillpage',
+% close(fig);
