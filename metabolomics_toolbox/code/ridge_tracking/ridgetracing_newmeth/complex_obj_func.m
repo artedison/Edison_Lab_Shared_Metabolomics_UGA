@@ -1,4 +1,4 @@
-function [objstr]=complex_obj_func(mat,ppm,times,Sample,noiserang,prop_threhs,ppmpropreg,regionsele,nearbythred,rangdss)
+function [objstr]=complex_obj_func(mat,ppm,times,Sample,noiserang,prop_threhs,ppmpropreg,regionsele,nearbythred,dssvec)
 %% this program will evaluate the complex level of spectral
 %% Different spectral will be evaluated by SNR and other evaluation functions
 %% The evaluation is based on ridge tracing result and so the higher the coverage of region and ridge tracing, the more precise the estimation
@@ -13,7 +13,7 @@ function [objstr]=complex_obj_func(mat,ppm,times,Sample,noiserang,prop_threhs,pp
 %%% ppmpropreg: the considerred spectral region in PPM. default [-1 10]
 %%% regionsele: the selected region in ridge tracing step, consierred as probled region for the spectra
 %%% nearbythred: the threhold to consider two peaks are close in PPM direction to calcualte Objcomdyn. default 0.05
-%%% rangdss: the range to search dss. default [-0.1 0.1]
+%%% dssvec: the intensity of dss peak
 %% return: objstr is a structure, including SNR, Objcomppm, Objcomdyn, Objcomrange, peakdensity
 %%% SNR: signal to noise ratio. mean signal to noise level among all samples.
 %%%% For each sample, SNR=mean(intensity_of_dss_peak/sd_of_selected_noise_region)
@@ -56,8 +56,8 @@ end
 if ~exist('nearbythred', 'var')
   nearbythred=0.05;
 end
-if ~exist('rangdss', 'var')
-  rangdss=[-0.1 0.1];
+if ~exist('dssvec', 'var')
+  dssvec=[];
 end
 %%initialization
 data=Sample.ridges;
@@ -100,8 +100,12 @@ noisemat=mat(:,noisereg(1):noisereg(2));
 %% signal to noise ratio
 ppmmeanvec=mean(ppmmat,1);
 refpeakind=find(ppmmeanvec>rangdss(1)&ppmmeanvec<rangdss(2));
-intensitymat(:,refpeakind)
-SNR=mean(intensitymat(:,refpeakind)./std(noisemat,0,2));
+% intensitymat(:,refpeakind)
+if length(dssvec)~=0
+  SNR=mean(dssvec./std(noisemat,0,2));
+else
+  SNR=max(intensitymat(:))/std(noisemat(:));
+end
 %% measure ppm shift
 ppmvarvec=[];
 for i=1:ncol
