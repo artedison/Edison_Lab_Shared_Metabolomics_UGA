@@ -15,8 +15,8 @@ function [objstr]=complex_obj_func(mat,ppm,times,Sample,noiserang,prop_threhs,pp
 %%% nearbythred: the threhold to consider two peaks are close in PPM direction to calcualte Objcomdyn. default 0.05
 %%% rangdss: the range to search dss. default [-0.1 0.1]
 %% return: objstr is a structure, including SNR, Objcomppm, Objcomdyn, Objcomrange, peakdensity
-%%% SNR: signal to noise ratio.Signal to noise level among all samples.
-%%%% For each sample, SNR=intensity_of_highest_peak/sd_of_selected_noise_region
+%%% SNR: signal to noise ratio. mean signal to noise level among all samples.
+%%%% For each sample, SNR=mean(intensity_of_dss_peak/sd_of_selected_noise_region)
 %%% Objcomppm(Shift complexity): measure ppm shift
 %%%% the mean squared standard deviation of peak ppm for different peaks
 %%%%% mean(sd^2(peak_ppm_each_peak))
