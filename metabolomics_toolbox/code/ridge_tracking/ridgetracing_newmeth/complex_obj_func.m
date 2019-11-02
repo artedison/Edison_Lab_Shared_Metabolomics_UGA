@@ -1,4 +1,4 @@
-function [objstr]=complex_obj_func(mat,ppm,times,Sample,noiserang,prop_threhs,ppmpropreg,regionsele,nearbythred)
+function [objstr]=complex_obj_func(mat,ppm,times,Sample,noiserang,prop_threhs,ppmpropreg,regionsele,nearbythred,rangdss)
 %% this program will evaluate the complex level of spectral
 %% Different spectral will be evaluated by SNR and other evaluation functions
 %% The evaluation is based on ridge tracing result and so the higher the coverage of region and ridge tracing, the more precise the estimation
@@ -13,6 +13,7 @@ function [objstr]=complex_obj_func(mat,ppm,times,Sample,noiserang,prop_threhs,pp
 %%% ppmpropreg: the considerred spectral region in PPM. default [-1 10]
 %%% regionsele: the selected region in ridge tracing step, consierred as probled region for the spectra
 %%% nearbythred: the threhold to consider two peaks are close in PPM direction to calcualte Objcomdyn. default 0.05
+%%% rangdss: the range to search dss. default [-0.1 0.1]
 %% return: objstr is a structure, including SNR, Objcomppm, Objcomdyn, Objcomrange, peakdensity
 %%% SNR: signal to noise ratio.Signal to noise level among all samples.
 %%%% For each sample, SNR=intensity_of_highest_peak/sd_of_selected_noise_region
@@ -55,6 +56,9 @@ end
 if ~exist('nearbythred', 'var')
   nearbythred=0.05;
 end
+if ~exist('rangdss', 'var')
+  rangdss=[-0.1 0.1];
+end
 %%initialization
 data=Sample.ridges;
 %%%remove empty rows:
@@ -94,7 +98,9 @@ intensitymat=intensitymat-minreal;%%shift spectral peak matrix to remove negativ
 noisereg=matchPPMs(noiserang,ppm);
 noisemat=mat(:,noisereg(1):noisereg(2));
 %% signal to noise ratio
-SNR=max(intensitymat(:))/std(noisemat(:));
+ppmmeanvec=mean(ppmmat,1);
+refpeakind=ppmmeanvec>rangdss(1)&ppmmeanvec<rangdss(2)
+SNR=intensitymat(:,refpeakind)./std(noisemat,0,2);
 %% measure ppm shift
 ppmvarvec=[];
 for i=1:ncol
@@ -103,7 +109,6 @@ for i=1:ncol
 end
 Objcomppm=mean(ppmvarvec);
 %% measure how dynamic are peaks in each spectral
-ppmmeanvec=mean(ppmmat,1);
 [ppmmeanvecsort ppmsortind]=sort(ppmmeanvec);
 intensitymatsort=intensitymat(:,ppmsortind);
 dynvec=[];
@@ -131,7 +136,8 @@ for i=1:nrowregion
   rag=regionsele(i,:);
   ppmrag=ppmrag+rag(2)-rag(1);
 end
-peakdensity=Npeak/ppmrag*(ppmpropreg(2)-ppmpropreg(1));
+% peakdensity=Npeak/ppmrag*(ppmpropreg(2)-ppmpropreg(1));
+peakdensity=Npeak/ppmrag;
 %%return
 objstr.SNR=SNR;
 objstr.Objcomppm=Objcomppm;
