@@ -99,8 +99,9 @@ noisereg=matchPPMs(noiserang,ppm);
 noisemat=mat(:,noisereg(1):noisereg(2));
 %% signal to noise ratio
 ppmmeanvec=mean(ppmmat,1);
-refpeakind=ppmmeanvec>rangdss(1)&ppmmeanvec<rangdss(2);
-SNR=intensitymat(:,refpeakind)./std(noisemat,0,2);
+refpeakind=find(ppmmeanvec>rangdss(1)&ppmmeanvec<rangdss(2));
+intensitymat(:,refpeakind)
+SNR=mean(intensitymat(:,refpeakind)./std(noisemat,0,2));
 %% measure ppm shift
 ppmvarvec=[];
 for i=1:ncol
