@@ -98,8 +98,7 @@ intensitymat=intensitymat-minreal;%%shift spectral peak matrix to remove negativ
 noisereg=matchPPMs(noiserang,ppm);
 noisemat=mat(:,noisereg(1):noisereg(2));
 %% signal to noise ratio
-ppmmeanvec=mean(ppmmat,1);
-refpeakind=find(ppmmeanvec>rangdss(1)&ppmmeanvec<rangdss(2));
+% refpeakind=find(ppmmeanvec>rangdss(1)&ppmmeanvec<rangdss(2));
 % intensitymat(:,refpeakind)
 if length(dssvec)~=0
   SNR=mean(dssvec./std(noisemat,0,2));
@@ -114,6 +113,7 @@ for i=1:ncol
 end
 Objcomppm=mean(ppmvarvec);
 %% measure how dynamic are peaks in each spectral
+ppmmeanvec=mean(ppmmat,1);
 [ppmmeanvecsort ppmsortind]=sort(ppmmeanvec);
 intensitymatsort=intensitymat(:,ppmsortind);
 dynvec=[];
