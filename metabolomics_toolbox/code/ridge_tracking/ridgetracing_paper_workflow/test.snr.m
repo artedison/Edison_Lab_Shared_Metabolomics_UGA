@@ -190,13 +190,15 @@ for samp_i=sample
   close(fig);
 end
 %%practical SNR
+load("noiseridge_trace.mat")
 snrlist=[];
 for samp_i=sample
   mathere=matrixstrlist{samp_i};
   noisereg=matchPPMs(noiserang,ppm);
   noisemat=mathere(:,noisereg(1):noisereg(2));
   %% signal to noise ratio
-  SNR=max(mathere(:))/std(noisemat(:));
+  % SNR=max(mathere(:))/std(noisemat(:));
+  SNR=mean(max(mathere,[],2)./std(noisemat,0,2));
   snrlist=[snrlist SNR];
 end
 save('noisemat_snr.mat','snrlist');
