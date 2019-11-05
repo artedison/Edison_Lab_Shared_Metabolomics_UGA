@@ -109,7 +109,8 @@ end
 ppmvarvec=[];
 for i=1:ncol
   scalppm=(ppmcell{i}-ppmpropreg(1))/(ppmpropreg(2)-ppmpropreg(1));
-  ppmvarvec=[ppmvarvec std(scalppm)^2];
+  scalppm_sq=sum((scalppm-mean(scalppm)).^2)/length(scalppm);
+  ppmvarvec=[ppmvarvec scalppm_sq];
 end
 Objcomppm=mean(ppmvarvec);
 %% measure how dynamic are peaks in each spectral
@@ -130,7 +131,8 @@ peakprop_sdvec=[];
 for i=1:ncol
   intensivec=intensitymat(:,i);
   propintpeaks=intensivec/max(intensivec);
-  peakprop_sdvec=[peakprop_sdvec std(propintpeaks)^2];
+  propintpeaks_sq=sum((propintpeaks-mean(propintpeaks)).^2)/length(propintpeaks);
+  peakprop_sdvec=[peakprop_sdvec propintpeaks_sq];
 end
 Objcomrange=mean(peakprop_sdvec);
 %% peak intensity
