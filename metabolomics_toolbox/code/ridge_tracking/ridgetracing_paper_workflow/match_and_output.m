@@ -210,17 +210,22 @@ close all;
 %%%%experiment spectra
 clear all;
 load(['../../data/sampleData.mat']);
-load(['../experiment_quantification_manul/archive/tracing.newmeth.experiment.manual.mat']);
+% load(['../experiment_quantification_manul/archive/tracing.newmeth.experiment.manual.mat']);
+load(['../experiment_quantification_manul_compare/tracing.newmeth.experiment.manual.mat'])
 temptab1=zeros([2 5]);
-sample=[1 4];
-regionsele=[1.1 1.135; 1.3 1.35; 1.85 1.92; 2.00 2.11; 2.33 2.44; 3.1 3.15; 3.15 3.3; 3.68 3.8; 4.08 4.155; 4.28 4.35; 4.48 4.54; 5.36 5.41; 6.05 6.08; 6.51 6.55];
+sample=[1 4];%the index of the chosen sample in ridges data
+sampleid=[1 7];%the index of the chosen sample in spectra data
+% regionsele=[1.1 1.135; 1.3 1.35; 1.85 1.92; 2.00 2.11; 2.33 2.44; 3.1 3.15; 3.15 3.3; 3.68 3.8; 4.08 4.155; 4.28 4.35; 4.48 4.54; 5.36 5.41; 6.05 6.08; 6.51 6.55];
+regionsele=[2.2 2.22; 0.97 0.99; 1.022 1.042; 0.992 1.01; 1.45 1.49; 1.31 1.34; 1.61 1.67; 5.785 5.81; 5.45 5.5; 8.25 8.36; 6.87 6.91; 7.405 7.43; 7.85 7.875; 3.15 3.2; 5.17 5.2; 7.95 8.05; 2.55 2.8; 2.4 2.55; 2.32 2.42; 6.5 6.6; 8.42 8.45; 5.2 5.26; 4.6 4.67; 3.87 3.92; 3.62 3.68; 1.15 1.2];
 for samp_i_i=1:length(sample)
   samp_i=sample(samp_i_i);
-  data=sampleData(samp_i);
+  samp_isp=sampleid(samp_i_i);
+  data=sampleData(samp_isp);
   mat=data.Xcollapsed_1h1d;
   ppm=data.ppm_1h1d;
   time=data.timesCollapsed_1h1d;
-  ridges=Sample(samp_i_i);
+  % ridges=Sample(samp_i_i);
+  ridges=Sample(samp_i);
   indrag=matchPPMs([-0.1,0.1],ppm);
   dssvec=max(mat(:,indrag(1):indrag(2)),[],2);
   objstr=complex_obj_func(mat,ppm,time',ridges,[-0.4 -0.2],10,[-0.4 10],regionsele,0.05,dssvec);
@@ -250,7 +255,7 @@ for samp_i=1:4
   temptab2(samp_i,5)=objstr.peakdensity;
 end
 comptab=array2table([temptab1; temptab2],'VariableNames',{'SNR','Objcomppm','Objcomdyn','Objcomrange','peakdensity'});
-datasource={'experiment1','experiemnt4','simualtion1','simualtion2','simualtion3','simualtion4'}';
+datasource={'experiment4','experiemnt10','simualtion1','simualtion2','simualtion3','simualtion4'}';
 comptab=addvars(comptab,datasource,'Before','SNR');
 save('spectra_complexity_tab.mat','comptab');
 writetable(comptab,'spectra_complexity_tab.txt','Delimiter','\t');
