@@ -1,14 +1,17 @@
-## download gissmo library
-## load gissmo library into a matlab dataset 600MHZ
-## spectra between ppm range [-1 11] will be selected
+%%% please don't run unless you understand this script.
+%%% contact me Yue.Wu@uga.edu if you want to use this script
+%%%download gissmo library
+%%%load gissmo library into a matlab dataset 600MHZ
+%%%spectra between ppm range [-1 11] will be selected
 %%%% yue wu
 close all;
 clear all;
 %%wget command
 PATH=getenv('PATH');
 setenv('PATH',[PATH ':/usr/local/bin/']);
-comp='/Users/mjudge';%the computer user location
-libdir=[comp 'Dropbox (Edison_Lab@UGA)/Resources/gissmo_lib/'];
+comp='/Users/yuewu/';%the computer user location
+%%if redownload is needed do change to another folder
+libdir=[comp 'YOURPATH'];%Dropbox (Edison_Lab@UGA)/Resources/gissmo_lib/raw/
 %%% downloading
 cd(libdir);
 tabinfor=readtable([libdir 'infor.txt'],'Delimiter','\t');
@@ -21,7 +24,7 @@ tabinfor(wrongind,1:2)=tabinfor(wrongind-1,1:2);
 tabinfor(:,2)=strrep(table2cell(tabinfor(:,2)),'BMRB ','');
 tabinfor(:,3)=strrep(table2cell(tabinfor(:,3)),'Simu','simu');
 compdnames=unique(tabinfor.CompoundName);
-#length(compdnames) 1250
+%length(compdnames) 1250
 homlink='http://gissmo.nmrfam.wisc.edu/entry/';
 options=weboptions('Timeout',500);
 mkdir(libdir)
