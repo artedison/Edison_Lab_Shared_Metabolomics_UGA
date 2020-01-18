@@ -19,7 +19,7 @@ test_script.m: test script
 
 ## data
 
-gissmo library: Resources/gissmo_lib
+gissmo library: Resources/gissmo_lib/cleandata [data link](https://www.dropbox.com/sh/yejij55ijd599ar/AABd2rydCWKwEwiLPAJnC4v-a?dl=0)
 
 ->"wholegissmo_spectral.complex.more.mat": spectra
 
