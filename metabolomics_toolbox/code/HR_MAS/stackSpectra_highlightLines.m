@@ -19,7 +19,7 @@ function stackSpectra_highlightLines(timepoints,timeVector,units,extraText)
         children = get(fig,'Children');
         
     % Make those lines bold
-        set(children(timeInds),'LineWidth',8)
+        set(children(timeInds),'LineWidth',2)
         
     % Add text labels to those times
         %figure,plot(currentppm,children(timeInds(1)).YData);
