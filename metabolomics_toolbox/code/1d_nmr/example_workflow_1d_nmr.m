@@ -249,6 +249,8 @@ XALN=normalize(XAL,ppmR,'PQN');
 %
 normcheck(XALN)
 %
+%%
+whichLine()
 %% Look at all the aligned and normalized data
 %
 displaypeak1D(XALN,ppmR,0,GroupID);
