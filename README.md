@@ -6,6 +6,8 @@ This is the GitHub page for the Edison lab at UGA. A lot of this is still under 
 If you are using all or part of the packages included here, please make sure you keep up to date with all the new updates being made to this site.
 Each directory will be provided with a README.md file that includes a brief description of what the directory includes and how it is organized.
 
+We now have a wiki that documents all the functions in this toolbox. Check it out on the wiki page tab or [here](https://github.com/artedison/Edison_Lab_Shared_Metabolomics_UGA/wiki).
+
 ## Directory Structure
 
 * [metabolomics_toolbox](https://github.com/artedison/Edison_lab_UGA/tree/master/metabolomics_toolbox)
