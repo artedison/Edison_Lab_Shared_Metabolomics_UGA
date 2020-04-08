@@ -8,7 +8,7 @@ comp='/Users/yuewu/';%the computer user location
 workdir=[comp 'Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge_tracing_manuscript/analysis_res/result/experiment_quantification_manul/'];%%the working folder
 cd(workdir);
 load('../../data/sampleData.mat');
-path=workdir;
+path=pwd;
 sample=1;%the plotting sample%[1 4];
 %% visual parameter
 horzshift= 0;
