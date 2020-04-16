@@ -4,10 +4,13 @@
 %% this script select complex/representative region in the real spectral as there are possible too many region to deal with
 close all;
 clear all;
-comp='/Users/yuewu/';%the computer user location
-workdir=[comp 'Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge_tracing_manuscript/analysis_res/result/experiment_quantification_manul/'];%%the working folder
-cd(workdir);
-load('../../data/sampleData.mat');
+%%%%%%%%%%%%%%%%%%%%path and data loading%%%%%%%%%%%%%%%%%%%%
+%%the user can cd to their own directory and load sampleData.mat from corresponding location
+% comp='/Users/yuewu/';%the computer user location
+% workdir=[comp 'Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge_tracing_manuscript/analysis_res/result/experiment_quantification_manul/'];%%the working folder
+% cd(workdir);
+% load('../../data/sampleData.mat');
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 path=pwd;
 sample=1;%the plotting sample%[1 4];
 %% visual parameter
@@ -15,7 +18,7 @@ horzshift= 0;
 vertshift= 1E-3;
 %% stack plot show
 samp_i=1;
-stackSpectra(sampleData(samp_i).Xcollapsed_1h1d,sampleData(samp_i).ppm_1h1d,horzshift,vertshift,'N. crassa NMR metabolic fingerprint over time')
+stackSpectra(sampleData(samp_i).Xcollapsed_1h1d,sampleData(samp_i).ppm_1h1d,horzshift,vertshift,'N. crassa NMR metabolic fingerprint over time')%%visualize time series spectra
 %% selected region to work on
 % allregionsele=[-0.05 0.05; 0.6 0.7; 0.8 0.9; 0.9 0.955; 0.955 0.97; 0.97 0.99; 0.992 1.05; 1.05 1.06; 1.06 1.07; 1.075 1.1; 1.1 1.135; 1.135 1.144; 1.144 1.15; 1.15 1.2; 1.25 1.3; 1.3 1.35; 1.35 1.4; 1.46 1.49; 1.5 1.6; 1.6 1.625; 1.625 1.67; 1.67 1.7; 1.7 1.8; 1.85 1.92; 1.90 2.0; 2.0 2.09; 2.07 2.17; 2.2 2.26; 2.3 2.365; 2.33 2.44; 2.4 2.6; 2.5 2.9; 2.79 2.83; 2.83 2.9; 2.9 2.95; 2.97 3.03; 3.03 3.1; 3.1 3.15; 3.15 3.3; 3.3 3.36; 3.36 3.43; 3.43 3.5; 3.5 3.54; 3.545 3.585; 3.585 3.62; 3.62 3.685; 3.68 3.8; 3.8 3.855; 3.855 3.875; 3.875 3.91; 3.92 3.96; 3.96 4.0; 4.0 4.08; 4.08 4.155; 4.06 4.19; 4.19 4.24; 4.24 4.29; 4.28 4.35; 4.38 4.41; 4.41 4.45; 4.48 4.54; 4.6 4.68; 5.15 5.2; 5.2 5.25; 5.25 5.35; 5.36 5.41; 5.46 5.5; 5.78 5.81; 5.86 5.92; 5.95 6.0; 6.05 6.08; 6.04 6.25; 6.51 6.55; 6.87 6.9; 7.15 7.2; 7.25 7.4; 7.4 7.44; 7.5 7.55; 7.8 8.0; 8.18 8.24; 8.25 8.36; 8.4 8.45; 8.5 8.62; 9.65 9.7];
 regionsele=[1.3 1.35; 2.33 2.44; 3.15 3.3; 3.68 3.8];%the plotting region
@@ -39,7 +42,7 @@ data=sampleData(samp_i);
 mat=data.Xcollapsed_1h1d;
 ppm=data.ppm_1h1d;
 time=data.timesCollapsed_1h1d;
-[returndata]=ridgetrace_power2_ext(mat,ppm,time,regionhere,path,thredseg,maxaddon);
+[returndata]=ridgetrace_power2_ext(mat,ppm,time,regionhere,path,thredseg,maxaddon);%%ridge tracking function
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% the production run
 thredseglist=repmat(10,[1 size(regionsele,1)]);% default 10
