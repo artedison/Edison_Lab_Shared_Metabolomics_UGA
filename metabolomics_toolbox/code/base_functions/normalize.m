@@ -4,10 +4,10 @@ function [XN,factors]=normalize(X,ppmH,method,features)
     % Version: 0.1
     % Tested on Matlab Version R2017b
     % Date: 25MAR2019
-    %
+    % 
     % Description:
     %       Normalize spectral matrix X to total area, single feature, or integral of set of features.        
-    %
+    % 
     % Input:
     %       X        : stack of 1D spectra
     %       ppmH     : chemical shift vector
@@ -28,6 +28,9 @@ function [XN,factors]=normalize(X,ppmH,method,features)
     %       factors : N calculated normalization factors: XN = X / factors
     %
     % Log:
+%             'factors' output for PQN now includes the initial 'total' normalization factors
+%             'factors' output for quantile returns nan to avoid error
+%             
     %
     % Example run:
     % [XN,factors]=normalize(X,ppmR,'PQN');
@@ -48,7 +51,8 @@ switch lower(method)
             XN(i,:)=X(i,:)./factors(i);
         end
     case 'pqn'
-        X=normalize(X,ppmH,'total').*100;
+        [X,factorsT] = normalize(X,ppmH,'total');      % MTJ edit 20APR2020
+        X = X.*100;                                    % MTJ edit 20APR2020
         X(0==X)=0.00000001;
         normRef=repmat(median(X),size(X,1),1);
         F=X./(normRef);
@@ -56,6 +60,7 @@ switch lower(method)
             factors(i)=median(F(i,:));
             XN(i,:)=X(i,:)./factors(i);
         end
+        factors = factors .* factorsT;                 % MTJ edit 20APR2020
     case 'intensity'
         [~,feature]=min(abs(ppmH-features));
         factors=X(:,feature);
@@ -75,5 +80,6 @@ switch lower(method)
         else
             XN = transpose(quantilenorm(X'));
         end           
+        factors = nan;                                  % MTJ edit 20APR2020
 end
 end
