@@ -3,10 +3,12 @@ function [] = highlightROIs(ROIs,height,varargin)
 %% highlightROIs
 %{
     This function highlights the ppm regions provided in 'ROIs'.
-
+        % Note: ROIs must be 2 x n 
     Hope this helps,
     MJ 2MAY2017
 %}
+
+edgeColor = 'none';
 
     % Read in any options:
         if ~isempty(varargin)
@@ -21,6 +23,16 @@ function [] = highlightROIs(ROIs,height,varargin)
             if any(varInd)
                 transparency = varvals{varInd};
             end
+            
+            varInd = contains(varnames,'edgeColor');
+            
+            if any(varInd)
+                edgeColor = varvals{varInd};
+            else
+                edgeColor = 'none';
+            end                
+            
+            
             % StackSpectra params:
             varInd = contains(varnames,'horzshift');
             if any(varInd)
@@ -36,8 +48,8 @@ function [] = highlightROIs(ROIs,height,varargin)
             end    
             varInd = contains(varnames,'extension');
             if any(varInd)
-                stackParams.extension = varvals{varInd};
-            end                
+                stackParams.numberOfSpectra = varvals{varInd};
+            end    
         end
         
     % Make the highlights
@@ -76,7 +88,7 @@ function [] = highlightROIs(ROIs,height,varargin)
                 end
 
             % Make the patch:
-                p=patch(xcoords,ycoords,'r','FaceAlpha',0.1,'EdgeColor','none');
+                p=patch(xcoords,ycoords,'r');
 
             % Modify the patch in various ways:
                 % Face Color
@@ -88,6 +100,15 @@ function [] = highlightROIs(ROIs,height,varargin)
                         set(p,'FaceColor','r'); %light red % pink [1    0.5  1]
                     end
 
+                % Face Color
+                    if exist('edgeColor','var')
+                        %p=patch(xcoords,ycoords,color); %light red % pink [1    0.5  1]
+                        set(p,'EdgeColor',edgeColor);
+                    else
+                        %p=patch(xcoords,ycoords,'r'); %light red % pink [1    0.5  1]
+                        set(p,'EdgeColor','none'); %light red % pink [1    0.5  1]
+                    end
+                    
                 % Transparency
                     if exist('transparency','var')
                         set(p,'FaceAlpha',transparency)

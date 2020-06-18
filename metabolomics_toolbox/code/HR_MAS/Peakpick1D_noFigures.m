@@ -1,4 +1,4 @@
-function [peakmatrix,shifts]=Peakpick1D_noFigures(X,ppm,represent,peakthresh,mode)
+function [peakmatrix,shifts,p]=Peakpick1D_noFigures(X,ppm,represent,peakthresh,mode)
 
 % [peakmatrix,shifts]=Peakpick1D(X,ppm,represent,peakthresh,mode)
 % 
@@ -26,6 +26,8 @@ end
 if exist('mode')~=1
     mode='Complex';
 end
+
+p = reportParams('exclude',{'X','ppm'});
 
 switch mode
     case 'Simple'
