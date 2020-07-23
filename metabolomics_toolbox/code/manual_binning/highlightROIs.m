@@ -9,27 +9,37 @@ function [] = highlightROIs(ROIs,height,varargin)
 %}
 
 edgeColor = 'none';
+color = 'r';
+transparency = 0.1;
+colorVect = color;      % in the absence of being set explicitly, this is a passthrough
 
     % Read in any options:
         if ~isempty(varargin)
             varnames = varargin(1:2:end);
             varvals = varargin(2:2:end);
 
-            varInd = contains(varnames,'color');
+            varInd = strcmp(varnames,'color');
             if any(varInd)
                 color = varvals{varInd};
+                colorVect = repmat({color},size(ROIs,2),1);
             end
-            varInd = contains(varnames,'transparency');
+            
+            varInd = strcmp(varnames,'transparency');
             if any(varInd)
                 transparency = varvals{varInd};
             end
             
-            varInd = contains(varnames,'edgeColor');
-            
+            varInd = strcmp(varnames,'edgeColor');
+
             if any(varInd)
                 edgeColor = varvals{varInd};
-            else
-                edgeColor = 'none';
+            end                
+           
+            varInd = strcmp(varnames,'colorVect');
+            
+            if any(varInd)
+                colorVect = varvals{varInd};
+                colorVect = num2cell(colorVect,2);
             end                
             
             
@@ -52,9 +62,9 @@ edgeColor = 'none';
             end    
         end
         
-    % Make the highlights
+    %% Make the highlights
         for i = 1:size(ROIs,2)
-            % Calculate the coordinates
+            %% Calculate the coordinates
                 width = (ROIs(2,i)-ROIs(1,i));
                 llx = ROIs(1,i); % 
                 lux = llx;
@@ -67,7 +77,7 @@ edgeColor = 'none';
                 xcoords = [llx rlx rux lux];
                 ycoords = [lly rly ruy luy];
                 
-            % If it's a stackSpectra plot, modify the coordinates:
+            %% If it's a stackSpectra plot, modify the coordinates:
                 if exist('stackParams','var')
                     
                     % luy and ruy coords need to shift based on vertshift, numberOfSpectra
@@ -87,34 +97,21 @@ edgeColor = 'none';
                         xcoords = [llx rlx rux lux]; 
                 end
 
-            % Make the patch:
+            %% Make the patch:
                 p=patch(xcoords,ycoords,'r');
 
-            % Modify the patch in various ways:
+            %% Modify the patch in various ways:
                 % Face Color
-                    if exist('color','var')
-                        %p=patch(xcoords,ycoords,color); %light red % pink [1    0.5  1]
-                        set(p,'FaceColor',color);
-                    else
-                        %p=patch(xcoords,ycoords,'r'); %light red % pink [1    0.5  1]
-                        set(p,'FaceColor','r'); %light red % pink [1    0.5  1]
-                    end
+                    
+                    set(p,'FaceColor',colorVect{i});
 
-                % Face Color
-                    if exist('edgeColor','var')
-                        %p=patch(xcoords,ycoords,color); %light red % pink [1    0.5  1]
-                        set(p,'EdgeColor',edgeColor);
-                    else
-                        %p=patch(xcoords,ycoords,'r'); %light red % pink [1    0.5  1]
-                        set(p,'EdgeColor','none'); %light red % pink [1    0.5  1]
-                    end
+                % Edge Color
+                
+                    set(p,'EdgeColor',edgeColor);
                     
                 % Transparency
-                    if exist('transparency','var')
-                        set(p,'FaceAlpha',transparency)
-                    else
-                        set(p,'FaceAlpha',0.1);
-                    end
+
+                    set(p,'FaceAlpha',transparency);
 
         end
 end

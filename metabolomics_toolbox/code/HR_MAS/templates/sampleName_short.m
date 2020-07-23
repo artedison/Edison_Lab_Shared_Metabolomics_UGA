@@ -41,8 +41,8 @@
 %%  
     cd('mFileLocation')
     expName.sampleName = 'sampleNameGoesHere';
-    thisFile = ['expName','_short.m'];
-    wd = which(thisFile);cd(wd(1:end-length(thisFile)-1));clear('wd')
+    %thisFile = ['expName','_short.m'];
+    [~,~,thisFile] = findCurrentFile();
     
 %% Take care of filepath stuff
    % I am opting for concrete filepaths that are set up dynamically

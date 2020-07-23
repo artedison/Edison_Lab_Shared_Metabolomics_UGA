@@ -1,4 +1,4 @@
-function [XN,factors]=normalize(X,ppmH,method,features)
+function [XN,factors,params]=normalize(X,ppmH,method,features)
 
     % Author: Edison Lab
     % Version: 0.1
@@ -34,7 +34,7 @@ function [XN,factors]=normalize(X,ppmH,method,features)
     %
     % Example run:
     % [XN,factors]=normalize(X,ppmR,'PQN');
-
+params = reportParams('exclude',{'X','ppmH'});
 XN=zeros(size(X));
 
 if nargin<2
