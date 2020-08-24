@@ -20,6 +20,9 @@ function XS=scale(X,method,offset)
 %
 % Outputs: 
 % XS              N x P matrix of scaled data
+%
+% MTJ edit 20200723: nans result from zero vals in several methods; replaced with
+% zeros in result for robustness
 
 switch method
     case 'mc'
@@ -107,4 +110,7 @@ switch method
         [XS,~,~]=glog_opt(X);
 
 end
+
+        XS(isnan(XS)) = 0; % MTJ edit 20200723: nans result from zero divisors, which happens frequently. 
+
 end

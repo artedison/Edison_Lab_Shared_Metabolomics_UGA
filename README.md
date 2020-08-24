@@ -1,6 +1,4 @@
-<p align="center">
-### EDISON LAB METABOLOMICS
-</p>
+# EDISON LAB METABOLOMICS
 
 This is the GitHub page for the Edison lab at UGA. A lot of this is still under development. New changes will be added along with comments in the near future. 
 If you are using all or part of the packages included here, please make sure you keep up to date with all the new updates being made to this site.
@@ -18,3 +16,5 @@ We now have a wiki that documents all the functions in the metabolomics toolbox.
 	* [tutorial](https://github.com/artedison/Edison_lab_UGA/tree/master/metabolomics_toolbox/tutorial)
 * [nmrPipe_macros](https://github.com/artedison/Edison_lab_UGA/tree/master/nmrPipe_macros)
 * [Biosorter_Analysis]
+
+If you have any questions, please add and issue! Thank you!
