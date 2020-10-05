@@ -1,4 +1,4 @@
-## RTExtract: Time-series NMR spectra quantification based on 3D surface ridge tracking 
+## [RTExtract: Time-series NMR spectra quantification based on 3D surface ridge tracking](https://github.com/artedison/Edison_Lab_Shared_Metabolomics_UGA/wiki/ridge-tracking)
 This provide function and workflow for compound quantification by ridge tracking in CIVM (Continuous in vivo Metabolism by NMR) data set. The method relate paper is currently under review.
 
 The folder ./ridgetracing_newmeth contains related functions and ./ridgetracing_paper_workflow contains related workflows.
