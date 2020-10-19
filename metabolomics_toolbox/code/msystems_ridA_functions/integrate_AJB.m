@@ -1,4 +1,4 @@
-function [integral] =integrate(X_in,Y_in,ppm_in,cursor_info,mut_ID_num)
+function [integral] =integrate_AJB(X_in,Y_in,ppm_in,cursor_info,mut_ID_num)
 %
 % Integrate the area under the NMR curve between designated right and left ppm boundaries for all X-value arrays in X_input, subtracting the baseline area (line draw between two boundries) from total area. 
 %
