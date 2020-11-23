@@ -11,7 +11,7 @@ function [] = highlightROIs(ROIs,height,varargin)
 edgeColor = 'none';
 color = 'r';
 transparency = 0.1;
-colorVect = color;      % in the absence of being set explicitly, this is a passthrough
+%colorVect = {color};      % in the absence of being set explicitly, this is a passthrough
 
     % Read in any options:
         if ~isempty(varargin)
@@ -60,6 +60,10 @@ colorVect = color;      % in the absence of being set explicitly, this is a pass
             if any(varInd)
                 stackParams.numberOfSpectra = varvals{varInd};
             end    
+        end
+        
+        if ~exist('colorVect','var')
+            colorVect = repmat({color},size(ROIs,2),1); % in the absence of being set explicitly above, this is a passthrough
         end
         
     %% Make the highlights
