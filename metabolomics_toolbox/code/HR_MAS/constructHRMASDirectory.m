@@ -1,5 +1,34 @@
 function constructHRMASDirectory(goaldir,datadir,sampledir)
-  %
+
+%% constructHRMASDirectory
+
+    % Author: Yue Wu and Michael T. Judge
+    % Version: 0.4
+    % Tested on Matlab Version R2020a
+    % Date: 2020
+    %
+    % Description:
+    %       plot_spec plots a set of chemical shift values on a set of 1D
+    %       spectra. It has added functionalities for display selection,
+    %       coloring and displaying labels.
+    %
+    % Input:
+    %       X: stack of 1D spectra
+    %       ppm: chemical shift vector
+    %       T: Table with the sample information.
+    %           5 columns with following exact headers:
+    %                Run_ID,Sample_ID,Sample_desc,Sample_grp,Yvec
+    %
+    % Output:
+    %       A plot of the 1D spectra.
+    %
+    % Log:
+    %       Ver 0.4: When plotting, does not use the black color anymore.
+    %
+    % Example run:
+    %
+
+    
   % filesys_cons(goaldir,datadir,sampledir)
   % this function construct the template folder for systematically arrange NMR data
   % It will copy the raw data to the folder structure

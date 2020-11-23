@@ -1,4 +1,7 @@
 function [output] = constructHRMASDirectory_2(destinationDir,newDataDir,templateDir)
+%%
+% Note: replaced by constructHRMASDirectory.m
+%
 % destinationDir = goaldir;
 % newDataDir = datadir;
 % templateDir = sampledir;
