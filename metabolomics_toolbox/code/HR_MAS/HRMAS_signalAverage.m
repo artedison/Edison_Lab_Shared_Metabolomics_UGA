@@ -7,23 +7,20 @@ function [matrixCollapsed,timesCollapsed,totalTime,resolution] = HRMAS_signalAve
 
 % Description:
 %       Takes time-series spectra (i.e. HR-MAS) and does a moving average 
-%       along the time dimension for improved signal-to noise. 
+%       along the time dimension for improved signal-to noise. Higher
+%       resolution than simply summing consecutive spectra as done in 
+%       HRMAS_collapseTimes. 
 %
 % Input: 
 %       matrix: spectroscopic data, where spectra = rows, ppms = columns
 %       times: timepoint vector (should be complete and linear)
 %       binsize: number of spectra to consider in the averaging
-%       model: type of smoothing to do
 %
 % Output: 
-%       linInds: linear indices defining the peak position across spectra,
-%           such that matrix(linInds) returns the ridge trajectory
-%       contours: the result of matrix(linInds), giving matrix intensity at
-%               each point in the window
-%       windowInds: linear indices defining the window across spectra,
-%           such that matrix(windowInds) returns the entire window
-%       ppmtester: useful for extracting the ppm positions from windowInds,
-%           accomplished by ppmtester(windowInds) 
+%       matrixCollapsed:    time-averaged matrix
+%       timesCollapsed:     time-averaged time vect
+%       totalTime:          experiment length
+%       resolution:         collapsed resolution
 %
 % Log:
 %
