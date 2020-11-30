@@ -27,6 +27,10 @@ function PLS=plsCV(Y,matrix,nfold,type,permutations)
 % PLS.loadings    Coefficients of each variable contributing to generation of the scores in each PLS component.
 % PLS.beta        PLS coefficients constructed from user selected optimal
 %                 number of PLS components
+%
+% Log: MTJ added parameter reporting 30NOV2020 (see lines 33, 124-126).
+
+p = reportParams('exclude',{'X','ppm'},'sizeLimit',3);
 
 if isempty(ver('stats'))==1
     error('This function requires the Matlab Statistics Toolbox')
@@ -117,6 +121,10 @@ PLS.q2=mean(q2(:,1:numcomponents));
 PLS.r2=mean(r2(:,1:numcomponents));
 PLS.variance=PCTVAR(1,1:numcomponents);
 
+%% MTJ added parameter reporting 30NOV2020
+    PLS.params = p;
+    PLS.params.userInput.components = numcomponents;
 
+end
 
 
