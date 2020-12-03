@@ -59,7 +59,8 @@ function [bucketStruct] = expandBucketBounds(bucketStruct,X,ppm,varargin)
                 breakPoints = zeros(size(betweenBuckets));
 
                 for i = 1:size(betweenBuckets,1)
-                    reg = fillRegions(betweenBuckets(i,:),ppm);
+                    pinds = fillRegions(matchPPMs(betweenBuckets(i,:),ppm));
+                    reg = pinds{:};
                         %figure,
                         %plot(ppm(reg),max(    X(:,reg),[],1));
                     [breakPoints(i,1),breakPoints(i,2)] = min(  max(    X(:,reg),[],1)   );
