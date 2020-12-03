@@ -71,8 +71,8 @@ function [buckets] = plotOptBucket_optResult(matrix,ppm,buckets,xlims,ylims,vara
     sn = buckets.optimization.optParams_OB.slacknessLevels;
     optResults = buckets.optimization.results;
     
-    matrixss = matrix(:,fillRegions(xlims,ppm));
-    ppmss = ppm(fillRegions(xlims,ppm));
+    matrixss = matrix(:,fillRegions(matchPPMs(xlims,ppm)));
+    ppmss = ppm(fillRegions(matchPPMs(xlims,ppm)));
 
     
 %%
