@@ -217,8 +217,10 @@ for s = 1:length(newDataDirs)
                     % Do all the navigation from here, passed as arguments:
                         cd([sampleDestinationDir,'/scripts'])
                         pathToRaw = ['../data/raw/',expTypes{t}];
+%                         pathToFID = ['../../nmrpipe/',expTypes{t},'/fid'];
+%                         pathToFT = ['../../nmrpipe/',expTypes{t},'/ft'];
                         pathToFID = ['../../nmrpipe/',expTypes{t},'/fid'];
-                        pathToFT = ['../../nmrpipe/',expTypes{t},'/ft'];
+                        pathToFT =  ['../../nmrpipe/',expTypes{t},'/ft' ];
                     % Build the command as a string and run it
                         cmd = [newDotcomFile,' "',pathToRaw,'" "',pathToFID,'" "',pathToFT,'"'];
                         system(cmd)

@@ -1,0 +1,137 @@
+function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
+%%
+% Note: replaced by constructHRMASDirectory.m
+
+% Next: don't overwrite existing files
+
+
+%% ***** Rework to conform to the sample(s).expType(t) format
+
+%% ***** Rework paths storage (all under paths)
+
+%%
+
+% Get Sample Names and Locations
+
+      newDataDirs=dir(newDataDir);
+      zipFiles = newDataDirs(contains({newDataDirs.name},{'.tar.gz','.zip'}));
+      newDataDirs = newDataDirs(~contains({newDataDirs.name},{'.','..','.DS_Store','.tar.gz'}));
+
+% For each sample:
+
+    sample = struct();
+    
+    for s = 1:length(newDataDirs)
+        
+    % Get the Sample Name
+    
+        sample(s).name = newDataDirs(s).name;     
+        
+    % Make the standard new directories and name them
+            
+            cd(destinationDir)
+                mkdir(sample(s).name)
+                
+                cd(sample(s).name)
+                    sample(s).paths.sample = pwd;
+            
+                    mkdir('data');mkdir('results');mkdir('scripts');
+                        sample(s).paths.data = [pwd,'/data'];
+                        sample(s).paths.results = [pwd,'/results'];
+                        sample(s).paths.scripts = [pwd,'/scripts'];
+                        
+                    cd('data');mkdir('raw');mkdir('processed');  
+                        sample(s).paths.raw = [pwd,'/raw'];
+                        sample(s).paths.processed = [pwd,'/processed'];
+                                cd('./processed');mkdir('nmrpipe');
+                                sample(s).paths.nmrpipe = [pwd,'/nmrpipe'];
+            sample(s).paths.originalData = [newDataDir,'/',sample(s).name];
+
+            cd(sample(s).paths.scripts)
+                    mkdir('nmrPipe_templates')
+                    cd('nmrPipe_templates')
+                        sample(s).paths.templates = pwd;
+                        mkdir('representative_spectrum')                        
+
+        % Sort the Experiments into Separate Directories by Experiment Type
+        
+        % Generate map: <expType types> - filenames
+        
+            % Get the acqus files (in the order they are read; NOT natural number sorted)
+                
+                sample(s).paramFiles.name = sample(s).name;
+                sample(s).paramFiles.fileData = readAcqusFiles(sample(s).paths.originalData);
+                
+        % Define the <expType types> 
+               % Find types of expTypes from that list
+                    sample(s).expTypes = unique({sample(s).paramFiles.fileData.experimentType});
+                    
+                    sample(s).dataFiles = dir(sample(s).paths.originalData);
+                        sample(s).dataFiles(ismember({sample(s).dataFiles.name},{'.','..','.DS_Store'})) = []; % remove unnecessary dirs                             
+
+        % Make a directory for each <expType type> within "raw"
+            cd(sample(s).paths.raw)
+                for t = 1:length(sample(s).expTypes)
+                    % Make the directory for this type
+                        sample(s).expType(t).type = sample(s).expTypes{t};
+                        mkdir(sample(s).expType(t).type)
+                        sample(s).expType(t).paths.raw = [pwd,'/',sample(s).expType(t).type];
+                end       
+                
+        % Make fid and ft directories for each <expType type> within "nmrpipe"
+                for t = 1:length(sample(s).expTypes)
+                    
+                    cd(sample(s).paths.nmrpipe)
+                        mkdir(sample(s).expType(t).type)
+                        cd(sample(s).expType(t).type)
+                            mkdir('fid'); sample(s).expType(t).paths.fid = [pwd,'/fid'];
+                            mkdir('ft');  sample(s).expType(t).paths.ft = [pwd,'/ft'];
+                            mkdir('proc_files'); sample(s).expType(t).paths.proc_files = [pwd,'/proc_files'];
+                            cd('proc_files');
+                                mkdir('fid_com'); sample(s).expType(t).paths.fid_com = [pwd,'/fid_com'];
+                                mkdir('ft_com');  sample(s).expType(t).paths.ft_com = [pwd,'/ft_com'];      
+                                
+                end  
+                cd(sample(s).paths.nmrpipe)
+                %sample(s).expType(t) = sample(s).expType; 
+                
+        % Copy (Move) the expTypes and zip/tar file for each <expType type>
+        
+                % Index the spectra based on their expType
+                
+                    [~,sample(s).exptKey] = ismember({sample(s).paramFiles.fileData.experimentType},sample(s).expTypes);
+        
+                for t = 1:length(sample(s).expTypes)
+                    
+                    % Find the file indices for this type
+                    
+                        inds = sample(s).exptKey == t;
+                        
+                    % Use system commands to move the files of that type
+                    
+                        cd(sample(s).paths.originalData); % move from original data location
+                        
+                            % use escape characters for dropbox path
+                                cmdLineExpdir = regexprep(sample(s).paths.sample,' ','\\ ');
+                                cmdLineExpdir = regexprep(cmdLineExpdir,'(','\\(');
+                                cmdLineExpdir = [regexprep(cmdLineExpdir,')','\\)'),'/data/raw/',sample(s).expType(t).type];
+                                
+                            %cmd = ['cp -R ', sprintf('%s',sample(s).dataFiles(inds).name), cmdLineExpdir]; % doesn't work/too slow
+                        
+                        cmd = ['mv ', sprintf('%s ',sample(s).dataFiles(inds).name), cmdLineExpdir];
+                        system(cmd);       
+                        
+                        sample(s).expType(t).files = sample(s).dataFiles(inds);
+                        
+                end          
+                
+                cd(sample(s).paths.raw) % Go back to the raw data dir 
+                
+    end
+
+    output.zipFiles = zipFiles;
+    output.sample = sample;
+    
+   
+end
+
