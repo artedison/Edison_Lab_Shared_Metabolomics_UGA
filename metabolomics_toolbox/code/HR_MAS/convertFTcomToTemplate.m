@@ -1,4 +1,4 @@
-function [ftcomTemplate] = convertFTcomToTemplate(ft_com_location,ft_com_file,repSpecName,studyInfo)
+function [ftcomTemplate] = convertFTcomToTemplate(ft_com_location,ft_com_file,repSpecName,specList)
 
 %% Make ft template
 
@@ -10,11 +10,11 @@ function [ftcomTemplate] = convertFTcomToTemplate(ft_com_location,ft_com_file,re
     
         % Generate relative filepaths
     
-           ftcom2fid = fullPath2RelativePath(studyInfo.paths(s).ft_com,...
-               studyInfo.paths(s).fid,...
+           ftcom2fid = fullPath2RelativePath(specList.paths.ft_com,...
+               specList.paths.fid,...
                'useEscapeCharacters');                       
-           ftcom2ft = fullPath2RelativePath(studyInfo.paths(s).ft_com,...
-               studyInfo.paths(s).ft,...
+           ftcom2ft = fullPath2RelativePath(specList.paths.ft_com,...
+               specList.paths.ft,...
                'useEscapeCharacters'); 
            
         % Make the replacements
@@ -28,7 +28,7 @@ function [ftcomTemplate] = convertFTcomToTemplate(ft_com_location,ft_com_file,re
                                 ['-out ',ftcom2ft,'/specNumber.ft -ov']);
                     
         % Write the file            
-            template_ftcom = [studyInfo.paths_sample(s).pipe_templates,'/template_ft.com'];
+            template_ftcom = [specList.paths.templates,'/template_ft.com'];
             f = fopen(template_ftcom,'w');
                 fprintf(f,'%s',fdata);
             fclose(f);        

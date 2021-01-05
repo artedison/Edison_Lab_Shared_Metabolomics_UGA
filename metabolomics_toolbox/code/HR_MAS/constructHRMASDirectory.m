@@ -1,9 +1,9 @@
-function constructHRMASDirectory(goaldir,datadir,sampledir)
+function constructHRMASDirectory(parentDest,datadir,sampledir)
 
 %% constructHRMASDirectory
 
     % Author: Yue Wu and Michael T. Judge
-    % Version: 0.4
+    % Version: 0.5
     % Tested on Matlab Version R2020a
     % Date: 2020
     %
@@ -43,6 +43,9 @@ function constructHRMASDirectory(goaldir,datadir,sampledir)
 %   - nmrpipe interfacing with .com file
 %   - 
 
+%% MJ edits DEC2020
+
+    
   
   %%
   
@@ -56,7 +59,7 @@ function constructHRMASDirectory(goaldir,datadir,sampledir)
       dirsname={dirs.name};
       dirsname=dirsname(~contains(dirsname,{'.','..','.DS_Store','.tar.gz'}));
       % What is the point of this?
-          existsname=dir(strcat(goaldir,'sampleGroup'));
+          existsname=dir(strcat(parentDest,'sampleGroup'));
           existsname={existsname.name};
           existsname=existsname(~ismember(existsname,{'.','..'}));
       dirsname=setdiff(dirsname,existsname);
@@ -64,35 +67,38 @@ function constructHRMASDirectory(goaldir,datadir,sampledir)
     % directory), then jump into the new directory
     % the function will move new folders that does not exist there.
 
-      cd(goaldir);
-      dirname = dirsname{:};
-      mkdir(dirname);
-      cd(['./',dirname]);
-    
+      cd(parentDest);
+%       dirname = dirsname{:};
+%       mkdir(dirname);
+%       cd(['./',dirname]);
+%%    
   % Copy them to the new location
       for i = 1:length(dirsname)
          matchind=regexp(dirsname{i},'^\.');
-         if length(matchind)==1
-             continue;
-         end
-        cd(strcat(goaldir,['/',dirsname{i}]))
-        % expname=strcat(subdatadirname,num2str(i));
-        expname=char(dirsname(i));
+         % Check to see if this is actually a data directory; 
+         % bail on cases where common non-directories are included
+             if length(matchind)==1
+                 continue;
+             end
+        
         % Make the individual experiment folder
-            %mkdir(expname);
-            %cd(expname);
-        % Create the directories
+            expname=char(dirsname(i));
+            mkdir(expname)
+            cd(strcat(parentDest,['/',expname]))
+                    
+        % Create the standard directories within that folder
             expdir=pwd();
             mkdir('data');mkdir('results');mkdir('scripts');
-            cd('./data');
-            mkdir('nmrpipe');mkdir('raw');
-            cd('./nmrpipe');
-            mkdir('fid');mkdir('ft');
-            cd('../raw'); 
+                cd('./data');mkdir('raw');mkdir('processed');              
+                        cd('./processed');mkdir('nmrpipe');
+                            cd('./nmrpipe');mkdir('fid');mkdir('ft');mkdir('proc_files');
+                                cd('proc_files');mkdir('fid_com');mkdir('ft_com');
+            
         % Copy the data into the appropriate directory
             % Check to see if these are different data types. If so, make two
             % directories and set a flag.
                 % Get the acqus files (in the order they are read; NOT natural number sorted)
+                    cd([expdir,'/data/raw']);
                     paramFiles = dir(cell2mat(strcat(datadir,dirsname(i),'/**/*acqus')));
                 % Open each one and get its experiment type
                     for pfile = 1:length(paramFiles)

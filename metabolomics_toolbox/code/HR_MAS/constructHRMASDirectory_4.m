@@ -10,13 +10,24 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
 %% ***** Rework paths storage (all under paths)
 
 %%
+% Make sure destination exists
+
+    if ~exist(destinationDir,'dir')
+        mkdir(destinationDir);
+    end
 
 % Get Sample Names and Locations
 
       newDataDirs=dir(newDataDir);
       zipFiles = newDataDirs(contains({newDataDirs.name},{'.tar.gz','.zip'}));
       newDataDirs = newDataDirs(~contains({newDataDirs.name},{'.','..','.DS_Store','.tar.gz'}));
-
+      
+% Check to make sure the newDataDir isn't empty
+      if isempty(newDataDirs)
+          warning(['The data input directory, ',newDataDir,', is empty. Please copy your datasets to there and re-run. Aborting constructHRMASDirectory_4().'])
+          return
+      end
+      
 % For each sample:
 
     sample = struct();
@@ -47,13 +58,14 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
                                 sample(s).paths.nmrpipe = [pwd,'/nmrpipe'];
             sample(s).paths.originalData = [newDataDir,'/',sample(s).name];
 
-            cd(sample(s).paths.scripts)
-                    mkdir('nmrPipe_templates')
-                    cd('nmrPipe_templates')
-                        sample(s).paths.templates = pwd;
-                        mkdir('representative_spectrum')                        
+%             cd(sample(s).paths.scripts)
+%                     mkdir('nmrPipe_templates')
+%                     cd('nmrPipe_templates')
+%                         sample(s).paths.templates = pwd;
+%                         mkdir('representative_spectrum')                        
 
-        % Sort the Experiments into Separate Directories by Experiment Type
+    % Sort the Experiments into Separate Directories by Experiment Type
+        
         
         % Generate map: <expType types> - filenames
         
@@ -68,7 +80,59 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
                     
                     sample(s).dataFiles = dir(sample(s).paths.originalData);
                         sample(s).dataFiles(ismember({sample(s).dataFiles.name},{'.','..','.DS_Store'})) = []; % remove unnecessary dirs                             
+                        
+        % Before doing anything else, check to make sure the data exist:
+            
+            % Index for empty files
+                neededFiles = {'acqus','fid','pulseprogram','pdata'};
+                neededpdata = {'title'}; % 1i, 1r could be added. sometimes these don't make it in
+                neededAll = [neededFiles,neededpdata];
+                sample(s).requiredFiles = neededAll;
+                checklist = zeros(length(sample(s).dataFiles),length(neededAll));
+                
+                for d = 1:length(sample(s).dataFiles)
+                    sample(s).dataFiles(d).fullname = [sample(s).dataFiles(d).folder,'/',sample(s).dataFiles(d).name];
+                    expFiles = dir(sample(s).dataFiles(d).fullname);
+                    pdataFiles = dir([sample(s).dataFiles(d).fullname,'/pdata/*/']);
+%                                         expFiles = dir(fullfile(sample(s).dataFiles(d).fullname,'**/*.*'));
+                    checklist(d,:) = [ismember(neededFiles,{expFiles.name}),...
+                                             ismember(neededpdata,{pdataFiles.name}),...
+                                             ];
+                    sample(s).dataFiles(d).hasData = all(checklist(d,:));
+                    sample(s).dataFiles(d).missingData = neededAll(   ~checklist(d,:)   );
 
+                end
+            % Store info about missing data
+                sample(s).filesMissingData.paramFiles = sample(s).paramFiles.fileData(~[sample(s).dataFiles.hasData]);
+                sample(s).filesMissingData.dataFiles = sample(s).dataFiles(~[sample(s).dataFiles.hasData]);
+                sample(s).filesMissingData.missing = {sample(s).dataFiles(~[sample(s).dataFiles.hasData]).missingData}';
+                
+            % Clear the paramFiles and dataFiles lines for empty data files
+                sample(s).paramFiles.fileData(~[sample(s).dataFiles.hasData]) = [];
+                
+                sample(s).dataFiles(~[sample(s).dataFiles.hasData]) = [];
+
+            
+            % Alert the user that datapoint(s) will be missing, if
+            % necessary
+            if ~isempty(studyInfo.sample(d).filesMissingData.missing)
+                warning(['Some files in   ',sample(s).name,'   did not contain necessary data. See info in studyInfo.sample(',num2str(s),').filesMissingData.'])
+            end
+            % Clear the fields without data
+            
+                    sample(s).dataFiles = rmfield(sample(s).dataFiles,'missingData');
+                    sample(s).dataFiles = rmfield(sample(s).dataFiles,'hasData');
+
+        % Each expt needs its own templates
+            cd(sample(s).paths.scripts)
+                for t = 1:length(sample(s).expTypes)
+                    sample(s).expType(t).paths.scripts = pwd;
+                        mkdir(sample(s).expType(t).type), cd(sample(s).expType(t).type)   % MTJ edit 21DEC2020 to allow different processing dir for each expt.
+                        mkdir('nmrPipe_templates')
+                        cd('nmrPipe_templates')
+                            sample(s).expType(t).paths.templates = pwd;
+                            mkdir('representative_spectrum') % no need to add
+                end
         % Make a directory for each <expType type> within "raw"
             cd(sample(s).paths.raw)
                 for t = 1:length(sample(s).expTypes)
@@ -115,23 +179,25 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
                                 cmdLineExpdir = regexprep(sample(s).paths.sample,' ','\\ ');
                                 cmdLineExpdir = regexprep(cmdLineExpdir,'(','\\(');
                                 cmdLineExpdir = [regexprep(cmdLineExpdir,')','\\)'),'/data/raw/',sample(s).expType(t).type];
-                                
                             %cmd = ['cp -R ', sprintf('%s',sample(s).dataFiles(inds).name), cmdLineExpdir]; % doesn't work/too slow
-                        
+                                                            
                         cmd = ['mv ', sprintf('%s ',sample(s).dataFiles(inds).name), cmdLineExpdir];
-                        system(cmd);       
+                        system(cmd);
                         
                         sample(s).expType(t).files = sample(s).dataFiles(inds);
                         
-                end          
+                end  
                 
+                % Clean up old dir
+                    cd([sample(s).paths.originalData]),cd ..
+                    system(['rm -r ',sample(s).name])
+                    
                 cd(sample(s).paths.raw) % Go back to the raw data dir 
-                
     end
 
     output.zipFiles = zipFiles;
     output.sample = sample;
-    
+    cd(sample(1).paths.sample),cd ..
    
 end
 

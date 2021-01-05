@@ -56,7 +56,7 @@ function fileInfo = getfidDotComFile(varargin)
 
     % Modify the fid.com file            
         fidData = fileread('fid.com');
-        fidData = regexprep(fidData,'sleep 5','sleep 0.01');
+        fidData = regexprep(fidData,'sleep 5','sleep 0.001');
         
         % Write the new file to new scripts directory
             

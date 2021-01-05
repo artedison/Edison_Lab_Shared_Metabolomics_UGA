@@ -1,35 +1,41 @@
-function [output] = makeFIDcomFiles(studyInfo,fidTemplate)
+function [output] = makeFIDcomFiles(specList,fidTemplate)
 %%
 
     
      
 %%        
     
-
     % (We'll need all of the files; no optimization takes place
     % until after the next step anyways)
 
-    fnames = {studyInfo.sample(s).expType(t).files.name};
+    fnames = {specList.files.name};
 
-            fidcom2raw = fullPath2RelativePath(studyInfo.paths(s).fid_com,...
-                       [studyInfo.paths(s).raw,'/',studyInfo.expTypes{s,t}],...
+            fidcom2raw = fullPath2RelativePath(specList.paths.fid_com,...
+                       specList.paths.raw,...
                        'useEscapeCharacters');
 
-            fidcom2fid = fullPath2RelativePath(studyInfo.paths(s).fid_com,...
-                       studyInfo.paths(s).fid,...
+            fidcom2fid = fullPath2RelativePath(specList.paths.fid_com,...
+                       specList.paths.fid,...
                        'useEscapeCharacters');
 
-    cd(studyInfo.paths(s).fid_com)
-
+    cd(specList.paths.fid_com)
+    
     for f = 1:length(fnames)
-        fidcomname = make_fidDotCom_customPaths(fileInfo.data,...
+        fidcomname = make_fidDotCom_customPaths(fidTemplate.data,...
                                                             fidcom2raw,...
                                                             fidcom2fid,...
-                                                            studyInfo.paths(s).fid_com,...
+                                                            specList.paths.fid_com,...
                                                             fnames{f});
-        system(fidcomname);
     end
             
+    %% Run the .com files
+            temp2fidcom = fullPath2RelativePath(specList.paths.templates,...
+                       specList.paths.fid_com,...
+                       'useEscapeCharacters');
+        
+        cd(specList.paths.templates)
+        system(['runFIDfiles.com ',temp2fidcom]);
+    
 %% Outputs
 
     output.commands = fidcomname;
