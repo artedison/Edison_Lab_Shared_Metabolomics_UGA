@@ -115,9 +115,10 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
             
             % Alert the user that datapoint(s) will be missing, if
             % necessary
-            if ~isempty(studyInfo.sample(d).filesMissingData.missing)
-                warning(['Some files in   ',sample(s).name,'   did not contain necessary data. See info in studyInfo.sample(',num2str(s),').filesMissingData.'])
-            end
+                if ~isempty(sample(s).filesMissingData.missing)
+                    warning(['Some files in   ',sample(s).name,'   did not contain necessary data. See info in studyInfo.sample(',num2str(s),').filesMissingData.'])
+                end
+
             % Clear the fields without data
             
                     sample(s).dataFiles = rmfield(sample(s).dataFiles,'missingData');
@@ -126,18 +127,19 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
         % Each expt needs its own templates
             cd(sample(s).paths.scripts)
                 for t = 1:length(sample(s).expTypes)
+                    sample(s).expType(t).type = sample(s).expTypes{t};
                     sample(s).expType(t).paths.scripts = pwd;
                         mkdir(sample(s).expType(t).type), cd(sample(s).expType(t).type)   % MTJ edit 21DEC2020 to allow different processing dir for each expt.
                         mkdir('nmrPipe_templates')
                         cd('nmrPipe_templates')
                             sample(s).expType(t).paths.templates = pwd;
-                            mkdir('representative_spectrum') % no need to add
+                            mkdir('representative_spectrum') % no need to add to paths list
                 end
         % Make a directory for each <expType type> within "raw"
             cd(sample(s).paths.raw)
                 for t = 1:length(sample(s).expTypes)
                     % Make the directory for this type
-                        sample(s).expType(t).type = sample(s).expTypes{t};
+                        
                         mkdir(sample(s).expType(t).type)
                         sample(s).expType(t).paths.raw = [pwd,'/',sample(s).expType(t).type];
                 end       

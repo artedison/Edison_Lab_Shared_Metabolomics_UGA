@@ -45,7 +45,7 @@ function [output] = makeAndRunFT_comFiles(genFilename,runFilename,specList,varar
                     
             commands = regexp(fdata,   ['(?<=nmrPipe -in[\s*]\S*\s*\\)','.+',...                                          
                         '(?=','[ *]-out\s*\S*\s*-ov',')'],'match');             
-            commands = regexprep(commands{:},'[ \f\t\v]*$',''); % remove trailing whitespace except for newlines/returns
+            commandsStr = regexprep(commands{:},'[ \f\t\v]*$',''); % remove trailing whitespace except for newlines/returns
                     
         % Build and write a new file 
                        
@@ -66,7 +66,7 @@ function [output] = makeAndRunFT_comFiles(genFilename,runFilename,specList,varar
                 fprintf(f,'%s\n','cd $1');
                 fprintf(f,'%s\n','');
                 fprintf(f,'%s\n','ls | while read fname ; do');
-                fprintf(f,'%s\n',['nmrPipe -in ./$fname \',commands,'| nmrPipe -out $2/${fname%.*}.ft -ov -verb']);
+                fprintf(f,'%s\n',['nmrPipe -in ./$fname \',commandsStr,'| nmrPipe -out $2/${fname%.*}.ft -ov -verb']);
                 fprintf(f,'%s\n','done');
                 fprintf(f,'%s\n','');
 %                 fprintf(f,'%s\n','# Remove any empty ft files');

@@ -237,9 +237,9 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
             bucketStruct.refinedBuckets.refinedBuckets = currentBuckets;
             bucketStruct.refinedBuckets.removedBuckets = bins(~ismember(bins,currentBuckets,'rows'),:);
             bucketStruct.refinedBuckets.addedBuckets = currentBuckets(~ismember(currentBuckets,bins,'rows'),:);
-
             
-         % Save 
+            
+        % Save 
          
             fig = gca;
             saveas(fig,bucketStruct.refinedBuckets.figure)

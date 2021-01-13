@@ -1,4 +1,4 @@
-function [] = colorBuckets(X,ppm,buckets,bucketColors,titleStr,colorbarStr,transparency,lineColors,lineLabels)
+function [ax] = colorBuckets(X,ppm,buckets,bucketColors,titleStr,colorbarStr,transparency,lineColors,lineLabels)
 %% colorBuckets
 
 % Author: MTJ
@@ -64,6 +64,7 @@ function [] = colorBuckets(X,ppm,buckets,bucketColors,titleStr,colorbarStr,trans
             for i = 1:size(lineColors,1)
                 plot(ppm,X(i,:),'Color',lineColors(i,:))
             end
+            ax = gca;
             set(gca,'XDir','reverse')
             title({titleStr})
             xlabel('Chemical Shift (ppm)')

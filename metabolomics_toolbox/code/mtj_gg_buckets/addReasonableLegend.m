@@ -84,7 +84,7 @@ end
     
     hold on
     for i=1:size(colors,1)
-        L(i)= plot ( [NaN,NaN], 'color', colors(i,:), 'DisplayName',string(labels(i)),'LineWidth',lineWidths(i) );%creates a fake plot of nan data to get the unique values/colors for the plot
+        L(i)= plot ( [NaN,NaN], 'color', colors(i,:), 'DisplayName',string(labels(i)),'LineWidth',lineWidths(i));%creates a fake plot of nan data to get the unique values/colors for the plot
     end
     
     if exist('addBox','var')
@@ -94,5 +94,6 @@ end
     end
     
     lgd.FontSize = textSize;
-   
+    set(lgd, 'Interpreter', 'none')
+    
 end

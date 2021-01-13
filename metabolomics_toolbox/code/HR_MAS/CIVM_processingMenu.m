@@ -2,25 +2,26 @@ function [response,doExit,doCancel] = CIVM_processingMenu()
 
     % Present the user with a menu of options
 
-        response = menu('Pick one of the following options:"',...
-                    'Show data',...
-                    'Phase Spectra',...
-                    'Auto Reference',...
-                    'Baseline Arguments',...
-                    'Apply Processing to Dataset',...
-                    'Reset phasing',...
-                    'SAVE AND EXIT',...
+        response = menu('Pick one of the following options:"',... % 
+                    'Show data',...                               % 1
+                    'Phase Spectra',...                           % 2
+                    'Auto Reference',...                          % 3
+                    'Baseline Arguments',...                      % 4
+                    'Apply Processing to Dataset',...             % 5
+                    'Reset phasing',...                           % 6
+                    'Restart from ft.com template upload',...     % 7
+                    'SAVE AND EXIT',...                           % 8
                     '',...
-                    'Cancel (do not save)');
+                    'Cancel (do not save)');                      % 10
                 
     % Inform on Save and exit options
     
         doExit = false;
         doCancel = false; 
         
-        if response == 7
+        if response == 8
             doExit = true;
-        elseif response == 9
+        elseif response == 10
             doCancel = true;
         end
 end
