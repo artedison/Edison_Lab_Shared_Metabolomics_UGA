@@ -26,7 +26,7 @@ function [matrixCollapsed,timesCollapsed,totalTime,resolution] = HRMAS_signalAve
 %
 % Example run: 
 
-    matrixCollapsed = movmean(matrix,binsize,1);
+    matrixCollapsed = movmean(matrix,binsize,1,'Endpoints','shrink');
     timesCollapsed = times;
     
     totalTime = num2str(round(times(end)-times(1),1));

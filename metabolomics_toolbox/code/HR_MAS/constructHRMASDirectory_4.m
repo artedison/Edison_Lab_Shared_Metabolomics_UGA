@@ -195,11 +195,13 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
                     system(['rm -r ',sample(s).name])
                     
                 cd(sample(s).paths.raw) % Go back to the raw data dir 
+                
+            fprintf(['\n\tSample ''',sample(s).name,''' constructed successfully...\n\n'])
     end
-
+    
     output.zipFiles = zipFiles;
     output.sample = sample;
     cd(sample(1).paths.sample),cd ..
-   
+    fprintf('\n\tconstructHRMASDirectory_4() completed. Revelant data are found in the output struct. Run processCIVMdata() next.\n\n')
 end
 

@@ -7,6 +7,8 @@ if contains(varargin,'reset','IgnoreCase',true)
     reset = true;
 else
     reset = false;
+    
+    % Get the phase corrections
         instructions = 'Phase Corrections entry';
         dims = [1,150];
         opts.Resize = 'on';
@@ -16,7 +18,6 @@ else
             if isempty(corrs)
                 return
             end    
-        % Modify the phase values in the template file
         % Convert corrs to doubles
             corrs = str2double(corrs);      
 end

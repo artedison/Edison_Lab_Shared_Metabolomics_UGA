@@ -35,36 +35,42 @@
 %load([sampleName,'.mat')
 
 %% STEP 1: NAVIGATE TO THE FOLDER IN WHICH THIS FILE SITS
-    % Also, add the Edison Lab Metabolomics Toolbox:
+    % Also, add the Edison Lab Metabolomics Toolbox, e.g.:
 %     addpath(genpath('/Users/mjudge/Edison_lab_UGA'))
 
 %%  
-    cd('mFileLocation')
+
     expName.sampleName = 'sampleNameGoesHere';
     
-    [~,~,thisFile] = findCurrentFile();
+    [~,filepath,thisFile] = findCurrentFile();
+        cd(filepath)
+        
         
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
 %% PROCESSING
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            
+
     %% Load the Processed data from ft files
         % Load all the ft files as spectra
             cd ftDataPath_relative
                 loadallft();
             expName.spectra = spectra;
+            cd(filepath)
             
         % Get timepoints from acqu files
             expName.dataDir = {spectra.Title}';
             cd rawDataPath_relative
                     [expName.startTimes,expName.dateTimes] = getRunTimes_NMR(expName.dataDir);
                     expName.timePoints = expName.startTimes - expName.startTimes(1); % these are in hours
-            cd(project_directory) 
-         
+                    
+            cd(filepath)
+                    
 %         figure, plot(expName.ppm,expName.X)
 %             set(gca,'XDir','reverse')
 %             xlabel('Chemical Shift (ppm)')
@@ -73,14 +79,13 @@
     %% Referencing (if you have a calibration peak) 
         
         expName.spectraRef = expName.spectra; % in case you don't want to reference
-        % pyruvate @ 2.364ppm
-        % peak @ 1.6ppm
-        expName.ref_threshold = .009;
-        expName.ref_offset = 1.6;
-        expName.spectraRef = ref_spectra(expName.spectra,expName.ref_threshold,expName.ref_offset);
-        %expName.spectraRef = ref_spectra(expName.spectra,expName.ref_threshold,expName.ref_offset,'testThreshold');
-        close(gcf)
-        expName.spectraRef = expName.spectra;
+            expName.ref_threshold = .009;
+            expName.ref_offset = 1.6;
+            expName.spectraRef = ref_spectra(expName.spectra,expName.ref_threshold);
+            %expName.spectraRef = ref_spectra(expName.spectra,expName.ref_threshold,expName.ref_offset);
+            %expName.spectraRef = ref_spectra(expName.spectra,expName.ref_threshold,expName.ref_offset,'testThreshold');
+            close(gcf)
+            expName.spectraRef = expName.spectra;
         
     %% Make 2D matrix of 1D spectra using sorted spectra
 
@@ -94,9 +99,9 @@
     %     times_13c1d = times_13c1d(1:cutInd);
 
     %% Remove ends, water region
-    
-        expName.X = remove_region(expName.X,expName.ppm,4.7,5);
-        [expName.X,expName.ppm] = remove_ends(expName.X,expName.ppm,-0.5,10);
+        
+%         expName.X = remove_region(expName.X,expName.ppm,4.7,5);
+%         [expName.X,expName.ppm] = remove_ends(expName.X,expName.ppm,-0.5,10);
         
 %%        
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -112,13 +117,17 @@
 % 
 %         [expName.XN,expName.ROInorm,~] = normalize_HRMASdata(matrix,currentppm,expName.NormMethod,expName.ROInorm);
 
-     %% Collapse spectra        
+     %% Collapse spectra   
+     
+        expName.binsize = 5;    
+        
+        
         if isfield(expName,'XN')
             matrix = expName.XN;
         else
             matrix = expName.X;
         end   
-        expName.binsize = 10;
+
         %[Xcollapsed,timesCollapsed,totalTime,resolution] = HRMAS_collapseTimes(matrix,timePoints,binsize);
         [expName.Xcollapsed,expName.timesCollapsed,expName.totalTime,expName.resolution] = HRMAS_signalAverage(matrix,expName.timePoints,expName.binsize);
     

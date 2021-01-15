@@ -322,10 +322,10 @@ function [updatedStudyInfo] = processCIVMdata(studyInfo,destinationDir,newDataDi
                     % Reset phasing
                     case 6
 
-                            % Update phasing
-
-                                updatePhasing_proc_civm(specList.paths.templates ,'proc_civm.com',repSpecName,'reset');
-
+%                             % Update phasing
+% 
+%                                 updatePhasing_proc_civm(specList.paths.templates ,'proc_civm.com',repSpecName,'reset');
+% 
                             % Produce the ft.com template
 
                                 specList.ftComTemplate(end+1) = convertFTcomToTemplate(['./representative_spectrum/',repSpecName],'_ft.com',repSpecName,specList);
@@ -340,7 +340,7 @@ function [updatedStudyInfo] = processCIVMdata(studyInfo,destinationDir,newDataDi
                       % Get ftcomtemplate
                           [~,~,~,cancel] = ft_comTemplate(specList,repSpecName);                  
                           if cancel
-                              fprintf('processCIVMdata() was cancelled prematurely')
+                              fprintf('\n\tprocessCIVMdata() was cancelled prematurely\n\n')
                               return
                           end
 
