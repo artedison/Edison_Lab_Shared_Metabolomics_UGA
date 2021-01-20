@@ -322,17 +322,17 @@ function [updatedStudyInfo] = processCIVMdata(studyInfo,destinationDir,newDataDi
                     % Reset phasing
                     case 6
 
-%                             % Update phasing
+% %                             % Update phasing
+% % 
+% %                                 updatePhasing_proc_civm(specList.paths.templates ,'proc_civm.com',repSpecName,'reset');
+% % 
+%                             % Produce the ft.com template
 % 
-%                                 updatePhasing_proc_civm(specList.paths.templates ,'proc_civm.com',repSpecName,'reset');
+%                                 specList.ftComTemplate(end+1) = convertFTcomToTemplate(['./representative_spectrum/',repSpecName],'_ft.com',repSpecName,specList);
 % 
-                            % Produce the ft.com template
-
-                                specList.ftComTemplate(end+1) = convertFTcomToTemplate(['./representative_spectrum/',repSpecName],'_ft.com',repSpecName,specList);
-
-                            %  Reprocess the spectra
-
-                                output(end+1) = makeAndRunFT_comFiles('generateFTcoms.sh','runFTfiles.com',specList,'batchMode');
+%                             %  Reprocess the spectra
+% 
+%                                 output(end+1) = makeAndRunFT_comFiles('generateFTcoms.sh','runFTfiles.com',specList,'batchMode');
                     
                     % Try different ft.com template
                     case 7

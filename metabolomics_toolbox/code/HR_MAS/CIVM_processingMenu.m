@@ -5,10 +5,10 @@ function [response,doExit,doCancel] = CIVM_processingMenu()
         response = menu('Pick one of the following options:"',... % 
                     'Show data',...                               % 1
                     'Phase Spectra',...                           % 2
-                    'Auto Reference',...                          % 3
-                    'Baseline Arguments',...                      % 4
+                    '',...                          % 3
+                    '',...                      % 4
                     'Apply Processing to Dataset',...             % 5
-                    'Reset phasing',...                           % 6
+                    'Reset phasing (in development)',...                           % 6
                     'Restart from ft.com template upload',...     % 7
                     'SAVE AND EXIT',...                           % 8
                     '',...
