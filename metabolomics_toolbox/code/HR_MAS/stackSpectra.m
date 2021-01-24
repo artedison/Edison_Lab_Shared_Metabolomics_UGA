@@ -111,7 +111,7 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
         for i = 1:length(ar) % *** must update them in the correct order so they lay on top of each other correctly
             ar(i).EdgeColor = colors.rgb(i,:); % colors.rgb was already flipped to match matrix
         end
-        addReasonableLegend(table2cell(colors.categories(:,1)),colors.colorList)    % these were not flipped
+        %addReasonableLegend(table2cell(colors.categories(:,1)),colors.colorList)    % these were not flipped
     end
     
 %     set(gca,'xlim',[-3.21862204651590,-3.04023643628845])
@@ -127,8 +127,9 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
         % coords)
         
         %figure,plotr(currentppm,adjMat)
-            bufferPoints = round(0.002*length(currentppm));
-
+            %bufferPoints = round(0.002*length(currentppm));
+            bufferSpace = (shiftedppms(1,1) - shiftedppms(end,1) ) *1.1;
+            
         % Calculate the endpoints of the ppm vect (beginning and end x coords)
 %             adjPPM(:,1) = currentppm(1+bufferPoints) + (1:size(matrix,1)) * horzshift;
 %             adjPPM(:,2) = currentppm(end-bufferPoints) + (1:size(matrix,1)) * horzshift;
@@ -138,32 +139,37 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
             % R pentagon: 
             
                 % X coords
-                    trap1(1,1) = shiftedppms(1,1+bufferPoints);     % upper middle
-                    trap1(2,1) = shiftedppms(end,1+bufferPoints);	% upper left      
-                    trap1(3,1) = shiftedppms(end,1+bufferPoints);   % lower left       
-                    trap1(4,1) = shiftedppms(1,1) - horzshift * 4;      % lower right
-                    trap1(5,1) = shiftedppms(1,1) - horzshift * 4;      % upper right 
-                    trap1(6,1) = shiftedppms(1,1) - horzshift * 4;  % dummy
-                    
+                    trap1(1,1) = shiftedppms(1,1) + bufferSpace;     % upper middle
+                    trap1(2,1) = shiftedppms(1,1) - bufferSpace;	% upper left      
+                    trap1(3,1) = shiftedppms(end,1) - bufferSpace;   % lower left       
+                    trap1(4,1) = shiftedppms(end,1) - bufferSpace;      % lower right
+                    trap1(5,1) = shiftedppms(end,1) + bufferSpace;      % upper right 
+                    trap1(6,1) = shiftedppms(end,1) + bufferSpace;  % dummy
+                     
                 % Y coords
                     trap1(1,2) = shiftedmat(1,1)+vertshift*2;       % upper middle
-                    trap1(2,2) = shiftedmat(end,1)-vertshift*2;     % upper left
-                    trap1(3,2) = baseline-vertshift;                % lower left
+                    trap1(2,2) = shiftedmat(1,1)+vertshift*2;     % upper left
+                    trap1(3,2) = shiftedmat(end,1)-vertshift*2;                % lower left
                     trap1(4,2) = baseline-vertshift;                % lower right
-                    trap1(5,2) = shiftedmat(1,1)+vertshift*2;       % upper right
-                    trap1(6,2) = shiftedmat(1,1)+vertshift*2;       % dummy
+                    trap1(5,2) = baseline-vertshift;       % upper right
+                    trap1(6,2) = shiftedmat(end,1)-vertshift*2;       % dummy
                     
                 pgonR = fill(trap1(:,1),trap1(:,2),'w','EdgeColor','w','HandleVisibility','off');
+%                 for p = 1:size(trap1,1)
+%                     p = 6
+%                     plot(trap1(p,1), trap1(p,2),'*','MarkerSize',10,'HandleVisibility','off');
+%                 end                
+                
 %%
             % L pentagon: 
             
                 % X coords
-                    trap2(1,1) = shiftedppms(1,end) + horzshift * 4;
-                    trap2(2,1) = shiftedppms(1,end-bufferPoints);	% upper middle      
-                    trap2(3,1) = shiftedppms(end,end-bufferPoints);   % lower left       
-                    trap2(4,1) = shiftedppms(end,end-bufferPoints);   % lower left       
-                    trap2(5,1) = shiftedppms(end,end) + horzshift * 4;      % lower right
-                    trap2(6,1) = shiftedppms(end,end) + horzshift * 4;      % upper right 
+                    trap2(1,1) = shiftedppms(1,end) + bufferSpace;
+                    trap2(2,1) = shiftedppms(1,end) - bufferSpace;	% upper middle      
+                    trap2(3,1) = shiftedppms(end,end) - bufferSpace;   % lower left       
+                    trap2(4,1) = shiftedppms(end,end) - bufferSpace;   % lower left       
+                    trap2(5,1) = shiftedppms(end,end) + bufferSpace;      % lower right
+                    trap2(6,1) = shiftedppms(end,end) + bufferSpace;      % upper right 
 
                 % Y coords
 %                     trap2(1,2) = shiftedmat(1,end)+vertshift*2;       % upper right
@@ -183,7 +189,8 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
 
 % Add the rectangle at the bottom
                 % x 
-                xl = get(gca,'xlim');
+                
+                    xl = get(gca,'xlim'); % matlab plots farther than I would, so we'll just cover the whole axis
                     rec(1,1) = xl(2);
                     rec(2,1) = xl(1);
                     rec(3,1) = rec(2,1);
