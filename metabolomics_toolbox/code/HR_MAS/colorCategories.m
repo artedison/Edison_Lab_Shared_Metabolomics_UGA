@@ -25,7 +25,7 @@ function [colors] = colorCategories(colorBy)
                     colorBy = table(colorBy);
                 end
             
-            [colors.categories,~, colors.inds_cat] = unique(colorBy,'rows');
+            [colors.categories,~, colors.inds_cat] = unique(colorBy,'rows','stable');
             colors.colorList = distinguishable_colors(height(colors.categories),[1 1 1; 0 0 0]);
             colors.rgb = colors.colorList(colors.inds_cat,:);
             
