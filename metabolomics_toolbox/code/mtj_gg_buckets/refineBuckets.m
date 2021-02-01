@@ -1,4 +1,4 @@
-function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)   
+function [buckets,refinedBounds] = refineBuckets(matrix,ppm,buckets,varargin)   
 %% refineBuckets() 
 %
 %   Author: MTJ
@@ -50,7 +50,7 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
 % 
 % Outputs:
 %
-%         - bucketStruct		(adds refineBuckets to the optOB_out struct)
+%         - buckets         struct() or 2 x n matrix of bounds (adds refineBuckets to the optOB_out struct)
 %             - refineBuckets contains:
 %                 - originalBuckets: 	original bins (ppm bounds) provided (derived from optOB_out.results.binsWithPeaks)
 %                 - refinedBuckets: 	updated bucket list (ppm bounds) after refining
@@ -59,7 +59,8 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
 %                 - figure:             name of the output figure (saved automatically in cd())
 %             - bins_refined_ figure:   the figure is saved. You can use a function
 %                                       like gatherROIsFromFigures() to get features from the figure
-% 
+%
+%         - refinedBounds       simple output (no bucketStruct)
 % 
 % MTJ 2020
 
@@ -69,6 +70,7 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
     
         expandedBuckets = false;    % default is optOB_out.results.binsWithPeaks
         previousFigure = false;     % default is optOB_out.results will be used as bucket source
+        saveFig = true;
         %figID = [];                 % default is gcf will be used
     
     % Set optional params to true if flag is provided
@@ -80,6 +82,10 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
 
             if ismember('previousFigure',varargin)                          
                 previousFigure = true;
+            end
+            
+            if ismember('tempFigure',varargin)                          
+                saveFig = false;
             end
             
             if ismember('figID',varargin)                          
@@ -94,7 +100,7 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
     
     % Record the params
     
-        bucketStruct.refinedBuckets.params = reportParams('exclude',{'optOB_out','matrix','ppm','varargin'});
+        p = reportParams('exclude',{'optOB_out','matrix','ppm','varargin'});
         
     %% Get the current Buckets
 
@@ -114,12 +120,25 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
             
             % Decide where to get the bins within optOB_out.results
             
-            if expandedBuckets
-                currentBuckets = bucketStruct.optimized.expandedBuckets;
-            else
-                currentBuckets = bucketStruct.results(ind).binsWithPeaks;
-            end
+            datType = class(buckets);
             
+            if strcmp(datType,'struct')
+                if expandedBuckets
+                    currentBuckets = buckets.optimized.expandedBuckets;
+                else
+                    currentBuckets = buckets.results(ind).binsWithPeaks;
+                end
+                
+            else
+                if strcmp(datType,'double')
+                    currentBuckets = buckets;
+                    buckets = struct(); % set as empty struct to avoid issues later (some data will be stored in there as a struct)
+                    saveFig = false;
+
+                else
+                    error('Input ''buckets'' must be a struct (in opt_bucket pipeline) or a n x 2 array of doubles where buckets(n,1)<buckets(n,2) (if simply using bucket bounds)')
+                end
+            end
             % Make the figure
             
             
@@ -127,7 +146,6 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
         end
 
         %selectLines('noPause'); % enable highlighting
-        
         
         bins = currentBuckets;
             
@@ -207,7 +225,7 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
                     case 'q'
                         
                         % Quit/Exit the interactive part of the program
-                            bucketStruct.refinedBuckets.figure = ['Buckets_refined_',num2str(now),'.fig'];
+                            buckets.refinedBuckets.figure = ['Buckets_refined_',num2str(now),'.fig'];
 
                             title('Refined Buckets - Complete. Please wait; saving and figure in current directory...')
 
@@ -227,31 +245,36 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
 
         
     %% Clean up results, save the figure, 
+    
+        % Report params
+            buckets.refinedBuckets.params = p; % pass the params now
            
         % Remove any single-point buckets
-            bucketStruct.refinedBuckets.singlePoints = ~(cellfun(@numel,fillRegions(matchPPMs(currentBuckets,ppm)))>1);
-            currentBuckets = currentBuckets(~bucketStruct.refinedBuckets.singlePoints,:);
+            buckets.refinedBuckets.singlePoints = ~(cellfun(@numel,fillRegions(matchPPMs(currentBuckets,ppm)))>1);
+            currentBuckets = currentBuckets(~buckets.refinedBuckets.singlePoints,:);
             
         % Sort the buckets and return them:
-            bucketStruct.refinedBuckets.originalBuckets = bins;
-            bucketStruct.refinedBuckets.refinedBuckets = currentBuckets;
-            bucketStruct.refinedBuckets.removedBuckets = bins(~ismember(bins,currentBuckets,'rows'),:);
-            bucketStruct.refinedBuckets.addedBuckets = currentBuckets(~ismember(currentBuckets,bins,'rows'),:);
-            
+            buckets.refinedBuckets.originalBuckets = bins;
+            buckets.refinedBuckets.refinedBuckets = currentBuckets;
+            buckets.refinedBuckets.removedBuckets = bins(~ismember(bins,currentBuckets,'rows'),:);
+            buckets.refinedBuckets.addedBuckets = currentBuckets(~ismember(currentBuckets,bins,'rows'),:);
+            refinedBounds = currentBuckets;
             
         % Save 
          
+        if saveFig
             fig = gca;
-            saveas(fig,bucketStruct.refinedBuckets.figure)
+            saveas(fig,buckets.refinedBuckets.figure)
            % close(fig)
-            msgbox({['Refinement Completed Successfully! Figure saved as ''',bucketStruct.refinedBuckets.figure,''''];...
+            msgbox({['Refinement Completed Successfully! Figure saved as ''',buckets.refinedBuckets.figure,''''];...
                     [];...
                     [' in'];...
                     [];...
                     [' ''',cd(),'''']})
-            fprintf(['\n\tRefinement Completed Successfully! Figure saved as \n\t\t''',bucketStruct.refinedBuckets.figure,'''\n','\tin\n\t\t','''',cd(),'''.\n'])
+            fprintf(['\n\tRefinement Completed Successfully! Figure saved as \n\t\t''',buckets.refinedBuckets.figure,'''\n','\tin\n\t\t','''',cd(),'''.\n'])
             fprintf('\n\tResults saved in optOB_out.results.refinedBuckets.\n\n')
-
+        end
+        
 end
 
 function txt = helpText()

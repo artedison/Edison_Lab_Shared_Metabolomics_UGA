@@ -1,4 +1,4 @@
-function [plotInds] = calc_stackPlotInds(data,numPoints)
+function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints)
 % Calculates the inds needed for plotting one or more datasets together at
 % a given resolution (e.g. number of spectra). This should make it easier
 % to plot reasonable numbers of spectra using slow functions like
@@ -35,7 +35,8 @@ function [plotInds] = calc_stackPlotInds(data,numPoints)
             % Simply distribute on rows
             
                 plotInds = {round(linspace(1,size(data,1),numPoints))};
-
+                plotIndsCat = plotInds;
+                
         case 'cell'
             
             % Get the size of each dataset
@@ -85,5 +86,6 @@ function [plotInds] = calc_stackPlotInds(data,numPoints)
             error('Input format is incorrect. ''data'' should be one matrix (double, m x n), or multiple matrices (cell or struct, each element m x n).')
     end
     
+    plotIndsCat = [plotInds{:}]';
     
 end

@@ -22,7 +22,8 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
 %% Parse varargins
 
     noise = quantile(sort(abs(matrix(:))),0.25); % useful later
-            %figure,plot(1:length(sort(abs(matrix(:)))),sort(abs(matrix(:))))
+    whiteShapes = true;
+
     if ~isempty(varargin)
         % Name-value pairs
         
@@ -32,23 +33,36 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
                 colors = varargin{ind(1)+1};
                 %colors.rgb = flipud(colors.rgb);
                 
-            % If we then have indices specified for those colors
-                ind = find(strcmp(varargin,'colorInds'));
+%             % If we then have indices specified for those colors
+%                 ind = find(strcmp(varargin,'colorInds'));
+%                 if ~isempty(ind)
+%                     colorInds = varargin{ind(1)+1};
+%                     colors.rgb = flipud(colors.rgb(colorInds,:)); % subset them, then flip to match matrix
+%                 end  
+                
+            % If we then have plot indices specified
+                ind = find(strcmp(varargin,'plotSubset'));
                 if ~isempty(ind)
-                    colorInds = varargin{ind(1)+1};
-                    colors.rgb = flipud(colors.rgb(colorInds,:)); % subset them, then flip to match matrix
+                    plotInds = varargin{ind(1)+1};               
+                    matrix = matrix(plotInds,:);                 % don't flip this yet
+                    colors.rgb = flipud(colors.rgb(plotInds,:)); % subset them, then flip to match matrix
                 end  
                 
             end
                         
             if ~isempty(strcmp(varargin,'autoVert'))
                 vertshift = vertshift * noise;
-                fprintf(['\n\n\tVertshift -> noise multiple mode. Estimated noise level : ',num2str(noise),'\n'])
+                %fprintf(['\n\n\tVertshift -> noise multiple mode. Estimated noise level : ',num2str(noise),'\n'])
             end     
+            
+            if ~isempty(strcmp(varargin,'noWhiteShapes'))
+                whiteShapes = false;
+            end     
+            
             
     end
 
-%% Make the plot    
+%% Do some calculations ahead of time
 
     matrix = flipud(matrix);
     baseline = mean(matrix(end,:))-std(matrix(end,:)) - vertshift * size(matrix,1); % get rid of sides
@@ -62,7 +76,7 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
     % Adjust ppm to match the first spectrum:
         currentppm = currentppm - horzshift * size(matrix,1);
     
-%%        
+%% Make the plot       
     % Spectra are plotted from the back to the front, and top to bottom
     % (i.e. the last row of the matrix is plotted highest and first, and
     % the rest are plotted on top of it. area() is used to mask spectra
@@ -111,99 +125,84 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
         for i = 1:length(ar) % *** must update them in the correct order so they lay on top of each other correctly
             ar(i).EdgeColor = colors.rgb(i,:); % colors.rgb was already flipped to match matrix
         end
-        %addReasonableLegend(table2cell(colors.categories(:,1)),colors.colorList)    % these were not flipped
+        addReasonableLegend(table2cell(colors.categories(:,1)),colors.colorList)    % these were not flipped
     end
     
 %     set(gca,'xlim',[-3.21862204651590,-3.04023643628845])
 %     set(gca,'ylim',[-126132930513.596,73262839879.1538])
      
-%% Add white triangles to cover undesirable regions
+%% Add white shapes to cover undesirable regions on edges and @ baseline
+
 % NEED TO UPDATE so vert is calculated from a single point, not rows 1 or end
+    if whiteShapes
+        % Get the coordinates:
 
-    % Get the coordinates:
-%         adjMat = matrix - (  (  (1:size(matrix,1))  ) * vertshift)';
-        
-        % Calculate the endpoints of the ppm vect (beginning and end x
-        % coords)
-        
-        %figure,plotr(currentppm,adjMat)
-            %bufferPoints = round(0.002*length(currentppm));
-            bufferSpace = (shiftedppms(1,1) - shiftedppms(end,1) ) *1.1;
-            
-        % Calculate the endpoints of the ppm vect (beginning and end x coords)
-%             adjPPM(:,1) = currentppm(1+bufferPoints) + (1:size(matrix,1)) * horzshift;
-%             adjPPM(:,2) = currentppm(end-bufferPoints) + (1:size(matrix,1)) * horzshift;
-%             adjPPM(:,1) = shiftedppms(:,1);
-%             adjPPM(:,2) = shiftedppms(:,end);
-            
-            % R pentagon: 
-            
-                % X coords
-                    trap1(1,1) = shiftedppms(1,1) + bufferSpace;     % upper middle
-                    trap1(2,1) = shiftedppms(1,1) - bufferSpace;	% upper left      
-                    trap1(3,1) = shiftedppms(end,1) - bufferSpace;   % lower left       
-                    trap1(4,1) = shiftedppms(end,1) - bufferSpace;      % lower right
-                    trap1(5,1) = shiftedppms(end,1) + bufferSpace;      % upper right 
-                    trap1(6,1) = shiftedppms(end,1) + bufferSpace;  % dummy
-                     
-                % Y coords
-                    trap1(1,2) = shiftedmat(1,1)+vertshift*2;       % upper middle
-                    trap1(2,2) = shiftedmat(1,1)+vertshift*2;     % upper left
-                    trap1(3,2) = shiftedmat(end,1)-vertshift*2;                % lower left
-                    trap1(4,2) = baseline-vertshift;                % lower right
-                    trap1(5,2) = baseline-vertshift;       % upper right
-                    trap1(6,2) = shiftedmat(end,1)-vertshift*2;       % dummy
-                    
-                pgonR = fill(trap1(:,1),trap1(:,2),'w','EdgeColor','w','HandleVisibility','off');
-%                 for p = 1:size(trap1,1)
-%                     p = 6
-%                     plot(trap1(p,1), trap1(p,2),'*','MarkerSize',10,'HandleVisibility','off');
-%                 end                
-                
-%%
-            % L pentagon: 
-            
-                % X coords
-                    trap2(1,1) = shiftedppms(1,end) + bufferSpace;
-                    trap2(2,1) = shiftedppms(1,end) - bufferSpace;	% upper middle      
-                    trap2(3,1) = shiftedppms(end,end) - bufferSpace;   % lower left       
-                    trap2(4,1) = shiftedppms(end,end) - bufferSpace;   % lower left       
-                    trap2(5,1) = shiftedppms(end,end) + bufferSpace;      % lower right
-                    trap2(6,1) = shiftedppms(end,end) + bufferSpace;      % upper right 
+                bufferSpace = (shiftedppms(1,1) - shiftedppms(end,1) ) *1.1;
 
-                % Y coords
-%                     trap2(1,2) = shiftedmat(1,end)+vertshift*2;       % upper right
-                    trap2(1,2) = shiftedmat(1,end)+vertshift*2;       % upper right
-                    trap2(2,2) = shiftedmat(1,end)+vertshift*2;     % upper middle
-                    trap2(3,2) = shiftedmat(end,end)-vertshift*2;   % lower left
-                    trap2(4,2) = baseline-vertshift;                % lower right
-                    trap2(5,2) = baseline-vertshift;       % upper right
-                    trap2(6,2) = shiftedmat(end,end)-vertshift*2;       % upper right
-                    
-                pgonL = fill(trap2(:,1),trap2(:,2),'w','EdgeColor','w','HandleVisibility','off');                
+                % R shape (parallelogram on top of a rectangle):
 
-%                 for p = 1:size(trap1,1)
-%                     plot(trap2(p,1), trap2(p,2),'*','MarkerSize',10,'HandleVisibility','off');
-%                 end
-%                 delete(marks(p))
+                    % X coords
+                        trap1(1,1) = shiftedppms(1,1) + bufferSpace;    % upper left
+                        trap1(2,1) = shiftedppms(1,1) - bufferSpace;	% upper right      
+                        trap1(3,1) = shiftedppms(end,1) - bufferSpace;  % middle right       
+                        trap1(4,1) = shiftedppms(end,1) - bufferSpace;  % lower right
+                        trap1(5,1) = shiftedppms(end,1) + bufferSpace;  % lower left
+                        trap1(6,1) = shiftedppms(end,1) + bufferSpace;  % middle left
 
-% Add the rectangle at the bottom
-                % x 
-                
-                    xl = get(gca,'xlim'); % matlab plots farther than I would, so we'll just cover the whole axis
-                    rec(1,1) = xl(2);
-                    rec(2,1) = xl(1);
-                    rec(3,1) = rec(2,1);
-                    rec(4,1) = rec(1,1);
-                % y     
-                    rec(1,2) = baseline + vertshift;
-                    rec(2,2) = baseline + vertshift;
-                    rec(3,2) = baseline - vertshift;
-                    rec(4,2) = baseline - vertshift;
-    
-                    fill(rec(:,1),rec(:,2),'w','EdgeColor','w','HandleVisibility','off');
-                    
-                    set(gca,'xlim',[min(shiftedppms(:)),max( shiftedppms(:) )])
-                    
+                    % Y coords
+                        trap1(1,2) = shiftedmat(1,1)+vertshift*2;     % upper left
+                        trap1(2,2) = shiftedmat(1,1)+vertshift*2;     % upper right      
+                        trap1(3,2) = shiftedmat(end,1)-vertshift*2;   % middle right       
+                        trap1(4,2) = baseline-vertshift;              % lower right
+                        trap1(5,2) = baseline-vertshift;              % lower left
+                        trap1(6,2) = shiftedmat(end,1)-vertshift*2;   % middle left
+
+                    pgonR = fill(trap1(:,1),trap1(:,2),'w','EdgeColor','w','HandleVisibility','off');
+
+                % L shape (parallelogram on top of a rectangle): 
+
+                    % X coords
+                        trap2(1,1) = shiftedppms(1,end) + bufferSpace;      % upper left
+                        trap2(2,1) = shiftedppms(1,end) - bufferSpace;      % upper right      
+                        trap2(3,1) = shiftedppms(end,end) - bufferSpace;    % middle right       
+                        trap2(4,1) = shiftedppms(end,end) - bufferSpace;    % lower right       
+                        trap2(5,1) = shiftedppms(end,end) + bufferSpace;    % lower left
+                        trap2(6,1) = shiftedppms(end,end) + bufferSpace;    % middle left 
+
+                    % Y coords
+                        trap2(1,2) = shiftedmat(1,end)+vertshift*2;         % upper left      
+                        trap2(2,2) = shiftedmat(1,end)+vertshift*2;         % upper right
+                        trap2(3,2) = shiftedmat(end,end)-vertshift*2;       % middle right
+                        trap2(4,2) = baseline-vertshift;                    % lower right
+                        trap2(5,2) = baseline-vertshift;                    % lower left
+                        trap2(6,2) = shiftedmat(end,end)-vertshift*2;       % middle left
+
+                    pgonL = fill(trap2(:,1),trap2(:,2),'w','EdgeColor','w','HandleVisibility','off');                
+
+            % Add the rectangle at the bottom
+                % Get the coords
+                    % x 
+
+                        xl = get(gca,'xlim'); % matlab plots farther than I would, so we'll just cover the whole axis
+                        rec(1,1) = xl(2);
+                        rec(2,1) = xl(1);
+                        rec(3,1) = rec(2,1);
+                        rec(4,1) = rec(1,1);
+                    % y     
+                        rec(1,2) = baseline + vertshift;
+                        rec(2,2) = baseline + vertshift;
+                        rec(3,2) = baseline - vertshift;
+                        rec(4,2) = baseline - vertshift;
+
+                % Plot it:
+                        fill(rec(:,1),rec(:,2),'w','EdgeColor','w','HandleVisibility','off');
+    end           
+   %% Other odds and ends            
+        % Zoom in to the relevant plot region
+            set(gca,'xlim',[min(shiftedppms(:)),max( shiftedppms(:) )])
+
+        % Do away with the colored background
+            set(gcf, 'InvertHardCopy', 'off');
+            hold off
     
 end

@@ -1,4 +1,4 @@
-function [binsWithPeaks,matchingPeaks,binFilt,peakFilt] = filterBins_peaks(bins,peaks)
+function [binsWithPeaks,matchingPeaks,binFilt,peakFilt,peaksPerBin] = filterBins_peaks(bins,peaks)
 %% filterBuckets_Peaks_opt
 
 % Author: MTJ and GG
@@ -37,5 +37,6 @@ function [binsWithPeaks,matchingPeaks,binFilt,peakFilt] = filterBins_peaks(bins,
         binFilt = any(peaks >= bins(:,1) & peaks <= bins(:,2),2); % faster (if no overlapping bins is no issue)
         binsWithPeaks = bins(binFilt,:);
         matchingPeaks = peaks(peakFilt);
+        peaksPerBin = sum(peaks >= bins(:,1) & peaks <= bins(:,2), 2);
         
 end

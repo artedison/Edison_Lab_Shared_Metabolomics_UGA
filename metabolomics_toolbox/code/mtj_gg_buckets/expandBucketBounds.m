@@ -29,12 +29,11 @@ function [bucketStruct] = expandBucketBounds(bucketStruct,X,ppm,varargin)
 %
 
     %% Handle varargin
-
+        plotResult = false;
         if ~isempty(varargin)
             if ismember('plotResult',varargin)                          
                 plotResult = true;
-            else
-                plotResult = false;
+
             end
         end
         
@@ -47,7 +46,7 @@ function [bucketStruct] = expandBucketBounds(bucketStruct,X,ppm,varargin)
             % Get the lowest point in the max spectrum of each non-bin region
 
                 betweenBuckets = [buckets(2:end,2), buckets(1:end-1,1)];
-
+                    
                         % figure,
                         % hold on
                         % plot(ppm,X)
