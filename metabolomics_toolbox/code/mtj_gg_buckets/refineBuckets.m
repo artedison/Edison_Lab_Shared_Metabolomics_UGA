@@ -254,6 +254,9 @@ function [buckets,refinedBounds] = refineBuckets(matrix,ppm,buckets,varargin)
             currentBuckets = currentBuckets(~buckets.refinedBuckets.singlePoints,:);
             
         % Sort the buckets and return them:
+            [~,inds] = sort(mean(currentBuckets,2));
+            currentBuckets = currentBuckets(inds,:);
+            
             buckets.refinedBuckets.originalBuckets = bins;
             buckets.refinedBuckets.refinedBuckets = currentBuckets;
             buckets.refinedBuckets.removedBuckets = bins(~ismember(bins,currentBuckets,'rows'),:);

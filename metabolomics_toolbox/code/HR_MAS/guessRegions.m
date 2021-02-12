@@ -85,6 +85,7 @@ function [regions,peaksPerBin] = guessRegions(matrix,ppm,peaksPerRegion_target,t
 %                        plot(shifts,max(peaks,[],1),'k*')
                        
         [~,regions] = refineBuckets(matrix,ppm,regions','expandedBuckets');
+        % Regions are sorted above ^
         close(gcf)
         regions = regions';
         
