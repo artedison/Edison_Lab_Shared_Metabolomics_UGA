@@ -513,6 +513,10 @@ if ~totalautoflag
   %%% refine for selected region
   if flagsmallwid
     [resstr]=smallwindow_tracing(mat,time,ppm,region,ridrefinetab,smalwid_lentrain,smalwid_thredseg,lengthrid);
+    if strcmp(resstr.refinereturndata,'C')
+      warning("user stop the program");
+      return
+    end
     if length(fieldnames(resstr.para))~=0
       ridrefinetab=resstr.refinereturndata;
       parameters.ridge_remove=resstr.para.ridge_remove;
@@ -528,6 +532,10 @@ if ~totalautoflag
     disp('3: final pick peaks');
     [strres]=interridpickinnernew(ridrefinetab,mat,time,ppm,'final pick peaks',lengthrid,defaultinput);
     newRidges=strres.clusterreturn;
+    if strcmp(newRidges,'C')
+      warning("user stop the program");
+      return
+    end
     ridgenames=strres.namevec;
     quantifys=strres.quantifyvec;
     newRidges=unique(newRidges,'stable');

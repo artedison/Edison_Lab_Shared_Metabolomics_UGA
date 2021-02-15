@@ -44,8 +44,8 @@ para=struct();
 disp('start solving specific reigon');
 disp('1: select bad ridges to delete');
 [strres]=interridpickinnernew(ridrefinetab,mat,time,ppm,'select bad ridges to delete',vislen);
-if strres.clusterreturn=='C'
-  refinereturndata=ridrefinetab;
+if strcmp(strres.clusterreturn,'C')
+  refinereturndata='C';
 else
   newRidges=strres.clusterreturn;
   para.ridge_remove=ridrefinetab(ismember(ridrefinetab(:,4),-newRidges),:);
