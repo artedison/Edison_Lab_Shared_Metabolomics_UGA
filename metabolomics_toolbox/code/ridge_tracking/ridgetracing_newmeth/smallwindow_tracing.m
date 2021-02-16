@@ -143,6 +143,11 @@ else
         midppmind=round(interp1(prex,prey,timeindele,'linear','extrap'));
         ppmrag=[midppmind-thredseg midppmind+thredseg];
         ppmind=ppmrag(1):ppmrag(2);
+        indrange=[1,size(mat,2)];
+        if any(ppmind<indrange(1)|ppmind>indrange(2))
+          warning('the extension run out of the current window');
+          break;
+        end
         intenvec=mat(timeindele,ppmind);
         peakind=islocalmax(intenvec);
         % [tempmax, peakind]=max(intenvec);
