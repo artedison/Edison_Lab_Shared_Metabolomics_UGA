@@ -5,7 +5,7 @@ function [returndata]=ridgetrace_power2_ext(mat,ppm,time,region,path,thredseg,ma
 %%  argument:
 %%%  mat: the input spectral matrix size(mat)=[time ppm]
 %%%  ppm: the ppm of the spectral, expected to be a size(ppm)=[1 length(spectra)]
-%%%  time: the time of each sample, expected length(time)=size(mat,1)
+%%%  time: the time of each sample, expected size(time)=[length(time) 1]
 %%%  region: the region to do ridge tracing, expected to be a size(time)=[sample_number 1]
 %%%  thredseg: the maximum distance to connect a segment
 %%%%%% default 5 can be changed for ridge with different curvy
@@ -57,6 +57,9 @@ function [returndata]=ridgetrace_power2_ext(mat,ppm,time,region,path,thredseg,ma
 % smalwid_thredseg=2;
 % totalautoflag=true;
 % %%%%%%%%%%%%%%%%%%%%%%%%%
+if size(ppm,1)>1||size(time,2)>1
+  error('wrong dimension for ppm and time vector, please refer to the documents, ppm should be a row vector and time should be a column vector');
+end
 
 disp('*****************************');
 % fixed parameters
