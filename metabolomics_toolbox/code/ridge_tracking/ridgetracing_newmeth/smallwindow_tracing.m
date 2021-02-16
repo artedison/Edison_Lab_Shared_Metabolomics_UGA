@@ -114,7 +114,7 @@ else
         startx=(startpoint(:,2)-lentrain+1):startpoint(:,2);
       else
         seqtimeind=(startpoint(:,2)-1):-1:1;
-        startx=(startpoint(:,2)+lentrain+1):-1:startpoint(:,2);
+        startx=(startpoint(:,2)+lentrain-1):-1:startpoint(:,2);
       end
       starty=[];
       for startxelei=1:length(startx)
