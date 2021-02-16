@@ -515,12 +515,16 @@ if ~totalautoflag
     [resstr]=smallwindow_tracing(mat,time,ppm,region,ridrefinetab,smalwid_lentrain,smalwid_thredseg,lengthrid);
     if strcmp(resstr.refinereturndata,'C')
       warning("user stop the program");
-      return
-    end
-    if length(fieldnames(resstr.para))~=0
-      ridrefinetab=resstr.refinereturndata;
-      parameters.ridge_remove=resstr.para.ridge_remove;
-      parameters.refined_region=resstr.para.refined_region;
+      return;
+    elseif strcmp(resstr.refinereturndata,'S')
+      flagstage='ssw';
+    else
+      if length(fieldnames(resstr.para))~=0
+        ridrefinetab=resstr.refinereturndata;
+        parameters.ridge_remove=resstr.para.ridge_remove;
+        parameters.refined_region=resstr.para.refined_region;
+      end
+      flagstage='ft';
     end
   end
   %%% manual pick
@@ -530,7 +534,7 @@ if ~totalautoflag
   newRidges=groups(cell2mat(arrayfun(@(x)length(find(clustsrid==x)),groups,'UniformOutput',false))>lengthrid);
   if peakflag
     disp('3: final pick peaks');
-    [strres]=interridpickinnernew(ridrefinetab,mat,time,ppm,'final pick peaks',lengthrid,defaultinput);
+    [strres]=interridpickinnernew(ridrefinetab,mat,time,ppm,'final pick peaks',lengthrid,defaultinput,flagstage);
     newRidges=strres.clusterreturn;
     if strcmp(newRidges,'C')
       warning("user stop the program");

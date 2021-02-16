@@ -43,9 +43,11 @@ para=struct();
 % remove bad ridges
 disp('start solving specific reigon');
 disp('1: select bad ridges to delete');
-[strres]=interridpickinnernew(ridrefinetab,mat,time,ppm,'select bad ridges to delete',vislen);
+[strres]=interridpickinnernew(ridrefinetab,mat,time,ppm,'select bad ridges to delete',vislen,[],'sw');
 if strcmp(strres.clusterreturn,'C')
   refinereturndata='C';
+elseif strcmp(strres.clusterreturn,'S')
+  refinereturndata='S';
 else
   newRidges=strres.clusterreturn;
   para.ridge_remove=ridrefinetab(ismember(ridrefinetab(:,4),-newRidges),:);
@@ -186,7 +188,7 @@ else
 end
 resstr.refinereturndata=refinereturndata;
 resstr.para=para;
-
+resstr.choice=strres.choice;
 % function [fig]=plotRidgesherenew(mat,ppm,time,clustshere,cindallhere,rindallhere,ridvalallhere,clusters)
 % % this is derived as the last function
 % fig=figure(), hold on
