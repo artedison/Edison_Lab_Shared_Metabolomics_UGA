@@ -95,8 +95,8 @@ else
       temptime=temptab(:,2);
       boundtime=[];
       direction=[];
-      if max(temptimefull)>max(temptime) && min(temptimefull)<min(temptime)
-        warning('the box should be at the end of the ridge Not middle');
+      if (max(temptimefull)>max(temptime) && min(temptimefull)<min(temptime))||(max(temptimefull)==max(temptime) && min(temptimefull)==min(temptime))
+        warning('the box should be at the end of the ridge Not middle or cover the whole ridge');
         continue;
       end
       if max(temptimefull)>max(temptime)
