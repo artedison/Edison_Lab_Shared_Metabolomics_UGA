@@ -95,6 +95,10 @@ else
       temptime=temptab(:,2);
       boundtime=[];
       direction=[];
+      if max(temptimefull)>max(temptime) && min(temptimefull)<min(temptime)
+        warning('the box should be at the end of the ridge Not middle');
+        continue;
+      end
       if max(temptimefull)>max(temptime)
         boundtime=max(temptime);
         direction= -1; % the tracing part decrease time
@@ -125,6 +129,10 @@ else
         end
         starty=[starty temptab(startyeleind,1)];
         % starty
+      end
+      if length(startx)~=length(starty)
+        warning('the existing ridge points are less than set (lentrain)');
+        continue;
       end
       prex=startx;
       prey=starty;
