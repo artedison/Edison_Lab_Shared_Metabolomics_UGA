@@ -252,14 +252,14 @@ ridvalall=mat(indln);
 %     xlabel('x')
 %     scatter3(cindall,rindall,ridvalall,'r','linewidth',3);
 
-% filter on local minimum
-%% ridge & local minimum
+% filter on local maximum
+%% ridge & local maximum
 ridmin=zeros(size(mat));
 for i = 1:size(mat,1)
   tempmat=mat(i,:);
   ridmin(i,:)=islocalmax(tempmat);
 end
-% plot soly local minimum
+% plot soly local maximum
 % indln=find(ridmin==1);
 % [rindall cindall]=ind2sub(size(ridmin),indln);
 % ridvalall=mat(indln);
@@ -279,6 +279,10 @@ for i =1:size(ridmin,1)
   indopt=find(ridmin(i,:));
   tempmat=mat(i,indopt);
   [temp indtemp]=sort(tempmat,'descend');
+  if length(indtemp)<maxaddon
+    warning('there is no maxaddon number of maximum for some spectra, use the real maximal number of local maximum instead');
+    maxaddon=length(maxaddon);
+  end
   ridpoint(i,indopt(indtemp(1:maxaddon)))=1;
 end
 ridpointfinal=(ridpoint+ridmin==2);
