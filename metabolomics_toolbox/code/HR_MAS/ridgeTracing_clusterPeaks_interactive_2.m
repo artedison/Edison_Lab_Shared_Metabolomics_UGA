@@ -107,32 +107,30 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
                         lineNumber = 1;
                 switch answer
                     case 1
-                        
-%                             title('Select two ridges to join by clicking on them, then hit Return (follows maxima between the points):')
-%                             [xbds,ybds] = drawROI(); 
-%                             newRidge = joinRidges(ridges,xbds,ybds,input,window);
-                        
-                        % Get the ridges to join:
-%                             title('Select two ridges to join by clicking on them, then hit Return (follows maxima between the points):')
-%                                 clickedRidges = [];
-%                                 lineNumber = 1;
-%                             selectLine(gcf)
-%                             pause()
-                        % Convert to useful indices
-                        % variables set automatically?)
-                        
-                            
-% % %                             inds = clickedRidges;
-% % %                             inds = inds(inds~=1)-1;  % shift (surface plot = 1)
-% % %                             % Get the odd-frequency ridges, only take these
-% % %                             clear('clickedRidges','lineNumber')
-% % %                                 ridgesToConnect = unique(inds(find(mod(sum(inds==inds'),2))));
-% % %                                         newRidge = joinRidges(ridges,ridgesToConnect,input,window);
-                                        % Concatenate with the ridges
-                                        % structure:
-                                            ridges = [ridges newRidge];
-                                        % Get rid of the old ridges
-                                            ridges(ridgesToConnect) = [];
+                                                    
+                            ridges = joinRidges(ridges);
+                            %%
+                                    % Get the ridges to join:
+                                    %                             title('Select two ridges to join by clicking on them, then hit Return (follows maxima between the points):')
+                                    %                                 clickedRidges = [];
+                                    %                                 lineNumber = 1;
+                                    %                             selectLine(gcf)
+                                    %                             pause()
+                                                            % Convert to useful indices
+                                                            % variables set automatically?)
+
+
+                                    % % %                             inds = clickedRidges;
+                                    % % %                             inds = inds(inds~=1)-1;  % shift (surface plot = 1)
+                                    % % %                             % Get the odd-frequency ridges, only take these
+                                    % % %                             clear('clickedRidges','lineNumber')
+                                    % % %                                 ridgesToConnect = unique(inds(find(mod(sum(inds==inds'),2))));
+                                    % % %                                         newRidge = joinRidges(ridges,ridgesToConnect,input,window);
+                                                                            % Concatenate with the ridges
+                                                                            % structure:
+                                                                                %ridges = [ridges newRidge];
+                                                                            % Get rid of the old ridges
+                                                                                %ridges(ridgesToConnect) = [];
 
                     case 2
                         % Pick the final ridges
@@ -143,21 +141,15 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
                             % general proximity (not exact clicks)
                             
                                 [ridgeInds] = clickRidge(ridges);
-                                
-                            % Exact clicks (uses highlightLine)
-                                clickedRidges=[];
-                                lineNumber=1;
-                            selectLine(gcf)
-                            pause()
-                            
+                                close(gcf)                                                 
                             
                         % Save them
-                            inds = clickedRidges;
-                            inds = inds(inds~=1)-1;  % shift (surface plot = 1)
-                            % Count the number of odd ridges
-                                oddRidges = inds(find(mod(sum(inds==inds'),2)));
-                            ridges = ridges(oddRidges);
-
+                            if ~isempty(ridgeInds)
+                                ridges = ridges(ridgeInds);
+                            end
+                            
+                            
+                            
                     case 3
                         % Delete ridge(s):
                             title('Select the final ridges by clicking on them, then hit Return')
@@ -236,18 +228,97 @@ function [ridges] = ridgeTracing_clusterPeaks_interactive_2(input,numberOfRidges
             end
     end
 
-%     function [newRidge] = joinRidges(ridges,xbds,ybds,input,window)
-%             %ridges,xbds,ybds,input,window
-%             % Identify all ridges in box
-%             
-%             % Collect all ridge points in box
-%             
-%             
-%             ridges.ppms
-%             ridgesToConnect = unique(inds(find(mod(sum(inds==inds'),2))));
-%             
-%             
-%     end
+    function [ridges] = joinRidges(ridges)
+            
+            title('Join Ridges')
+            
+            m(1) = msgbox([{'Join ridges into one by doing one of the following'};...
+               {'1) Press ''b'' for box drawing mode (in development)'};...
+               {'2) Press any other letter key to activate click'}],'WindowStyle','modal');
+           
+            waitforbuttonpress;
+                key = get(gcf,'CurrentCharacter');
+                if strcmp(key,'b')
+                    waitfor(msgbox('Option ''b'' - Box drawing mode - is not allowed at the moment, still under development','WindowStyle','modal'));
+                    % Box method
+%                         % Get box 
+%                             [xbds,ybds] = drawROI(); 
+% 
+%                         % Collect all ridge points in box
+% 
+%             %                 [~,lineObjs] = extractLineData();
+%                             [~,...
+%                                 lineObjData,...
+%                                 inds_myLines,...
+%                                 ~] = mapLines2Lines(findall(gca,'Type','Line'),{ridges.ppms},...
+%                                                                                                {ridges.times});
+% 
+%                             inXbounds = xbds(1)<lineObjData(:,1) & xbds(2)>lineObjData(:,1);
+%                             inYbounds = ybds(1)<lineObjData(:,2) & ybds(2)>lineObjData(:,2);
+% 
+%                             ridgesToConnect = unique(inds_myLines(inXbounds & inYbounds));
+                            
+                else % Use click method
+                        % Click one or more ridges to join
+                        
+                            m(3) = msgbox([{'Join Ridges:'};...
+                                   {'1) Press any letter key to activate click'};...
+                                   {'2) Click a ridge to select/deselect'};...
+                                   {'Repeat to select ridges to join into one.'};...
+                                   {'Press ''Enter/Return'' to update data and return to menu'}],'WindowStyle','modal');
+                            
+                            % Develop ridge clicking method based on
+                            % general proximity (not exact clicks)
+
+                                [ridgeInds,~,inds_myLines,~,lineObjData] = clickRidge(ridges);
+                                close(gcf)                                                 
+                            
+                        % Update ridges
+                            if ~isempty(ridgeInds)
+                               matches = inds_myLines == ridgeInds';
+                               newRidgePts = any(matches,2);
+                               newppms = lineObjData(newRidgePts,1);
+                               newtimes = lineObjData(newRidgePts,2);
+                                   [t,~,uniquetimeInds] = unique(newtimes); % times need to be unique, not ppms. Unique default is sorted
+                                   compmat = zeros(length(uniquetimeInds),length(ridgeInds));
+                                   
+                                   % Find overlapping times
+                                        % Inds to fill out matrix
+                                            [~,ridgePtID] = find(matches);
+                                            lininds = sub2ind(size(compmat),uniquetimeInds,ridgePtID);
+                                            
+                                            % Get the intensities
+                                                ints = {ridges.intensities};
+                                                ints = [ints{:}]';
+                                                
+                                            compmat(lininds) = ints(lininds);
+                                            
+                                            
+                                        % Pick the highest ridge point at
+                                        % each time
+                                        
+                                            [newInts,maxinds] = max(compmat,[],2);
+                                            
+                                        % Apply this choice to ppms and
+                                            ridges(end+1).times = t; % has to be after [ints{:}] to avoid empty issues
+                                            ridges(end).ppms = newppms(maxinds)';
+                                            ridges(end).intensities = newInts';
+                                            ridges(end).joined = ridges(ridgeInds);
+
+                                            ridges(ridgeInds) = [];
+                            else
+                                waitfor(msgbox('No ridges were selected','WindowStyle','modal'))
+                                
+                            end                    
+                    
+                    
+                end
+            
+        % clean up msgboxes
+            
+            close(m(ishandle(m)))
+            
+    end
     
     
     
