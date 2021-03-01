@@ -131,7 +131,7 @@ else
         % starty
       end
       if length(startx)~=length(starty)
-        warning('the existing ridge points are less than set (lentrain)');
+        warning('Some ridges cannot be extended as the prior ridges is too short');
         continue;
       end
       prex=startx;
