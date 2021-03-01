@@ -43,9 +43,11 @@ para=struct();
 % remove bad ridges
 disp('start solving specific reigon');
 disp('1: select bad ridges to delete');
-[strres]=interridpickinnernew(ridrefinetab,mat,time,ppm,'select bad ridges to delete',vislen);
-if strres.clusterreturn=='C'
-  refinereturndata=ridrefinetab;
+[strres]=interridpickinnernew(ridrefinetab,mat,time,ppm,'select bad ridges to delete',vislen,[],'sw');
+if strcmp(strres.clusterreturn,'C')
+  refinereturndata='C';
+elseif strcmp(strres.clusterreturn,'S')
+  refinereturndata='S';
 else
   newRidges=strres.clusterreturn;
   para.ridge_remove=ridrefinetab(ismember(ridrefinetab(:,4),-newRidges),:);
@@ -93,6 +95,10 @@ else
       temptime=temptab(:,2);
       boundtime=[];
       direction=[];
+      if (max(temptimefull)>max(temptime) && min(temptimefull)<min(temptime))||(max(temptimefull)==max(temptime) && min(temptimefull)==min(temptime))
+        warning('the box should be at the end of the ridge Not middle or cover the whole ridge');
+        continue;
+      end
       if max(temptimefull)>max(temptime)
         boundtime=max(temptime);
         direction= -1; % the tracing part decrease time
@@ -112,7 +118,7 @@ else
         startx=(startpoint(:,2)-lentrain+1):startpoint(:,2);
       else
         seqtimeind=(startpoint(:,2)-1):-1:1;
-        startx=(startpoint(:,2)+lentrain+1):-1:startpoint(:,2);
+        startx=(startpoint(:,2)+lentrain-1):-1:startpoint(:,2);
       end
       starty=[];
       for startxelei=1:length(startx)
@@ -124,6 +130,10 @@ else
         starty=[starty temptab(startyeleind,1)];
         % starty
       end
+      if length(startx)~=length(starty)
+        warning('Some ridges cannot be extended as the prior ridges is too short');
+        continue;
+      end
       prex=startx;
       prey=starty;
       temptabnew=[];
@@ -133,6 +143,11 @@ else
         midppmind=round(interp1(prex,prey,timeindele,'linear','extrap'));
         ppmrag=[midppmind-thredseg midppmind+thredseg];
         ppmind=ppmrag(1):ppmrag(2);
+        indrange=[1,size(mat,2)];
+        if any(ppmind<indrange(1)|ppmind>indrange(2))
+          warning('the extension run out of the current window');
+          break;
+        end
         intenvec=mat(timeindele,ppmind);
         peakind=islocalmax(intenvec);
         % [tempmax, peakind]=max(intenvec);
@@ -186,7 +201,7 @@ else
 end
 resstr.refinereturndata=refinereturndata;
 resstr.para=para;
-
+resstr.choice=strres.choice;
 % function [fig]=plotRidgesherenew(mat,ppm,time,clustshere,cindallhere,rindallhere,ridvalallhere,clusters)
 % % this is derived as the last function
 % fig=figure(), hold on

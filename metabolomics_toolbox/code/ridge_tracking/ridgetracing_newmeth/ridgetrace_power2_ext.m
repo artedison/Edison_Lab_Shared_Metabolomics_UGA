@@ -5,7 +5,7 @@ function [returndata]=ridgetrace_power2_ext(mat,ppm,time,region,path,thredseg,ma
 %%  argument:
 %%%  mat: the input spectral matrix size(mat)=[time ppm]
 %%%  ppm: the ppm of the spectral, expected to be a size(ppm)=[1 length(spectra)]
-%%%  time: the time of each sample, expected length(time)=size(mat,1)
+%%%  time: the time of each sample, expected size(time)=[length(time) 1]
 %%%  region: the region to do ridge tracing, expected to be a size(time)=[sample_number 1]
 %%%  thredseg: the maximum distance to connect a segment
 %%%%%% default 5 can be changed for ridge with different curvy
@@ -57,6 +57,9 @@ function [returndata]=ridgetrace_power2_ext(mat,ppm,time,region,path,thredseg,ma
 % smalwid_thredseg=2;
 % totalautoflag=true;
 % %%%%%%%%%%%%%%%%%%%%%%%%%
+if size(ppm,1)>1||size(time,2)>1
+  error('wrong dimension for ppm and time vector, please refer to the documents, ppm should be a row vector and time should be a column vector');
+end
 
 disp('*****************************');
 % fixed parameters
@@ -249,14 +252,14 @@ ridvalall=mat(indln);
 %     xlabel('x')
 %     scatter3(cindall,rindall,ridvalall,'r','linewidth',3);
 
-% filter on local minimum
-%% ridge & local minimum
+% filter on local maximum
+%% ridge & local maximum
 ridmin=zeros(size(mat));
 for i = 1:size(mat,1)
   tempmat=mat(i,:);
   ridmin(i,:)=islocalmax(tempmat);
 end
-% plot soly local minimum
+% plot soly local maximum
 % indln=find(ridmin==1);
 % [rindall cindall]=ind2sub(size(ridmin),indln);
 % ridvalall=mat(indln);
@@ -276,6 +279,10 @@ for i =1:size(ridmin,1)
   indopt=find(ridmin(i,:));
   tempmat=mat(i,indopt);
   [temp indtemp]=sort(tempmat,'descend');
+  if length(indtemp)<maxaddon
+    warning('there is no maxaddon number of maximum for some spectra, use the real maximal number of local maximum instead');
+    maxaddon=length(indtemp);
+  end
   ridpoint(i,indopt(indtemp(1:maxaddon)))=1;
 end
 ridpointfinal=(ridpoint+ridmin==2);
@@ -513,10 +520,18 @@ if ~totalautoflag
   %%% refine for selected region
   if flagsmallwid
     [resstr]=smallwindow_tracing(mat,time,ppm,region,ridrefinetab,smalwid_lentrain,smalwid_thredseg,lengthrid);
-    if length(fieldnames(resstr.para))~=0
-      ridrefinetab=resstr.refinereturndata;
-      parameters.ridge_remove=resstr.para.ridge_remove;
-      parameters.refined_region=resstr.para.refined_region;
+    if strcmp(resstr.refinereturndata,'C')
+      warning("user stop the program");
+      return;
+    elseif strcmp(resstr.refinereturndata,'S')
+      flagstage='ssw';
+    else
+      if length(fieldnames(resstr.para))~=0
+        ridrefinetab=resstr.refinereturndata;
+        parameters.ridge_remove=resstr.para.ridge_remove;
+        parameters.refined_region=resstr.para.refined_region;
+      end
+      flagstage='ft';
     end
   end
   %%% manual pick
@@ -526,8 +541,12 @@ if ~totalautoflag
   newRidges=groups(cell2mat(arrayfun(@(x)length(find(clustsrid==x)),groups,'UniformOutput',false))>lengthrid);
   if peakflag
     disp('3: final pick peaks');
-    [strres]=interridpickinnernew(ridrefinetab,mat,time,ppm,'final pick peaks',lengthrid,defaultinput);
+    [strres]=interridpickinnernew(ridrefinetab,mat,time,ppm,'final pick peaks',lengthrid,defaultinput,flagstage);
     newRidges=strres.clusterreturn;
+    if strcmp(newRidges,'C')
+      warning("user stop the program");
+      return
+    end
     ridgenames=strres.namevec;
     quantifys=strres.quantifyvec;
     newRidges=unique(newRidges,'stable');
