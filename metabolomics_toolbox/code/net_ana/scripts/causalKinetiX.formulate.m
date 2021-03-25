@@ -1,7 +1,7 @@
 %% Formualte the input for CausalKinetiX (and for all related analysis that apply to features existing in all replicates)
 %% Combine ridges from different replicates and annotate compound peaks with annotation
 %% The combination is an automatic process and visual check is provided at the end.
- 
+
 close all;
 clear all;
 
@@ -9,7 +9,7 @@ clear all;
 comp='/Users/yuewu/';%the computer user location
 pardir=[comp 'Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge.net/result_reprod/'];
 % OR
-% pardir=pwd();
+% pardir=[pwd() '/'];
 workdir=[pardir 'result/quality_check/'];%%the working folder
 datadir=[pardir 'data/'];%the data folder
 continue_dir=[pardir 'result_data/'];

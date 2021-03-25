@@ -5,7 +5,7 @@ clear all;
 comp='/Users/yuewu/';%the computer user location
 pardir=[comp 'Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge.net/result_reprod/'];
 % OR
-% pardir=pwd();
+% pardir=[pwd() '/'];
 workdir=[pardir 'result/annotation/'];%%the working folder
 datadir=[pardir 'data/'];%the data folder
 continue_dir=[pardir 'result_data/'];
