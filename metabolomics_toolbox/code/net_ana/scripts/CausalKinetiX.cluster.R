@@ -17,9 +17,9 @@ registerDoMC(cores=10)
 comp="/Users/yuewu/"
 pardir=paste0(comp,"Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge.net/result_reprod/");
 # OR
-# pardir=getwd()
+# pardir=paste0(getwd(),"/")
 datadir=paste0(pardir,"result_data/")
-resdir=paste0(pardir,"function_cluster/")
+resdir=paste0(pardir,"result/function_cluster/")
 #
 set.seed(1)
 setwd(resdir)
