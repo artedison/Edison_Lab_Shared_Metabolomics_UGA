@@ -14,10 +14,10 @@ clear all;
 comp='/Users/yuewu/';%the computer user location
 pardir=[comp 'Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge.net/result_reprod/'];
 % OR
-% pardir=pwd();
-workdir=[comp pardir 'result/ridgetracking/'];%%the working folder
-datadir=[comp pardir 'result_reprod/data/'];
-continue_dir=[comp pardir 'result_data/'];
+% pardir=[pwd() '/'];
+workdir=[pardir 'result/ridgetracking/'];%%the working folder
+datadir=[pardir 'data/'];
+continue_dir=[pardir 'result_data/'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 cd(workdir);
 load([datadir 'unshared/sampleData.mat']);%please refer to the orginal CIVM-NMR paper for the data here
