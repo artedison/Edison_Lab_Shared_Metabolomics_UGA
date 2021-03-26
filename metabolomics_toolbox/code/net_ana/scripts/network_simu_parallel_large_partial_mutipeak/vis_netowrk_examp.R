@@ -9,11 +9,12 @@ require(deSolve)
 require(igraph)
 require(ggplot2)
 require(reshape2)
+require(RCy3)
 # the user will need to modify the path here for local run
 comp="/Users/yuewu/"
 pardir=paste0(comp,"Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge.net/result_reprod/");
 # OR
-# pardir=getwd()
+# pardir=paste0(getwd(),"/")
 resdir=paste0(pardir,"result/cluster_simu_test/")
 dir_load=paste0(resdir,"parallel_run_big_new/multipeak/")
 setwd(resdir)
@@ -23,7 +24,7 @@ ncondi=100
 load(paste0(dir_load,"net.CausalKinetiX.network_",inetwork,".RData"))
 control_points=c("0","1","2","3")
 colors=c("#CCCCCC","#FF0033","#00FF00","#0033FF")
-style="BioPAX_0_0"
+style="BioPAX_0_0"#please use the style you like and have
 #
 locres=listressep[["1_100"]]
 edgetab=locres[["simu_network"]][,c("from","to")]

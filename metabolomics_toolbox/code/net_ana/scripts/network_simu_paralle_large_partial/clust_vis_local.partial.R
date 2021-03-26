@@ -17,7 +17,7 @@ require(reshape2)
 comp="/Users/yuewu/"
 pardir=paste0(comp,"Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge.net/result_reprod/");
 # OR
-# pardir=getwd()
+# pardir=paste0(getwd(),"/")
 resdir=paste0(pardir,"result/cluster_simu_test/")
 # standard error function
 std <- function(x) sd(x)/sqrt(length(x))

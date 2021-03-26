@@ -16,7 +16,7 @@ require(reticulate)
 comp="/Users/yuewu/"
 pardir=paste0(comp,"Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge.net/result_reprod/");
 # OR
-# pardir=getwd()
+# pardir=paste0(getwd(),"/")
 datadir=paste0(pardir,"result_data/")
 resdir=paste0(pardir,"result/annotation/mapping/")
 setwd(resdir)
@@ -73,7 +73,7 @@ for(clust in clust_filter){
   ratio_ind=mathcind_ord[lenmatch[mathcind_ord]/length(ppmvec)>=mini_match_prop | lenmatch[mathcind_ord]>mini_match_num]#the match will be visualized if one of the condition is true
   order_ind=mathcind_ord[1:maxmatch]
   peakind=intersect(ratio_ind,order_ind)
-  
+
   cleanlist=sapply(reslist[peakind],simplify=FALSE,function(x){
     x[1:4]
   })

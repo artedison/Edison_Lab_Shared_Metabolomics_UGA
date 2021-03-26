@@ -13,7 +13,7 @@ require(RCy3)
 comp="/Users/yuewu/"
 pardir=paste0(comp,"Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge.net/result_reprod/");
 # OR
-# pardir=getwd()
+# pardir=paste0(getwd(),"/")
 datadir=paste0(pardir,"result_data/")
 resdir=paste0(pardir,"result/clust_bootstrapping/")
 setwd(resdir)
