@@ -23,15 +23,12 @@ function [file,path,cancel,success] = ft_comTemplate(specList,repSpecName)
                 switch response
                     % From the proc_civm.com template file:
                     case 1
-                            locs = [' ./representative_spectrum/',repSpecName,'/test.fid',... % data IN location
-                                    ' ./representative_spectrum/',repSpecName,... % ft.com directory
-                                    ' ./representative_spectrum/',repSpecName,... % data OUT location
-                                    ' ',repSpecName];                      % spec name (used for naming files)
-        %                     locs = [' ./test.fid',... % data IN location
-        %                             ' ./',... % ft.com directory
-        %                             ' ./']... % data OUT location
-        %                    
-                            success = system(['proc_civm.com',locs]);
+%                             locs = [' ./representative_spectrum/',repSpecName,'/test.fid',... % data IN location
+%                                     ' ./representative_spectrum/',repSpecName,... % ft.com directory
+%                                     ' ./representative_spectrum/',repSpecName,... % data OUT location
+%                                     ' ',repSpecName];                      % spec name (used for naming files)
+%                                                             
+                            success = system(['proc_civm.com ',repSpecName]);
                             file = [repSpecName,'_ft.com'];
                             path = pwd;
                             cancel = 0;
@@ -76,13 +73,13 @@ function [file,path,cancel,success] = ft_comTemplate(specList,repSpecName)
                                 replaceIn = './test.fid';
                                 replaceOut = ['./',repSpecName','.ft'];
 
-                                            fdata = regexprep(fdata,['(?<!#[^\n])',...  % not preceded by a # followed by any non-newline char (e.g. not commented out)
+                                            fdata = regexprep(fdata,['(?<!#[^\n]*)',...  % not preceded by a # followed by any non-newline char (e.g. not commented out)
                                                                       '(?<=nmrPipe -in )',... % preceded by 'nmrPipe -in '
                                                                         '\S*',...       % expr is any number of consecutive non-whitespace chars
                                                                       '(?=\s\\)'],...   % followed by ' \'
                                                                      replaceIn);        % replacement for expr
 
-                                            fdata = regexprep(fdata,['(?<!#[^\n])',... % not preceded by a # followed by any non-newline char (e.g. not commented out)
+                                            fdata = regexprep(fdata,['(?<!#[^\n]*)',... % not preceded by a # followed by any non-newline char (e.g. not commented out)
                                                                       '(?<=-out )',... % preceded by '-out '
                                                                         '\S*',...      % expr is any number of consecutive non-whitespace chars
                                                                       '(?= -ov)'],...  % followed by ' -ov'

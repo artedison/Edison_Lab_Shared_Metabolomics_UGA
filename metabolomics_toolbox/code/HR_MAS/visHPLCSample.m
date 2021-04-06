@@ -21,7 +21,7 @@ if ~isempty(varargin)
     end
     if any(contains(varargin,'plotSum'))
         plotSum = true;
-    end
+    end    
 end
 
     for s = 1:length(sample)

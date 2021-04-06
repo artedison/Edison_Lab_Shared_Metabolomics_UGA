@@ -1,5 +1,7 @@
 function [colors] = colorCategories(colorBy,varargin)
 
+% 'cmap'      'jet', 'lines', etc
+% 'bgColors'  {'w','k'} or [1,1,1;0,0,0]
     
 
     %% Parse inputs
@@ -10,12 +12,12 @@ function [colors] = colorCategories(colorBy,varargin)
         bgColors = [1 1 1; 0 0 0];
         
     if ~isempty(varargin)
-        ind = ismember('cmap',varargin);
+        ind = strcmp('cmap',varargin);
         if any(ind)
             cmap = varargin{find(ind,1)+1};
         end
         
-        ind = ismember('bgColors',varargin);
+        ind = strcmp('bgColors',varargin);
         if any(ind)
             bgColors = varargin{find(ind,1)+1};
         end

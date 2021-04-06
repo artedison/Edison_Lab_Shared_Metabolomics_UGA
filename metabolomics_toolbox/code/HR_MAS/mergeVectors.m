@@ -35,12 +35,12 @@ function [unifiedVect, inds_unified_inEach,indsCells,repeatedVals] = mergeVector
 %     
 %     for k=1:size(spectra,2)
 %         clear h k1 k2 
-%         [h,k1]=min(abs(spectra(k).ppm-shiftpoints(2)));
-%         [h,k2]=min(abs(spectra(k).ppm-shiftpoints(1)));
+%         [h,k1]= matchPPMs(shiftpoints(2),spectra(k).ppm);
+%         [h,k2]= matchPPMs(shiftpoints(1),spectra(k).ppm);
 %         
 %         X(k,:)=interp1(spectra(k).ppm(k1:k2),spectra(k).real(k1:k2),ppm,'spline','extrap');
 %     end
-% 
+
 
 % Find overlapping range across all vects
 

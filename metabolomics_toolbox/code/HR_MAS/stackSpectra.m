@@ -1,4 +1,4 @@
-function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
+function [noise] = stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
 %% stackSpectra
 %{
     This function plots spectra sequentially so that trends can be seen for
@@ -23,7 +23,8 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
 
     noise = quantile(sort(abs(matrix(:))),0.25); % useful later
     whiteShapes = true;
-
+    continuousColors = false;
+    
     if ~isempty(varargin)
         % Name-value pairs
         
@@ -32,7 +33,9 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
             if ~isempty(ind)
                 colors = varargin{ind(1)+1};
                 %colors.rgb = flipud(colors.rgb);
-                
+                if ~isfield(colors,'categories') % figure out if it's a colorCategories or customColormap struct
+                    continuousColors = true;
+                end
 %             % If we then have indices specified for those colors
 %                 ind = find(strcmp(varargin,'colorInds'));
 %                 if ~isempty(ind)
@@ -46,19 +49,19 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
                     plotInds = varargin{ind(1)+1};               
                     matrix = matrix(plotInds,:);                 % don't flip this yet
                     colors.rgb = flipud(colors.rgb(plotInds,:)); % subset them, then flip to match matrix
-                end  
-                
+                else
+                    colors.rgb = flipud(colors.rgb);             % flip to match matrix
+                end
             end
-                        
-            if ~isempty(strcmp(varargin,'autoVert'))
+
+            if any(strcmp(varargin,'autoVert'))
                 vertshift = vertshift * noise;
                 %fprintf(['\n\n\tVertshift -> noise multiple mode. Estimated noise level : ',num2str(noise),'\n'])
             end     
             
-            if ~isempty(strcmp(varargin,'noWhiteShapes'))
+            if any(strcmp(varargin,'noWhiteShapes'))
                 whiteShapes = false;
             end     
-            
             
     end
 
@@ -70,9 +73,13 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
     hshiftvect = (horzshift * (1:size(matrix,1)))';
     shiftedppms = flipud(repmat(currentppm,size(matrix,1),1) - repmat(hshiftvect,1,length(currentppm)));
 
-    vshiftvect = vertshift * (1:size(matrix,1))';
-    shiftedmat = matrix - vshiftvect;
+    % All vertical adjustments made here
     
+        vshiftvect = vertshift * (1:size(matrix,1))';     
+       
+        shiftedmat = matrix - vshiftvect; 
+        shiftedmat(shiftedmat<baseline) = baseline;
+
     % Adjust ppm to match the first spectrum:
         currentppm = currentppm - horzshift * size(matrix,1);
     
@@ -94,10 +101,9 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
 %             ar(i).EdgeColor = lineColor;
 %         end
 % Adjustments made as matrices
+    
         for i = 1:size(matrix,1)
-            adjRow = matrix(i,:)-vertshift * i;
-            adjRow(adjRow<baseline) = baseline;
-            ar(i) = area(currentppm + horzshift * i,adjRow,'BaseValue',baseline);%,'EdgeColor','flat');
+            ar(i) = area(currentppm + horzshift * i,shiftedmat(i,:),'BaseValue',baseline);%,'EdgeColor','flat');
             lineColor = ar(i).FaceColor;
             ar(i).FaceColor = 'w';
             ar(i).EdgeColor = lineColor;
@@ -122,10 +128,23 @@ function stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
 % Update line colors (if provided)
     
     if exist('colors','var')
-        for i = 1:length(ar) % *** must update them in the correct order so they lay on top of each other correctly
-            ar(i).EdgeColor = colors.rgb(i,:); % colors.rgb was already flipped to match matrix
+        if continuousColors
+            for i = 1:length(ar) % *** must update them in the correct order so they lay on top of each other correctly
+                ar(i).EdgeColor = colors.rgb(i,:); % colors.rgb was already flipped to match matrix
+            end
+            
+            colorbar(gca,'Colormap',colors.cmap,...
+                 'TickLabels',round(colors.setPts,1),...
+                 'Ticks', (colors.setPts - min(colors.setPts))/range(colors.setPts),...
+                 'FontSize',20);
+             
+        else
+            for i = 1:length(ar) % *** must update them in the correct order so they lay on top of each other correctly
+                ar(i).EdgeColor = colors.rgb(i,:); % colors.rgb was already flipped to match matrix
+            end
+            legendInds = unique(colors.inds_cat(plotInds));
+            addReasonableLegend(table2cell(colors.categories(legendInds,1)),colors.colorList(legendInds,:))    % these were not flipped
         end
-        addReasonableLegend(table2cell(colors.categories(:,1)),colors.colorList)    % these were not flipped
     end
     
 %     set(gca,'xlim',[-3.21862204651590,-3.04023643628845])

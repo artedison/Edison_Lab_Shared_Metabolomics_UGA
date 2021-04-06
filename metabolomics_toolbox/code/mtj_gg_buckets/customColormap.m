@@ -54,6 +54,7 @@ function [cinfo] = customColormap(x,varargin)
         colors = [0,0,0.5686;...
                   1,1,1;...
                   0.5686,0.0392,0.0392]; % Blue (low vals), White (middle vals), Red (high vals)
+        balance = 0;
         
     %% Parse params
     

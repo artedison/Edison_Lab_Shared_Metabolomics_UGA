@@ -328,5 +328,6 @@ function updateFigure(matrix,currentBuckets,patches,expandedBuckets)
     end
     
     title('Press one of the allowed keys for a refining action. Press ''h'' for help')
-    
+    %set(gcf,'WindowState','fullscreen')
+    set(gcf,'WindowState','maximized')
 end
