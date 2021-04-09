@@ -1,4 +1,4 @@
-function [noise] = stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,varargin)
+function [noise] = stackSpectra(matrix,ppm,horzshift,vertshift,plotTitle,varargin)
 %% stackSpectra
 %{
     This function plots spectra sequentially so that trends can be seen for
@@ -24,6 +24,7 @@ function [noise] = stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,
     noise = quantile(sort(abs(matrix(:))),0.25); % useful later
     whiteShapes = true;
     continuousColors = false;
+    timeVect = (1:size(matrix,1))';
     
     if ~isempty(varargin)
         % Name-value pairs
@@ -42,12 +43,24 @@ function [noise] = stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,
 %                     colorInds = varargin{ind(1)+1};
 %                     colors.rgb = flipud(colors.rgb(colorInds,:)); % subset them, then flip to match matrix
 %                 end  
+        % If we are plotting based on a time vector (should come after
+        % plotInds
+        
+            ind = find(strcmp(varargin,'timeVect'));
+            if ~isempty(ind)
+                %tvflag = 1;
+                timeVect = varargin{ind(1)+1};
+                if size(timeVect,2) > size(timeVect,1) % make sure it's a column
+                    timeVect = timeVect';
+                end
+            end
                 
             % If we then have plot indices specified
                 ind = find(strcmp(varargin,'plotSubset'));
                 if ~isempty(ind)
                     plotInds = varargin{ind(1)+1};               
                     matrix = matrix(plotInds,:);                 % don't flip this yet
+                    timeVect = timeVect(plotInds);
                     colors.rgb = flipud(colors.rgb(plotInds,:)); % subset them, then flip to match matrix
                 else
                     colors.rgb = flipud(colors.rgb);             % flip to match matrix
@@ -57,7 +70,9 @@ function [noise] = stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,
             if any(strcmp(varargin,'autoVert'))
                 vertshift = vertshift * noise;
                 %fprintf(['\n\n\tVertshift -> noise multiple mode. Estimated noise level : ',num2str(noise),'\n'])
+                timeVect = (1:size(matrix,1))'; % override timeVect (only way)
             end     
+
             
             if any(strcmp(varargin,'noWhiteShapes'))
                 whiteShapes = false;
@@ -67,21 +82,28 @@ function [noise] = stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,
 
 %% Do some calculations ahead of time
 
+    % Vertshift and horzshift need to be related 
+    
     matrix = flipud(matrix);
-    baseline = mean(matrix(end,:))-std(matrix(end,:)) - vertshift * size(matrix,1); % get rid of sides
-
-    hshiftvect = (horzshift * (1:size(matrix,1)))';
-    shiftedppms = flipud(repmat(currentppm,size(matrix,1),1) - repmat(hshiftvect,1,length(currentppm)));
-
+%%    
+    hshiftvect = horzshift * timeVect; 
+    
+    shiftedppms = flipud(repmat(ppm,length(timeVect),1) - repmat(hshiftvect,1,length(ppm)));
+    
+    % Adjust ppm to match the first spectrum in shiftedmat
+    
+        %ppm = ppm + horzshift * max(timeVect);
+        
     % All vertical adjustments made here
     
-        vshiftvect = vertshift * (1:size(matrix,1))';     
-       
-        shiftedmat = matrix - vshiftvect; 
+        vshiftvect = flipud(vertshift * timeVect); 
+        
+        shiftedmat = matrix + vshiftvect; 
+        
+            baseline = mean(shiftedmat(end,:))-std(shiftedmat(end,:)) - vertshift * length(timeVect); % get rid of sides
+            
         shiftedmat(shiftedmat<baseline) = baseline;
 
-    % Adjust ppm to match the first spectrum:
-        currentppm = currentppm - horzshift * size(matrix,1);
     
 %% Make the plot       
     % Spectra are plotted from the back to the front, and top to bottom
@@ -103,7 +125,7 @@ function [noise] = stackSpectra(matrix,currentppm,horzshift,vertshift,plotTitle,
 % Adjustments made as matrices
     
         for i = 1:size(matrix,1)
-            ar(i) = area(currentppm + horzshift * i,shiftedmat(i,:),'BaseValue',baseline);%,'EdgeColor','flat');
+            ar(i) = area(shiftedppms(i,:),shiftedmat(i,:),'BaseValue',baseline);%,'EdgeColor','flat');
             lineColor = ar(i).FaceColor;
             ar(i).FaceColor = 'w';
             ar(i).EdgeColor = lineColor;

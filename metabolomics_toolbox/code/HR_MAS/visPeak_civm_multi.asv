@@ -46,8 +46,7 @@
     
 %% Plot peak from each sample
 
-    plotRegion = [5,5.6]; % G1P
-    plotRegion = [1.1233    1.2510]; % Ethanol
+    plotRegion = [5,5.6];
     plotRes = 30;
     horzshift = -.001;
         noise = 1.298578433674705e+10; % got this as output from running stackSpectra on the data
@@ -75,9 +74,6 @@
         
     end
 
-    
-    
-    
 %%
     for i = 1:length(sn)  
         for j = 1:length(bs)
