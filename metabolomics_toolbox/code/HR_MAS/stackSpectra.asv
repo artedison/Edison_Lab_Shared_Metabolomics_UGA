@@ -1,4 +1,4 @@
-function [noise,p] = stackSpectra(matrix,ppm,horzshift,vertshift,plotTitle,varargin)
+function [noise] = stackSpectra(matrix,ppm,horzshift,vertshift,plotTitle,varargin)
 %% stackSpectra
 %{
     This function plots spectra sequentially so that trends can be seen for

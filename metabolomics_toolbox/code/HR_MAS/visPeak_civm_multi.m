@@ -17,11 +17,11 @@
                 'paper_Sample_4'};
             
 % Open the above files
-%     for e = 1:length(experiments)
-%         cd(experiments{e})
-%         edit('makeDirs*.m')
-%         cd ..
-%     end
+    for e = 1:length(experiments)
+        cd(experiments{e})
+        edit('makeDirs*.m')
+        cd ..
+    end
     
     datasets = struct();    
     
@@ -46,37 +46,85 @@
     
 %% Plot peak from each sample
 
-    plotRegion = [5,5.6]; % G1P
-    plotRegion = [1.1233    1.2510]; % Ethanol
-    plotRes = 30;
-    horzshift = -.001;
         noise = 1.298578433674705e+10; % got this as output from running stackSpectra on the data
-    vertshift = 0.3 * noise;   
-    
-    
+        timeLimit = 12;
+        
+   plotSpec(1).region = [5,5.6]; % G1P
+        plotSpec(1).peakName = 'glucose-1-phoshphate';
+        
+   plotSpec(2).region = [1.1498    1.2630]; % Ethanol
+        plotSpec(2).peakName = 'ethanol';
+        
+   plotSpec(3).region = [3.0    3.3]; % 3.2 singlet
+        plotSpec(3).peakName = 'Singlet at 3.2';
+        
+   plotSpec(4).region = [2.3    2.6]; % succinate
+        plotSpec(4).peakName = 'succinate';
+
+%% 
+p = 4;
+clear ax fig 
+
+%     plotSpec(p).plotRes = 50;
+%     plotSpec(p).horzshift = .001;
+%     plotSpec(p).vertshift = 0.2 * noise;   
+
     for d = 1:length(datasets)
-        
+
+        timepoints = [datasets(d).dataStruct.smoothedData.timepoints];        
         ppm = datasets(d).dataStruct.ppm;
-        reginds = fillRegion(plotRegion,ppm);
-        ppm = ppm(reginds);
+        reginds = fillRegion(plotSpec(p).region,ppm);
+        ppm = ppm;
         matrix = vertcat(datasets(d).dataStruct.smoothedData.data);
-        matrix = matrix(:,reginds);
-        timepoints = [datasets(d).dataStruct.smoothedData.timepoints];
-        
+        matrix = matrix;
+            
              % Make a Stack Plot of the spectra:
 
-                    [datasets(d).dataStruct.plotInds,datasets(d).dataStruct.plotIndsCat] = calc_stackPlotInds({datasets(d).dataStruct.smoothedData.data},plotRes);
-
-                stackSpectra(matrix,ppm,horzshift,vertshift,datasets(d).dataStruct.plotTitle,...
+                    [datasets(d).dataStruct.plotInds,datasets(d).dataStruct.plotIndsCat] = calc_stackPlotInds({datasets(d).dataStruct.smoothedData.data},plotRes,maxTime);
+                    
+                [~,plotSpec(p).params] = stackSpectra(matrix,ppm,...
+                            plotSpec(p).horzshift,...
+                            plotSpec(p).vertshift,...
+                            [datasets(d).dataStruct.plotTitle;' (',...
+                                    num2str(timepoints(max(datasets(d).dataStruct.plotIndsCat))),...
+                            ' h)'],...
                              'colors',datasets(d).dataStruct.colorsSmoothed,...
                              'plotSubset',datasets(d).dataStruct.plotIndsCat,...
-                             'timeVect',timepoints)
+                             'noWhiteShapes',...
+                             'timeVect',timepoints);
                          legend 'off'
+                         
+        ax(d) = gca;
+        fig(d) = gcf;
+
+%         set(gca,'xlim',plotSpec.xlims)
+%         set(gca,'ylim',plotSpec.ylims)
         
     end
+    
+ linkaxes(ax);
+ 
+ 
+%% Saving
+cd('/Users/mjudge/Dropbox (Edison_Lab@UGA)/Projects/clock/CIVM_paper_2/Acetate_QAX_project/NMRdata/processed')
+mkdir('multisample_plotting_byPeak')
+cd('multisample_plotting_byPeak')
+regionName = [num2str(plotSpec(p).region(1)),'-',num2str(plotSpec(p).region(2)),' ppm'];
+mkdir(regionName);
+cd(regionName)
 
-    
-    
+plotSpec(p).xlims = get(gca,'xlim');
+plotSpec(p).ylims = get(gca,'ylim');
+
+
+    for i = 1:length(ax)   
+        printCleanPDF(fig(i),[datasets(i).structName{:},...
+                                ' - Region ',...
+                                    num2str(plotRegion(1)),'-',num2str(plotRegion(2)),...
+                                ' ppm']);
+    end
+
+    close all
     
 %%
     for i = 1:length(sn)  

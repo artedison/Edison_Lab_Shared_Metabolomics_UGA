@@ -1,4 +1,4 @@
-function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints)
+function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints,maxInd)
 % Calculates the inds needed for plotting one or more datasets together at
 % a given resolution (e.g. number of spectra). This should make it easier
 % to plot reasonable numbers of spectra using slow functions like
@@ -25,7 +25,9 @@ function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints)
 
 % MTJ JAN2021
 
-    
+
+
+
 %% Convert data to rows vect
 
     type = class(data);
@@ -44,18 +46,30 @@ function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints)
                 rows = cellfun(@(x) size(x,1), data);
                 cols = cellfun(@(x) size(x,2), data);
                 
+                if ~exist('maxInd','var')
+                    maxInd = max(rows); 
+                end
+                
             % Calculate the inds lists
             
                 cr = cumsum(rows);          
                 indsLists = fillRegions([1,cr(1:end-1) + 1;...
                                          cr                  ]);
-                    % Note: his operation is equivalent to:
-                    %                         [1 : cr(1)
+                    % Note: this operation is equivalent to:
+                    %                   [     1 : cr(1)
                     %                   cr(1)+1 : cr(2)
                     %                   cr(2)+1 : cr(3)
                     %                   ...
                     %                   cr(end-1)+1 : cr(end)]
                                  
+                 % Trim this indsLists to maxInd
+                 
+                    for i = 1:length(indsLists)
+                        indsLists{i} = indsLists{i}(indsLists{i} < maxInd);
+                    end
+                    rows(cellfun(@isempty,indsLists)) = [];
+                    indsLists(cellfun(@isempty,indsLists)) = [];
+                    
             % Distribute numPoints across each range
                 
                 numPoints_row = zeros(size(rows));
@@ -65,11 +79,12 @@ function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints)
                 remPoints = numPoints - sum(numPoints_row);     % number of points left to distribute over, accounting for single-point runs
                 needPoints = rows>1;
                   
-
             % Divide these up to the groups (always include endpoints)
             
                 ratios = rows(needPoints) / sum(rows(needPoints));
-                numPoints_row(needPoints) = round(ratios * remPoints); 
+                numPoints_row(needPoints) = round(ratios * remPoints);
+                numPoints_row(numPoints_row<1) = 1;
+                
                     % In the future, we could rank the remainders of these and assign remaining
                     % points based on highest remainders
                     
