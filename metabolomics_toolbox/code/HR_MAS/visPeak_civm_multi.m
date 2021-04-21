@@ -14,14 +14,15 @@
                 'CIVM_ncrassa_qax_08';
                 'CIVM_ncrassa_qax_10';
                 'CIVM_ncrassa_qax_11';
-                'paper_Sample_4'};
+                'paper_Sample_4';
+                'CIVM_ncrassa_qax_12'};
             
 % Open the above files
-    for e = 1:length(experiments)
-        cd(experiments{e})
-        edit('makeDirs*.m')
-        cd ..
-    end
+%     for e = 1:length(experiments)
+%         cd(experiments{e})
+%         edit('makeDirs*.m')
+%         cd ..
+%     end
     
     datasets = struct();    
     
@@ -41,7 +42,7 @@
         
     end
 
-    clear('temp','experiments','d','tempstruct')
+    clear('temp','experiments','d','tempstruct','e')
     cd ..
     
 %% Plot peak from each sample
@@ -64,26 +65,27 @@
 %% 
 p = 4;
 clear ax fig 
-
-%     plotSpec(p).plotRes = 50;
-%     plotSpec(p).horzshift = .001;
-%     plotSpec(p).vertshift = 0.2 * noise;   
+    maxTime = 12;
+    plotSpec(p).plotRes = 50;
+    plotSpec(p).horzshift = .001;
+    plotSpec(p).vertshift = 0.8 * noise;   
 
     for d = 1:length(datasets)
 
-        timepoints = [datasets(d).dataStruct.smoothedData.timepoints];        
+        timepoints = [datasets(d).dataStruct.smoothedData.timepoints];    
+        maxInd = max(find(timepoints<maxTime));
         ppm = datasets(d).dataStruct.ppm;
         reginds = fillRegion(plotSpec(p).region,ppm);
-        ppm = ppm;
+        ppm = ppm(reginds);
         matrix = vertcat(datasets(d).dataStruct.smoothedData.data);
-        matrix = matrix;
+        matrix = matrix(:,reginds);
             
              % Make a Stack Plot of the spectra:
 
-                    [datasets(d).dataStruct.plotInds,datasets(d).dataStruct.plotIndsCat] = calc_stackPlotInds({datasets(d).dataStruct.smoothedData.data},plotRes,maxTime);
+                    [datasets(d).dataStruct.plotInds,datasets(d).dataStruct.plotIndsCat] = calc_stackPlotInds({datasets(d).dataStruct.smoothedData.data},plotSpec(p).plotRes,maxInd);
                     
                 [~,plotSpec(p).params] = stackSpectra(matrix,ppm,...
-                            plotSpec(p).horzshift,...
+                            plotSpec(p).horzshift,... 
                             plotSpec(p).vertshift,...
                             [datasets(d).dataStruct.plotTitle;' (',...
                                     num2str(timepoints(max(datasets(d).dataStruct.plotIndsCat))),...

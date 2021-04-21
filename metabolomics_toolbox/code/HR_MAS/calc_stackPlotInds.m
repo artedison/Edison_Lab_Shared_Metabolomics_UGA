@@ -63,7 +63,7 @@ function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints,maxInd)
                     %                   cr(end-1)+1 : cr(end)]
                                  
                  % Trim this indsLists to maxInd
-                 
+                    
                     for i = 1:length(indsLists)
                         indsLists{i} = indsLists{i}(indsLists{i} < maxInd);
                     end

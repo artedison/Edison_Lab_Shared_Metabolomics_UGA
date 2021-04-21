@@ -14,7 +14,8 @@
                 'CIVM_ncrassa_qax_08';
                 'CIVM_ncrassa_qax_10';
                 'CIVM_ncrassa_qax_11';
-                'paper_Sample_4'};
+                'paper_Sample_4';
+                'CIVM_ncrassa_qax_12'};
             
 % Open the above files
 %     for e = 1:length(experiments)
@@ -64,10 +65,10 @@
 %% 
 p = 4;
 clear ax fig 
-
-%     plotSpec(p).plotRes = 50;
-%     plotSpec(p).horzshift = .001;
-%     plotSpec(p).vertshift = 0.2 * noise;   
+    maxTime = 12;
+    plotSpec(p).plotRes = 50;
+    plotSpec(p).horzshift = .001;
+    plotSpec(p).vertshift = 0.2 * noise;   
 
     for d = 1:length(datasets)
 
@@ -80,7 +81,7 @@ clear ax fig
             
              % Make a Stack Plot of the spectra:
 
-                    [datasets(d).dataStruct.plotInds,datasets(d).dataStruct.plotIndsCat] = calc_stackPlotInds({datasets(d).dataStruct.smoothedData.data},plotRes,maxTime);
+                    [datasets(d).dataStruct.plotInds,datasets(d).dataStruct.plotIndsCat] = calc_stackPlotInds({datasets(d).dataStruct.smoothedData.data},plotSpec(p).plotRes,maxTime);
                     
                 [~,plotSpec(p).params] = stackSpectra(matrix,ppm,...
                             plotSpec(p).horzshift,...
@@ -103,8 +104,8 @@ clear ax fig
     end
     
  linkaxes(ax);
-  
-    
+ 
+ 
 %% Saving
 cd('/Users/mjudge/Dropbox (Edison_Lab@UGA)/Projects/clock/CIVM_paper_2/Acetate_QAX_project/NMRdata/processed')
 mkdir('multisample_plotting_byPeak')
