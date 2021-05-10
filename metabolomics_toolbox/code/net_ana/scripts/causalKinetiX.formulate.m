@@ -167,5 +167,5 @@ save('network_data.mat','namesall','mat_reshape_all','ppmmatch_ind_all');
 % 'timevec': time vector (ntime)
 % 'envvec': environment vector (nreplicate)
 % 'namesall': compound name vector (nfeature)
-% 'ppmmatch_ind_all': ppm match matrix (nreplicate*(nfeature*ntime))
+% 'ppmmatch_ind_all': ppm match matrix (nreplicate*(nfeature))
 % 'mat_reshape_all': feature intenstiy matrix ((nreplicate*ntime)*nfeature)
