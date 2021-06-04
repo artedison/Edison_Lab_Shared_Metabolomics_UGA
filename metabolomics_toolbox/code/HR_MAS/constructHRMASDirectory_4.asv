@@ -219,9 +219,8 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
                             mkdir('representative_spectrum') % no need to add to paths list
                 end
         % Make a directory for each <expType type> within "raw"
-            
+            cd(sample(s).paths.raw)
                 for t = 1:length(sample(s).expTypes)
-                    cd(sample(s).paths.raw)
                     % Make the directory for this type
                         
                         mkdir(sample(s).expType(t).type)

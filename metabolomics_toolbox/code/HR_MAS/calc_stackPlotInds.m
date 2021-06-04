@@ -46,13 +46,15 @@ function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints,maxInd)
                 rows = cellfun(@(x) size(x,1), data);
                 cols = cellfun(@(x) size(x,2), data);
                 
-                if ~exist('maxInd','var')
-                    maxInd = max(rows); 
-                end
                 
             % Calculate the inds lists
             
-                cr = cumsum(rows);          
+                cr = cumsum(rows);    
+                
+                if ~exist('maxInd','var')
+                    maxInd = max(cr); 
+                end
+                
                 indsLists = fillRegions([1,cr(1:end-1) + 1;...
                                          cr                  ]);
                     % Note: this operation is equivalent to:
@@ -71,10 +73,15 @@ function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints,maxInd)
                     indsLists(cellfun(@isempty,indsLists)) = [];
                     
             % Distribute numPoints across each range
+                % If there are > 1 timepoint, make sure at least the first
+                % and last points are represented
                 
                 numPoints_row = zeros(size(rows));
                 numPoints_row(rows==1) = 1;
-                
+
+%                 numPoints_row = ones(size(rows));
+%                 numPoints_row(rows>1) = 2;
+%                 
             % How many points are left to distribute?
                 remPoints = numPoints - sum(numPoints_row);     % number of points left to distribute over, accounting for single-point runs
                 needPoints = rows>1;
@@ -84,6 +91,7 @@ function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints,maxInd)
                 ratios = rows(needPoints) / sum(rows(needPoints));
                 numPoints_row(needPoints) = round(ratios * remPoints);
                 numPoints_row(numPoints_row<1) = 1;
+                numPoints_row(rows>1 & numPoints_row < 2) = 2;
                 
                     % In the future, we could rank the remainders of these and assign remaining
                     % points based on highest remainders

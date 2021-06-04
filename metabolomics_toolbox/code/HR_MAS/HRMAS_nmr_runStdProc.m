@@ -10,6 +10,9 @@ function [data] = HRMAS_nmr_runStdProc(sampleInfo,sample,expType)
 
 %% handle inputs
 
+if expType == 0
+    expType = 1;
+end
 specList = sampleInfo.sample(sample).expType(expType);
 
 %% Take care of filepath stuff

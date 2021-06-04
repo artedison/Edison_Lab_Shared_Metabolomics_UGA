@@ -53,7 +53,7 @@
    plotSpec(1).region = [5,5.6]; % G1P
         plotSpec(1).peakName = 'glucose-1-phoshphate';
         
-   plotSpec(2).region = [1.1498    1.2630]; % Ethanol
+   plotSpec(2).region = [1.1498    1.22]; % Ethanol
         plotSpec(2).peakName = 'ethanol';
         
    plotSpec(3).region = [3.0    3.3]; % 3.2 singlet
@@ -62,15 +62,35 @@
    plotSpec(4).region = [2.3    2.6]; % succinate
         plotSpec(4).peakName = 'succinate';
 
-%% 
-p = 4;
-clear ax fig 
-    maxTime = 12;
-    plotSpec(p).plotRes = 50;
-    plotSpec(p).horzshift = .001;
-    plotSpec(p).vertshift = 0.8 * noise;   
+   plotSpec(5).region = [3    4.5]; % succinate
+        plotSpec(5).peakName = 'myo-inositol region';
 
+   plotSpec(6).region = [-0.5 10];
+        plotSpec(6).peakName = 'Whole Spectrum';
+        
+   plotSpec(7).region = [-0.0496    1.2207];
+        plotSpec(7).peakName = 'EtOH cp DSS';   
+        
+   plotSpec(8).region = [1.8353    1.8621];
+        plotSpec(8).peakName = 'quinic acid (quant)'; 
+
+   plotSpec(9).region = [5.211    5.23968];
+        plotSpec(9).peakName = 'glucose a (quant)'; 
+
+   plotSpec(10).region = [1.8353    1.8621];
+        plotSpec(10).peakName = 'glucose b (quant)'; 
+        
+%% 
+p = 2;
+clear ax fig 
+    maxTime = 40;
+    plotSpec(p).plotRes = 30;
+    plotSpec(p).horzshift = .002;
+    plotSpec(p).vertshift = 0.8 * noise;   
+    quinicData = [1,2,5];
     for d = 1:length(datasets)
+
+%     for d = 8%quinicData
 
         timepoints = [datasets(d).dataStruct.smoothedData.timepoints];    
         maxInd = max(find(timepoints<maxTime));
@@ -94,8 +114,13 @@ clear ax fig
                              'plotSubset',datasets(d).dataStruct.plotIndsCat,...
                              'noWhiteShapes',...
                              'timeVect',timepoints);
-                         legend 'off'
-                         
+%                          legend 'off'
+
+                 
+%                  highlightROIs([1.8353    1.8621]',max(matrix(:)),'horzshift', plotSpec(p).params.horzshift,'vertshift',plotSpec(p).params.vertshift, 'numberOfSpectra', size(matrix,1),'extension',0.1)
+                 qaquant_max{d} = max(matrix,[],2);
+                 qaquant_min{d} = min(matrix,[],2);
+                 
         ax(d) = gca;
         fig(d) = gcf;
 
@@ -122,7 +147,7 @@ plotSpec(p).ylims = get(gca,'ylim');
     for i = 1:length(ax)   
         printCleanPDF(fig(i),[datasets(i).structName{:},...
                                 ' - Region ',...
-                                    num2str(plotRegion(1)),'-',num2str(plotRegion(2)),...
+                                    num2str(plotSpec(p).region(1)),'-',num2str(plotSpec(p).region(2)),...
                                 ' ppm']);
     end
 
@@ -165,6 +190,66 @@ plotSpec(p).ylims = get(gca,'ylim');
         suplabel('Chemical Shift (ppm)','x');
     
 
+%% QA and total spectral intensity Quant
+ figure,hold on
+    for d = 1
+        m = qaquant_max{d};
+            m = m/max(m(:));
+        plot([datasets(d).dataStruct.smoothedData.timepoints],m)
+    end 
+    legend({'WT','qa-X','qa-4'})
+    title('QA Consumption in Mutants')
+    xlabel('Time (h)')
+    ylabel('Scaled QA Peak Height (Peak Max)')
+%     ylabel('Total Spectral Intensity')
+    set(gca,'FontSize',20)
+ figure,hold on
+    for d = [1,2,5]
+        m = qaquant_max{d}-qaquant_min{d};
+            m = m/max(m(:));
+        plot([datasets(d).dataStruct.smoothedData.timepoints],m)
+    end 
+    legend({'WT','qa-X','qa-4'})
+    title('QA Consumption in Mutants')
+    xlabel('Time (h)')
+    ylabel('Scaled QA Peak Height (Max - min)')
+%     ylabel('Total Spectral Intensity')
+    set(gca,'FontSize',20)
 
-
-
+%% EtOH and total spectral intensity Quant
+ figure,hold on
+    for d = 8
+        m = qaquant_max{d};
+            m = m/max(m(:));
+        plot([datasets(d).dataStruct.smoothedData.timepoints],m)
+    end 
+    legend({'pgm-2'})
+    title('EtOH Long Starve pgm-2')
+    xlabel('Time (h)')
+    ylabel('Scaled EtOH Peak Height (Peak Max)')
+%     ylabel('Total Spectral Intensity')
+    set(gca,'FontSize',20)
+ figure,hold on
+    for d = 8
+        m = qaquant_max{d}-qaquant_min{d};
+            m = m/max(m(:));
+        plot([datasets(d).dataStruct.smoothedData.timepoints],m)
+    end 
+    legend({'pgm-2'})
+    title('EtOH Long Starve pgm-2')
+    xlabel('Time (h)')
+    ylabel('Scaled EtOH Peak Height (Max - min)')
+%     ylabel('Total Spectral Intensity')
+    set(gca,'FontSize',20)
+    
+    
+%% QA and total spectral intensity Quant
+    for d = 1:length(datasets)
+        figure
+        m = qaquant_max{d};
+            m = m/max(m(:));
+        plot([datasets(d).dataStruct.smoothedData.timepoints],m)
+        title(['EtOH in ',datasets(d).structName],'Interpreter','none')
+        xlabel('time (h)')
+    end 
+    
