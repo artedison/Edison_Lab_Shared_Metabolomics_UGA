@@ -389,5 +389,5 @@ function [updatedStudyInfo] = processCIVMdata(studyInfo,destinationDir,newDataDi
     end    
 
     updatedStudyInfo = studyInfo;
-    cd(specList.paths.sample)
+%     cd(destinationDir)
 end
