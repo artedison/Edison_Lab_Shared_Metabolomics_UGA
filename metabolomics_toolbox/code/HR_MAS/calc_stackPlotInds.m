@@ -1,4 +1,4 @@
-function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints,maxInd)
+function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints,varargin)
 % Calculates the inds needed for plotting one or more datasets together at
 % a given resolution (e.g. number of spectra). This should make it easier
 % to plot reasonable numbers of spectra using slow functions like
@@ -26,7 +26,20 @@ function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints,maxInd)
 % MTJ JAN2021
 
 
+%% Parse optional args
 
+%    optParams = {'maxInd','minInd'};
+%    varargin =[ {'minInd'}  {0}  {'maxInd'}];
+%    
+%     if ~isempty(varargin)
+%         isstr = find(cellfun(@ischar,varargin));
+%         [a,b] = ismember(varargin(isstr),optParams);
+%         for parm = isstr(a)
+%             varargin(parm)
+%         end
+%         ismember(op
+%         
+%     end
 
 %% Convert data to rows vect
 
