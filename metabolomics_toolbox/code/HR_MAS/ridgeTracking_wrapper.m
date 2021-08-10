@@ -1,6 +1,31 @@
-function [Sample] = ridgeTracking_wrapper(Sample,sample,matrix,ppm,timepoints,regionsele,wander_settingByRegion,intensityVariation_ByRegion,i)
+function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
+% So we don't have to look at all this in the main workflow.
 
-% So we don't have to look at all this crap.
+% MTJ 10AUG2021
+
+%% Get the data out:
+        matrix = vertcat(thisExp.smoothedData(thisExp.traceMats).data);
+            matrix = matrix(thisExp.plotInds{:},:);
+
+        ppm = thisExp.ppm;
+        
+        timepoints = vertcat(thisExp.smoothedTimes(thisExp.traceMats).timepoints(:));
+            timepoints = timepoints(thisExp.plotInds{:});
+            
+%         plotTitle = thisExp.plotTitle;        
+
+        regionsele = thisExp.trackingRegions;
+        wander_settingByRegion = thisExp.wander_settingByRegion;
+        intensityVariation_ByRegion = thisExp.intensityVariation_ByRegion;
+        
+            
+%% Plot to make sure the spectra look good. Params used for plotting later?
+
+    thisExp.horzshift = .002;
+    thisExp.vertshift = 1E-2;
+
+
+
     mkdir('Production_Run')
     cd Production_Run
 
@@ -16,8 +41,8 @@ function [Sample] = ridgeTracking_wrapper(Sample,sample,matrix,ppm,timepoints,re
                 plotTitle = [num2str(currentTrackingRegion(1)),'.',num2str(currentTrackingRegion(2)),'.',num2str(samp_i),'.testplot'];
             
             % Run the Function
-                [returndata] = ridgetrace_power2_ext(matrix,ppm,timepoints',currentTrackingRegion,path,wander_settingByRegion(i),intensityVariation_ByRegion(i));
-%           
+                [returndata] = ridgetrace_power2_ext(matrix,ppm,timepoints,currentTrackingRegion,path,wander_settingByRegion(i),intensityVariation_ByRegion(i));
+           
             % Save the figure    
                 fig = gcf;
                 saveas(fig,strcat(cd(),'/',plotTitle,'.surf.experiment.manual.fig'));
@@ -81,10 +106,10 @@ function [Sample] = ridgeTracking_wrapper(Sample,sample,matrix,ppm,timepoints,re
                 ind = reg(1):reg(2);
                 mathere = matrix(:,ind);
                 ppmhere = ppm(ind);
-                fig = stackSpectra_paintRidges_3return(mathere,ppmhere,horzshift,0.01,plotTitle,peakshere,10);
-                saveas(fig,strcat(path,plotTitle,'.scatter.experiment.manual.fig'));
+                fig = stackSpectra_paintRidges_3return(mathere,ppmhere,thisExp.horzshift,0.01,plotTitle,peakshere,10);
+                saveas(fig,strcat(cd(),'/',plotTitle,'.scatter.experiment.manual.fig'));
                 close(fig);
                 
     end
-      
+    cd ..
 end
