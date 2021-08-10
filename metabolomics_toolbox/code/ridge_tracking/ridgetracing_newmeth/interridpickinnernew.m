@@ -1,4 +1,4 @@
-function [strres]=interridpickinnernew(input,mathere,timehere,ppmhere,titlehere,vislen,defaultinput)
+function [strres]=interridpickinnernew(input,mathere,timehere,ppmhere,titlehere,vislen,defaultinput,flagstage)
 %% this function plot the ridge and give interactive picking
 %% click the ridge once(odd times), you will get the ridge recorded. If you click it even times, it will not be selected
 %% arguement:
@@ -9,8 +9,9 @@ function [strres]=interridpickinnernew(input,mathere,timehere,ppmhere,titlehere,
 %%% titlehere: the title of the figure shown
 %%% vislen: the minimum length for interactive ridge picking
 %%% defaultinput: the default input for compound name and quantificability
+%%% flagstage: the flag to distinguish small window retracking step ('sw'), final tracking step ('ft'), skipped from small window retracking ('ssw'). default 'sw'.
 %% return: strres
-%%% contains the cluster number of the selected ridges (clusterreturn), names of spectral (namevec), and whether it is good to quantify (quantifyvec)
+%%% contains the cluster number of the selected ridges (clusterreturn), names of spectral (namevec), and whether it is good to quantify (quantifyvec), the menu choice.
 %% the ridges can be removed by delte ridges, in which condition, the return value will be negative cluster number
 %% this is derived from ridgeTracing_clusterPeaks_interactive_2
 %% MJ&YW 11/28/2018
@@ -25,10 +26,13 @@ function [strres]=interridpickinnernew(input,mathere,timehere,ppmhere,titlehere,
 if ~exist('titlehere', 'var')
   titlehere='figure';
 end
-if ~exist('defaultinput', 'var')
+if ~exist('defaultinput', 'var') || length(defaultinput)==0
   defaultinput=struct();
   defaultinput.compd='unknown';
   defaultinput.quan='N';
+end
+if ~exist('flagstage', 'var')
+  flagstage='ft';
 end
 %% intializaiton
 clustsrid=input(:,4);
@@ -54,7 +58,16 @@ choice='start';
 while ~((strcmp(choice,'Pick Final Clusters'))||(strcmp(choice,'Delete Ridge(s)'))||(strcmp(choice,'Cancel')))%
   fig=plotRidgesherenew(mathere,ppmhere,timehere,clustshere,cindallhere,rindallhere,ridvalallhere,clusters,titlehere);
   % answer = menu('Interactive Ridge Picking Menu','Pick Clusters to Join','Pick Final Clusters','Delete Ridge(s)','Cancel','box_remove');
-  answer=menu('Interactive Ridge Picking Menu','Pick Final Clusters','Delete Ridge(s)','Cancel');
+  if ~strcmp(flagstage,'ssw')
+    answer=menu('Interactive Ridge Picking Menu','Pick Final Clusters','Delete Ridge(s)','Cancel');
+  else
+    answer=1;
+  end
+  if strcmp(flagstage,'ft') && answer==2
+    warning('Delete Ridge(s) only occur once');
+    close(gcf);
+    continue;
+  end
   % Globals MUST be cleaned up after each iteration and
   % initialized ONCE in the code.
   global clickedRidges;
@@ -62,7 +75,12 @@ while ~((strcmp(choice,'Pick Final Clusters'))||(strcmp(choice,'Delete Ridge(s)'
   global lineNumber;
   lineNumber=1;
   choice=choices{answer};
-  if strcmp(choice,'Pick Clusters to Join')
+  if strcmp(choice,'Pick Final Clusters') && strcmp(flagstage,'sw')
+    % Quit without plotting
+    close(gcf);
+    clusterreturn='S';
+    break;
+  elseif strcmp(choice,'Pick Clusters to Join')
     warning('sorry we cannot do join ridge now');
   elseif strcmp(choice,'Pick Final Clusters')
     % Pick the final ridges
@@ -118,10 +136,11 @@ while ~((strcmp(choice,'Pick Final Clusters'))||(strcmp(choice,'Delete Ridge(s)'
   clear('clickedRidges','lineNumber');
   close(gcf);
 end
-if strcmp(choice,'Pick Final Clusters')
+if strcmp(choice,'Pick Final Clusters') && ~strcmp(flagstage,'sw')
     % Plot and save the selected ridges:
     plotRidgesherenew(mathere,ppmhere,timehere,clustshere,cindallhere,rindallhere,ridvalallhere,clusters,'selected results');
 end
 strres.clusterreturn=clusterreturn;
 strres.namevec=namevec;
 strres.quantifyvec=quantifyvec;
+strres.choice=choice;

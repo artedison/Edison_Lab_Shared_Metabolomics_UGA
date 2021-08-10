@@ -42,7 +42,7 @@ while ~or(answer==1,answer==2)
       while 1
         fighere=gcf;
         %%get the line that are needed to deal with
-        title('select lines you want deal with');
+        title('select lines you want deal with (end by ENTER)');
         global clickedRidges;
         clickedRidges=[];
         global lineNumber;
@@ -56,7 +56,7 @@ while ~or(answer==1,answer==2)
         seleccluserindex=find(ismember(tabtochange(:,4),clusterreturn));
         %%get the box draw
         while 1
-          title('use box to remove bad region');
+          title('use box to remove bad region (end by clicking)');
           vec=getrect(fighere);
           rectrag=[max(ppm(1),vec(1)) max(time(1),vec(2)); min(ppm(end),vec(1)+vec(3)) min(time(end),vec(2)+vec(4))];%xmin ymin xmax ymax
           rectragind=[matchPPMs(rectrag(:,1)',ppm);matchPPMs(rectrag(:,2)',time)];
