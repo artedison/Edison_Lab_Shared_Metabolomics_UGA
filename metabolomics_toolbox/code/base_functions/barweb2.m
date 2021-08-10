@@ -1,4 +1,4 @@
-function handles = barweb2(barvalues, errors, varargin)
+function handles = barweb(barvalues, errors, varargin)
 
 %
 % Usage: handles = barweb(barvalues, errors, 'parameter', 'value')
