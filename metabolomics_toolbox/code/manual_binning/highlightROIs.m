@@ -58,7 +58,7 @@ transparency = 0.1;
             end    
             varInd = contains(varnames,'extension');
             if any(varInd)
-                stackParams.numberOfSpectra = varvals{varInd};
+                stackParams.extension = varvals{varInd};
             end    
         end
         

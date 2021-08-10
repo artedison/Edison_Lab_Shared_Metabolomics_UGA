@@ -33,7 +33,10 @@ function addReasonableLegend(labels,colors,varargin)
 %         addReasonableLegend(labels,colors,'addBox','true')
 %         addReasonableLegend(labels,colors,'numColumns',2)
 %         addReasonableLegend(labels,colors,'addBox','true','numColumns',2,'textSize',15,'lineWidths',[2,1])
-%                 
+% 
+% NOTE: If using plot() to plot other things after calling this, you can 
+%       exclude them using plot(...,'HandleVisibility','off')
+%
 % MTJ and GG 2020
 
 %% Parse Optional Params

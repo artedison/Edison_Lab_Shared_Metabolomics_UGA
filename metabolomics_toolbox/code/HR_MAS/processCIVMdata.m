@@ -267,6 +267,11 @@ function [updatedStudyInfo] = processCIVMdata(studyInfo,destinationDir,newDataDi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%            
   
+    % It is necessary at this point to keep track of what the ft file is
+    % that we are operating on. 
+    
+%         currentFTcomFile = specList.ftComTemplate.fullpath;
+        
 
       %% Fine-tune processing on representative spectrum (while loop)
       
@@ -294,12 +299,15 @@ function [updatedStudyInfo] = processCIVMdata(studyInfo,destinationDir,newDataDi
                     % Enter Phasing Corrections
                     case 2
 %%
-                            % Update phasing
+                            % Update phasing in the template file
 
-                                updatePhasing_proc_civm(specList.paths.templates ,'proc_civm.com',repSpecName);
+%                                 updatePhasing_proc_civm(specList.paths.templates ,'proc_civm.com',repSpecName);
+                                updatePhasing_repSpec(specList.paths.rep_spec,repSpecName); % at this point, template_ft.com should be what we work off of. 
 
-                            % Produce the ft.com template
-
+                            % Produce the ft.com file for the
+                            % representative spectrum (template for the
+                            % downstream steps)
+                                cd(specList.paths.templates)
                                 specList.ftComTemplate(end+1) = convertFTcomToTemplate(['./representative_spectrum/',repSpecName],'_ft.com',repSpecName,specList);
 
                             % Apply to dataset
@@ -381,5 +389,5 @@ function [updatedStudyInfo] = processCIVMdata(studyInfo,destinationDir,newDataDi
     end    
 
     updatedStudyInfo = studyInfo;
-    
+%     cd(destinationDir)
 end

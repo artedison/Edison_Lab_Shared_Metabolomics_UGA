@@ -117,13 +117,15 @@ function [output] = makeAndRunFT_comFiles(genFilename,runFilename,specList,varar
                                     ' ','specNumber',...  % str to replace in input file
                                     ' ',fid2temp,...   % input file relative path
                                     ' ',fid2ftcom];      % output files relative path (ft_com directory)
-
+                           fprintf(['\n\n\t','Please wait, individual ft.com files are being created...\n'])
                            system(cmd)
-
+                           fprintf('\n\n\t... ft.com files were created\n')
+                           
         %% Run the ft.com files
-
+                           fprintf(['\n\n\t','Please wait, individual ft.com files running. This may take a few minutes...\n'])
                            system([runFilename,' ',temps2ftcom]);
-
+                           fprintf(['\n\n\t','...Processing was successfully applied to current dataset!\n'])
+                           
             output.commands.generate = cmd;
             output.commands.run = [runFilename,' ',temps2ftcom];
             output.relativePaths.temps2fid = temps2fid;

@@ -41,6 +41,8 @@ function [cinfo] = customColormap(x,varargin)
 %                   x and setPoints.
 % 
 % Usage:
+%
+% 
 %     [cinfo] = customColormap(x,'resolution',100,'setPoints','colors',[-.2,median(x),0.05],colors = [0.568600000000000,0.0392000000000000,0.0392000000000000;1,1,1;0,0,0.568600000000000]);
 %      rng = max([min(abs(vals)),max(abs(vals))]); [cinfo] = customColormap(x,'setPoints',[-rng,0,rng]);
 % 
@@ -52,6 +54,7 @@ function [cinfo] = customColormap(x,varargin)
         colors = [0,0,0.5686;...
                   1,1,1;...
                   0.5686,0.0392,0.0392]; % Blue (low vals), White (middle vals), Red (high vals)
+        balance = 0;
         
     %% Parse params
     
@@ -68,7 +71,10 @@ function [cinfo] = customColormap(x,varargin)
             if ~isempty(ind)
                 setPts = varargin{ind+1}; % reset setPoints to passed val
             end
-
+            ind = find(strcmp('balance',varargin),1);
+            if ~isempty(ind)
+                balance = true;
+            end
         end
     
     %% Interpolate colors
@@ -94,6 +100,15 @@ function [cinfo] = customColormap(x,varargin)
                         setPts = (mn: ( mx - mn ) / (numBaseColors-1) : mx)';                    
                     end
 
+                % Now that we have setpoints, do we need them balanced?
+                % Balance = endpoints expanded to be equidistant from median
+                % If default setpoints are used, nothing should happen.
+                
+                    if balance
+                        setPts(1) = median(setPts)-max( abs(setPts-median(setPts) ));
+                        setPts(end) = median(setPts)+max( abs(setPts-median(setPts) ));
+                    end
+                    
                 %% Interpolate RGB colormap                  
                 
                     % Handle cases where scale is saturated on either or both ends:
