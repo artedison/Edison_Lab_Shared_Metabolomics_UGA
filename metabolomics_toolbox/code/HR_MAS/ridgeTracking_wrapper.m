@@ -1,30 +1,4 @@
-function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
-
-
-    % Get the data out:
-        matrix = vertcat(thisExp.smoothedData(thisExp.traceMats).data);
-
-        thisExp.plotRes = 50;
-            [thisExp.plotInds,thisExp.plotIndsCat] = calc_stackPlotInds(matrix,thisExp.plotRes);
-            matrix = matrix(thisExp.plotInds{:},:);
-
-        ppm = thisExp.ppm;
-        
-        timepoints = vertcat(thisExp.smoothedTimes(thisExp.traceMats).timepoints(:));
-            timepoints = timepoints(thisExp.plotInds{:});
-            
-%         plotTitle = thisExp.plotTitle;        
-
-        regionsele = thisExp.trackingRegions;
-        wander_settingByRegion = thisExp.wander_settingByRegion;
-        intensityVariation_ByRegion = thisExp.intensityVariation_ByRegion;
-        
-            
-%% Plot to make sure the spectra look good. Params used for plotting later?
-
-    thisExp.horzshift = .002;
-    thisExp.vertshift = 1E-2;
-
+function [Sample] = ridgeTracking_wrapper(Sample,sample,matrix,ppm,timepoints,regionsele,wander_settingByRegion,intensityVariation_ByRegion,i)
 
 % So we don't have to look at all this crap.
     mkdir('Production_Run')
@@ -43,7 +17,7 @@ function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
             
             % Run the Function
                 [returndata] = ridgetrace_power2_ext(matrix,ppm,timepoints',currentTrackingRegion,path,wander_settingByRegion(i),intensityVariation_ByRegion(i));
-           
+%           
             % Save the figure    
                 fig = gcf;
                 saveas(fig,strcat(cd(),'/',plotTitle,'.surf.experiment.manual.fig'));
@@ -108,9 +82,9 @@ function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
                 mathere = matrix(:,ind);
                 ppmhere = ppm(ind);
                 fig = stackSpectra_paintRidges_3return(mathere,ppmhere,horzshift,0.01,plotTitle,peakshere,10);
-                saveas(fig,strcat(cd(),'/',plotTitle,'.scatter.experiment.manual.fig'));
+                saveas(fig,strcat(path,plotTitle,'.scatter.experiment.manual.fig'));
                 close(fig);
                 
     end
-    cd ..
+      
 end
