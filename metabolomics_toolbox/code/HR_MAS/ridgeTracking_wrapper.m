@@ -1,11 +1,10 @@
 function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
+% So we don't have to look at all this in the main workflow.
 
+% MTJ 10AUG2021
 
-    % Get the data out:
+%% Get the data out:
         matrix = vertcat(thisExp.smoothedData(thisExp.traceMats).data);
-
-        thisExp.plotRes = 50;
-            [thisExp.plotInds,thisExp.plotIndsCat] = calc_stackPlotInds(matrix,thisExp.plotRes);
             matrix = matrix(thisExp.plotInds{:},:);
 
         ppm = thisExp.ppm;
@@ -26,7 +25,7 @@ function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
     thisExp.vertshift = 1E-2;
 
 
-% So we don't have to look at all this crap.
+
     mkdir('Production_Run')
     cd Production_Run
 
@@ -42,7 +41,7 @@ function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
                 plotTitle = [num2str(currentTrackingRegion(1)),'.',num2str(currentTrackingRegion(2)),'.',num2str(samp_i),'.testplot'];
             
             % Run the Function
-                [returndata] = ridgetrace_power2_ext(matrix,ppm,timepoints',currentTrackingRegion,path,wander_settingByRegion(i),intensityVariation_ByRegion(i));
+                [returndata] = ridgetrace_power2_ext(matrix,ppm,timepoints,currentTrackingRegion,path,wander_settingByRegion(i),intensityVariation_ByRegion(i));
            
             % Save the figure    
                 fig = gcf;
@@ -107,7 +106,7 @@ function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
                 ind = reg(1):reg(2);
                 mathere = matrix(:,ind);
                 ppmhere = ppm(ind);
-                fig = stackSpectra_paintRidges_3return(mathere,ppmhere,horzshift,0.01,plotTitle,peakshere,10);
+                fig = stackSpectra_paintRidges_3return(mathere,ppmhere,thisExp.horzshift,0.01,plotTitle,peakshere,10);
                 saveas(fig,strcat(cd(),'/',plotTitle,'.scatter.experiment.manual.fig'));
                 close(fig);
                 
