@@ -1,30 +1,4 @@
-function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
-
-
-    % Get the data out:
-        matrix = vertcat(thisExp.smoothedData(thisExp.traceMats).data);
-
-        thisExp.plotRes = 50;
-            [thisExp.plotInds,thisExp.plotIndsCat] = calc_stackPlotInds(matrix,thisExp.plotRes);
-            matrix = matrix(thisExp.plotInds{:},:);
-
-        ppm = thisExp.ppm;
-        
-        timepoints = vertcat(thisExp.smoothedTimes(thisExp.traceMats).timepoints(:));
-            timepoints = timepoints(thisExp.plotInds{:});
-            
-%         plotTitle = thisExp.plotTitle;        
-
-        regionsele = thisExp.trackingRegions;
-        wander_settingByRegion = thisExp.wander_settingByRegion;
-        intensityVariation_ByRegion = thisExp.intensityVariation_ByRegion;
-        
-            
-%% Plot to make sure the spectra look good. Params used for plotting later?
-
-    thisExp.horzshift = .002;
-    thisExp.vertshift = 1E-2;
-
+function [Sample] = ridgeTracking_wrapper(Sample,sample,matrix,ppm,timepoints,regionsele,wander_settingByRegion,intensityVariation_ByRegion,i,horzshift)
 
 % So we don't have to look at all this crap.
     mkdir('Production_Run')
@@ -107,7 +81,7 @@ function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
                 ind = reg(1):reg(2);
                 mathere = matrix(:,ind);
                 ppmhere = ppm(ind);
-                fig = stackSpectra_paintRidges_3return(mathere,ppmhere,horzshift,0.01,plotTitle,peakshere,10);
+                fig = stackSpectra_paintRidges_3return(mathere,ppmhere,horzshift,0.01,plotTitle,peakshere,10)
                 saveas(fig,strcat(cd(),'/',plotTitle,'.scatter.experiment.manual.fig'));
                 close(fig);
                 
