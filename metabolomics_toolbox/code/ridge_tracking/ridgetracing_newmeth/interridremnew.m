@@ -35,24 +35,43 @@ clusters=unique(clustshere,'stable')';
 while ~or(answer==1,answer==2)
   close all;
   fig=plotRidgesherenew(mat,ppm,time,clustshere,cindallhere,rindallhere,ridvalallhere,clusters,titlehere);
-  answer=menu('Interactive Ridge remove','yes','no');
+  answer=menu('Interactive Ridge Trimming','yes','no');
   switch answer
     case 1
       width=1;
       while 1
         fighere=gcf;
         %%get the line that are needed to deal with
-        title('select lines you want deal with (end by ENTER)');
-        global clickedRidges;
-        clickedRidges=[];
-        global lineNumber;
-        lineNumber=1;
-        selectLine(fighere);
-        pause();
-        inds=clickedRidges;
-        inds=inds(inds~=1)-1; % shift (surface plot = 1)
-        oddRidges=inds(find(mod(sum(inds==inds'),2)));%only ones with odd click time will be added
-        clusterreturn=clusters(oddRidges);
+%         title('select lines you want deal with (end by ENTER)');
+%         global clickedRidges;
+%         clickedRidges=[];
+%         global lineNumber;
+%         lineNumber=1;
+%         selectLine(fighere);
+%         pause();
+%         inds=clickedRidges;
+%         inds=inds(inds~=1)-1; % shift (surface plot = 1)
+%         oddRidges=inds(find(mod(sum(inds==inds'),2)));%only ones with odd click time will be added
+%         clusterreturn=clusters(oddRidges);
+
+                    % Split the ridges into cells using clustshere (format for
+                    % clickRidge)
+
+                        for r = 1:length(clusters)
+                            cinds = clustshere == clusters(r);
+                            ridges(r).clustInd = clusters(r);
+                            ridges(r).ppms = ppm(cindallhere(cinds));
+                            ridges(r).times = time(rindallhere(cinds));
+                        end
+
+                    % Select ridges    
+
+                        selectedRidgeInds = clickRidge(ridges,'Select a line for trimming');
+
+                    % Implement selection on cluster list
+
+                        clusterreturn=clusters(selectedRidgeInds);
+
         seleccluserindex=find(ismember(tabtochange(:,4),clusterreturn));
         %%get the box draw
         while 1

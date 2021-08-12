@@ -1,4 +1,4 @@
-function [selectedRidgeInds,logicalInds,ridgeInds,lineObjs,lineData] = clickRidge(ridges,rad,objType)
+function [selectedRidgeInds,logicalInds,ridgeInds,lineObjs,lineData] = clickRidge(ridges,titleStr,rad,objType)
 
 % Meant to be a more user-friendly version of selectLine() that also avoids
 % global variables (often a poor coding practice).
@@ -8,7 +8,22 @@ function [selectedRidgeInds,logicalInds,ridgeInds,lineObjs,lineData] = clickRidg
 % behavior for other graphics objects may be unpredictable)
 % Press any key other than Enter/Return to click another ridge. 
 % Mainly used in CIVM ridge tracking/tracing workflows.
-
+% Ridgepoints will be sorted by time before being compared for exact match.
+%
+% Params:
+% 'ridges' struct array must contain the following for each cluster i:
+%     ridges(i).ppms = [];
+%     ridges(i).times = [];
+%
+%   this is required to match the list of objects in the figure with an
+%   the list you have in-hand. 
+%
+% Optional:
+% rad is the max search distance (set automatically, but can adjust)
+% objType allows different objects (e.g. scatter points) to be clicked. 
+%     'Line' is default. Currently not tested. 
+% 
+% 
 % MTJ 12FEB2021
 % 
 
@@ -20,6 +35,12 @@ function [selectedRidgeInds,logicalInds,ridgeInds,lineObjs,lineData] = clickRidg
                 objType = 'Line';
             end
 
+        % In case another title should be passed
+            
+            if ~exist('titleStr','var')
+                titleStr = '';
+            end
+        
         % Get the figure handle to make sure it can be called to the top later
         
             fig = gcf;
@@ -38,8 +59,17 @@ function [selectedRidgeInds,logicalInds,ridgeInds,lineObjs,lineData] = clickRidg
             % for the ridges. (ppm,time) maps 1to1 to surface intensity, so intensity is unnecessary
 
                 ridgeCp = [{ridges.ppms};{ridges.times}];
-                lineCp = [{lineObjs.XData};{lineObjs.YData}];  
-
+                    % Sort each ridge's points by time
+                    for i = 1:length(ridgeCp)
+                        [ridgeCp{2,i},si] = sort(ridgeCp{2,i});
+                        ridgeCp{1,i} = ridgeCp{1,i}(si);
+                    end
+                lineCp = [{lineObjs.XData};{lineObjs.YData}]; 
+                    % Sort each line's points by time
+                    for i = 1:length(lineCp)
+                        [lineCp{2,i},si] = sort(lineCp{2,i});
+                        lineCp{1,i} = lineCp{1,i}(si);
+                    end
             % Need an empty matrix to hold all pairwise comparisons between cell contents from the two lists of cells (concat ppms and times)
                 id = false(length(lineObjs), length(ridges)); 
 
@@ -100,7 +130,7 @@ function [selectedRidgeInds,logicalInds,ridgeInds,lineObjs,lineData] = clickRidg
         % Prompt for click or button press
         
             figure(fig)
-            title('Press any letter key to select another ridge, or press Enter/Return to exit')
+            title({titleStr,'Press any letter key to (de-)select another ridge, or press Enter/Return to exit'})
             
             waitforbuttonpress;
                 key = get(gcf,'CurrentCharacter');

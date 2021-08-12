@@ -34,112 +34,158 @@ end
 if ~exist('flagstage', 'var')
   flagstage='ft';
 end
+
 %% intializaiton
-clustsrid=input(:,4);
-groups=unique(clustsrid,'stable');
-% groupsele=groups(find(histc(clustsrid,groups)>vislen));
-groupsele=groups(cell2mat(arrayfun(@(x)length(find(clustsrid==x)),groups,'UniformOutput',false))>vislen);
-ind=find(ismember(clustsrid,groupsele));
-% ind=1:length(clustsrid);
-mattabhere=input(ind,:);
-clustshere=clustsrid(ind);
-cindallhere=input(ind,1);
-rindallhere=input(ind,2);
-ridvalallhere=input(ind,3);
+
+    clustsrid=input(:,4);
+    groups=unique(clustsrid,'stable');
+    % groupsele=groups(find(histc(clustsrid,groups)>vislen));
+    groupsele=groups(cell2mat(arrayfun(@(x)length(find(clustsrid==x)),groups,'UniformOutput',false))>vislen);
+    ind=find(ismember(clustsrid,groupsele));
+    % ind=1:length(clustsrid);
+    mattabhere=input(ind,:);
+    clustshere=clustsrid(ind);
+    cindallhere=input(ind,1);
+    rindallhere=input(ind,2);
+    ridvalallhere=input(ind,3);
+
 %% Do interactive stuff
-answer=0;
-clusters=unique(clustshere,'stable')';
-clusterreturn=[];
-namevec={};
-quantifyvec=[];
-close all;
-choices={'Pick Final Clusters','Delete Ridge(s)','Cancel',''};
-choice='start';
-while ~((strcmp(choice,'Pick Final Clusters'))||(strcmp(choice,'Delete Ridge(s)'))||(strcmp(choice,'Cancel')))%
-  fig=plotRidgesherenew(mathere,ppmhere,timehere,clustshere,cindallhere,rindallhere,ridvalallhere,clusters,titlehere);
-  % answer = menu('Interactive Ridge Picking Menu','Pick Clusters to Join','Pick Final Clusters','Delete Ridge(s)','Cancel','box_remove');
-  if ~strcmp(flagstage,'ssw')
-    answer=menu('Interactive Ridge Picking Menu','Pick Final Clusters','Delete Ridge(s)','Cancel');
-  else
-    answer=1;
-  end
-  if strcmp(flagstage,'ft') && answer==2
-    warning('Delete Ridge(s) only occur once');
-    close(gcf);
-    continue;
-  end
-  % Globals MUST be cleaned up after each iteration and
-  % initialized ONCE in the code.
-  global clickedRidges;
-  clickedRidges=[];
-  global lineNumber;
-  lineNumber=1;
-  choice=choices{answer};
-  if strcmp(choice,'Pick Final Clusters') && strcmp(flagstage,'sw')
-    % Quit without plotting
-    close(gcf);
-    clusterreturn='S';
-    break;
-  elseif strcmp(choice,'Pick Clusters to Join')
-    warning('sorry we cannot do join ridge now');
-  elseif strcmp(choice,'Pick Final Clusters')
-    % Pick the final ridges
-    while 1
-      title('Select the ridges by clicking on them, then hit Return')
-      clickedRidges=[];
-      lineNumber=1;
-      selectLine(gcf);
-      pause();
-      % Save them
-      inds=clickedRidges;
-      inds=inds(inds~=1)-1; % shift (surface plot = 1)
-      % Count the number of odd ridges
-      oddRidges=inds(find(mod(sum(inds==inds'),2)));%only ones with odd click time will be added
-      clusterreturn=[clusterreturn clusters(oddRidges)];
-      prompt={'ridge/compound names','quantifiable?(Y/N)'};
-      titlelocal='Input';
-      dims=[1 35];
-      definput={defaultinput.compd,defaultinput.quan};%default result unknow compound and not quantifiable
-      answerdialog=inputdlg(prompt,titlelocal,dims,definput);
-      namevec=[namevec,repmat(answerdialog(1),[1,length(oddRidges)])];
-      quantifyvec=[quantifyvec,repmat(answerdialog(2),[1,length(oddRidges)])];
-      title('you can end by typing space or go on by typing other');
-      fighere=gcf;
-      waitforbuttonpress;
-      chinput=fighere.CurrentCharacter;
-      if chinput==' '
-        break;
-      end
-      close(gcf);
-      fig=plotRidgesherenew(mathere,ppmhere,timehere,clustshere,cindallhere,rindallhere,ridvalallhere,clusters,titlehere);
+
+    answer=0;
+    clusters=unique(clustshere,'stable')';
+    clusterreturn=[]; % keeps a running list of clusters to return
+    namevec={};
+    quantifyvec=[];
+    close all;
+    choices={'Pick Final Clusters','Delete Ridge(s)','Cancel',''};
+    choice='start';
+
+    while ~((strcmp(choice,'Pick Final Clusters'))||(strcmp(choice,'Delete Ridge(s)'))||(strcmp(choice,'Cancel')))%
+        
+        % Plot the clusters
+            fig=plotRidgesherenew(mathere,ppmhere,timehere,clustshere,cindallhere,rindallhere,ridvalallhere,clusters,titlehere);
+
+        if ~strcmp(flagstage,'ssw')
+            answer=menu('Interactive Ridge Picking Menu','Pick Final Clusters','Delete Ridge(s)','Cancel');
+        else
+            answer=1;
+        end
+
+        if strcmp(flagstage,'ft') && answer==2
+            warning('Delete Ridge(s) only occur once'); % the user will not see this. Must be a pop-up. 
+            close(gcf);
+            continue; % next loop iteration
+        end
+
+        choice=choices{answer};
+        if strcmp(choice,'Pick Final Clusters') && strcmp(flagstage,'sw')
+            % Quit without plotting
+            close(gcf);
+            clusterreturn='S';
+            break;  % exit the loop
+
+        elseif strcmp(choice,'Pick Clusters to Join')
+            warning('sorry we cannot do join ridge now');
+
+        elseif strcmp(choice,'Pick Final Clusters')
+
+            % Pick the final ridges
+
+                while 1  % runs in a while loop so metadata can be added
+
+                    % Split the ridges into cells using clustshere (format for
+                    % clickRidge)
+
+                        for r = 1:length(clusters)
+                            cinds = clustshere == clusters(r);
+                            ridges(r).clustInd = clusters(r);
+                            ridges(r).ppms = ppmhere(cindallhere(cinds));
+                            ridges(r).times = timehere(rindallhere(cinds));
+                        end
+
+                    % Select ridges    
+
+                        selectedRidgeInds = clickRidge(ridges,'Pick Clusters');
+
+                    % Implement selection on cluster list
+
+                        clusterreturn=[clusterreturn clusters(selectedRidgeInds)];
+%                         clusters=selectedRidgeInds;
+
+                    % Get clusters metadata
+
+                        prompt={'ridge/compound names','quantifiable?(Y/N)'};
+                        titlelocal='Input';
+                        dims=[1 35];
+                        definput={defaultinput.compd,defaultinput.quan};%default result unknow compound and not quantifiable
+                        answerdialog=inputdlg(prompt,titlelocal,dims,definput);
+                        namevec=[namevec,repmat(answerdialog(1),[1,length(selectedRidgeInds)])];
+                        quantifyvec=[quantifyvec,repmat(answerdialog(2),[1,length(selectedRidgeInds)])];
+
+                    % Next menu...for what?? Unnecessary clicks because there are no
+                    % actual options from here. 
+
+                        title('you can end by typing space or press any letter key to continue');
+                        fighere=gcf;
+                        waitforbuttonpress;
+                        chinput=fighere.CurrentCharacter;
+
+                        if chinput==' '
+                            break;
+                        end
+
+                        close(gcf);
+
+                    % Plot the new cluster group
+
+                        fig=plotRidgesherenew(mathere,ppmhere,timehere,clustshere,cindallhere,rindallhere,ridvalallhere,clusters,titlehere);
+
+                end
+
+        elseif strcmp(choice,'Delete Ridge(s)')
+
+            % Split the ridges into cells using clustshere (format for
+            % clickRidge)
+
+                for r = 1:length(clusters)
+                    cinds = clustshere == clusters(r);
+                    ridges(r).clustInd = clusters(r);
+                    ridges(r).ppms = ppmhere(cindallhere(cinds));
+                    ridges(r).times = timehere(rindallhere(cinds));
+                end
+
+            % Select ridges to delete  
+
+                selectedRidgeInds = clickRidge(ridges,'Pick Clusters to Delete');
+
+            % Invert and apply selection on cluster list; Delete ridge(s):
+
+                tempClusterSave = clusters;
+                clusterreturn=[clusterreturn -clusters(selectedRidgeInds)];
+%                 clusterreturn=[clusterreturn -selectedRidgeInds];
+%                 clusters(selectedRidgeInds)=[];
+
+        elseif strcmp(choice,'Cancel')
+
+            % Quit without plotting
+                close(gcf);
+                clusterreturn='C';
+                break;
+        end
+
+        clear('clickedRidges','lineNumber');
+        close(gcf);
     end
-  elseif strcmp(choice,'Delete Ridge(s)')
-    % Delete ridge(s):
-    title('Select the ridges by clicking on them, then hit Return')
-    clickedRidges=[];
-    lineNumber=1;
-    selectLine(gcf);
-    pause();
-    inds=clickedRidges;
-    inds=inds(inds~=1)-1; % shift (surface plot = 1)
-    % Count the number of odd ridges
-    oddRidges=inds(find(mod(sum(inds==inds'),2)));
-    clusterreturn=clusters(oddRidges);
-    clusterreturn= -clusterreturn;
-    % clusters(oddRidges)=[];
-  elseif strcmp(choice,'Cancel')
-    % Quit without plotting
-    close(gcf);
-    clusterreturn='C';
-    break;
-  end
-  clear('clickedRidges','lineNumber');
-  close(gcf);
-end
-if strcmp(choice,'Pick Final Clusters') && ~strcmp(flagstage,'sw')
-    % Plot and save the selected ridges:
-    plotRidgesherenew(mathere,ppmhere,timehere,clustshere,cindallhere,rindallhere,ridvalallhere,clusters,'selected results');
-end
+
+%% Plot the final resulting ridges
+
+    if strcmp(choice,'Pick Final Clusters') && ~strcmp(flagstage,'sw')
+
+        % Plot and save the selected ridges:
+            plotRidgesherenew(mathere,ppmhere,timehere,clustshere,cindallhere,rindallhere,ridvalallhere,clusters,'selected results');
+
+    end
+
 strres.clusterreturn=clusterreturn;
 strres.namevec=namevec;
 strres.quantifyvec=quantifyvec;
