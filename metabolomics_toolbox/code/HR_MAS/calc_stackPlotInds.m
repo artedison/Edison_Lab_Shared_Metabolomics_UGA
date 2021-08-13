@@ -1,4 +1,4 @@
-function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints,varargin)
+function [plotInds,plotIndsCat,newData] = calc_stackPlotInds(data,numPoints,smooth,varargin)
 % Calculates the inds needed for plotting one or more datasets together at
 % a given resolution (e.g. number of spectra). This should make it easier
 % to plot reasonable numbers of spectra using slow functions like
@@ -19,6 +19,19 @@ function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints,varargin)
 %
 %   matrix = [data];
 %   matrix( [plotInds{:}] , :)
+% 
+%   data:           matrix or cell array of matrices which can be vertically concatenated
+%   numPoints:      desired number of rows in vertcat(data{:}) or data;
+%   Optional Args:
+%                   'smooth':  applies moving average smoothing with
+%                               symmetric windowsize = round( total
+%                               rows/numPoints)
+%                   varargin
+%   plotInds:       cell array of inds for each cell in data, or one cell
+%                       if data is a mat
+%   plotIndsCat:    vector of inds spanning all cells in data (i.e. inds
+%                       apply to the rows of vertcat(data{:})
+%   z:              returned matrix (e.g. for 'smooth' optional arg)
 %
 % This could also be worked out for timepoint - based (continuous)
 % distribution of inds. 
@@ -28,7 +41,7 @@ function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints,varargin)
 
 %% Parse optional args
 
-%    optParams = {'maxInd','minInd'};
+%    optParams = {'maxInd','minInd','smooth'};
 %    varargin =[ {'minInd'}  {0}  {'maxInd'}];
 %    
 %     if ~isempty(varargin)
@@ -123,5 +136,11 @@ function [plotInds,plotIndsCat] = calc_stackPlotInds(data,numPoints,varargin)
     end
     
     plotIndsCat = [plotInds{:}]';
+    
+    if exist('smooth','var')
+            data = HRMAS_signalAverage(data,1:size(data,2),round(size(data,1)/numPoints));            
+    end
+    
+    newData = data(plotIndsCat,:);
     
 end

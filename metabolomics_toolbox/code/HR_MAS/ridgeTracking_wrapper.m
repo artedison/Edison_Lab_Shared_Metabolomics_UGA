@@ -3,6 +3,8 @@ function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
 
 % MTJ 10AUG2021
 
+    startpath = cd();
+
 %% Get the data out:
         matrix = vertcat(thisExp.smoothedData(thisExp.traceMats).data);
             matrix = matrix(thisExp.plotInds{:},:);
@@ -41,8 +43,12 @@ function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
                 plotTitle = [num2str(currentTrackingRegion(1)),'.',num2str(currentTrackingRegion(2)),'.',num2str(samp_i),'.testplot'];
             
             % Run the Function
+            try
                 [returndata] = ridgetrace_power2_ext(matrix,ppm,timepoints,currentTrackingRegion,path,wander_settingByRegion(i),intensityVariation_ByRegion(i));
-           
+            catch
+                warning('Program terminated prematurely. Data were not saved.');
+                break
+            end
             % Save the figure    
                 fig = gcf;
                 saveas(fig,strcat(cd(),'/',plotTitle,'.surf.experiment.manual.fig'));
@@ -111,5 +117,6 @@ function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
                 close(fig);
                 
     end
-    cd ..
+    cd(startpath)
+    return
 end

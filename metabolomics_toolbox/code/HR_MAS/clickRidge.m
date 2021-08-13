@@ -60,16 +60,17 @@ function [selectedRidgeInds,logicalInds,ridgeInds,lineObjs,lineData] = clickRidg
 
                 ridgeCp = [{ridges.ppms};{ridges.times}];
                     % Sort each ridge's points by time
-                    for i = 1:length(ridgeCp)
+                    for i = 1:size(ridgeCp,2)
                         [ridgeCp{2,i},si] = sort(ridgeCp{2,i});
                         ridgeCp{1,i} = ridgeCp{1,i}(si);
                     end
                 lineCp = [{lineObjs.XData};{lineObjs.YData}]; 
                     % Sort each line's points by time
-                    for i = 1:length(lineCp)
+                    for i = 1:size(lineCp,2)
                         [lineCp{2,i},si] = sort(lineCp{2,i});
                         lineCp{1,i} = lineCp{1,i}(si);
                     end
+                    
             % Need an empty matrix to hold all pairwise comparisons between cell contents from the two lists of cells (concat ppms and times)
                 id = false(length(lineObjs), length(ridges)); 
 
