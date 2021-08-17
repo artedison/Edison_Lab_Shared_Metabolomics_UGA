@@ -6,9 +6,10 @@ function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
     startpath = cd();
 
 %% Get the data out:
-        matrix = vertcat(thisExp.smoothedData(thisExp.traceMats).data);
-            matrix = matrix(thisExp.plotInds{:},:);
-
+%         matrix = vertcat(thisExp.smoothedData(thisExp.traceMats).data);
+%             matrix = matrix(thisExp.plotInds{:},:);
+% 
+        matrix = thisExp.matrix;
         ppm = thisExp.ppm;
         
         timepoints = vertcat(thisExp.smoothedTimes(thisExp.traceMats).timepoints(:));
@@ -45,24 +46,30 @@ function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
             % Run the Function
             try
                 [returndata] = ridgetrace_power2_ext(matrix,ppm,timepoints,currentTrackingRegion,path,wander_settingByRegion(i),intensityVariation_ByRegion(i));
-            catch
+            catch 
                 warning('Program terminated prematurely. Data were not saved.');
-                break
+                cd(startpath)
+                return
             end
             % Save the figure    
                 fig = gcf;
-                saveas(fig,strcat(cd(),'/',plotTitle,'.surf.experiment.manual.fig'));
+%                 saveas(fig,strcat(cd(),'/',plotTitle,'.surf.experiment.manual.fig'));
                 if samp_i == 1
                   showfigtitle = plotTitle;
                 end
                 close(fig);
                 
             % Store the data?
-                result = returndata.result;
-                ridnames = returndata.names;
-                quanvec = returndata.quantifyvec;
-                groups = result(:,5);
-            
+                if ~isempty(fieldnames(returndata))
+                    result = returndata.result;
+                    ridnames = returndata.names;
+                    quanvec = returndata.quantifyvec;
+                    groups = result(:,5);
+                else
+                    warning('No data were saved')
+                    return
+                end
+                
             % Store as a struct table
             
                 tempstorerids = [];
@@ -112,9 +119,10 @@ function [Sample] = ridgeTracking_wrapper(thisExp,Sample,sample,i)
                 ind = reg(1):reg(2);
                 mathere = matrix(:,ind);
                 ppmhere = ppm(ind);
-                fig = stackSpectra_paintRidges_3return(mathere,ppmhere,thisExp.horzshift,0.01,plotTitle,peakshere,10);
-                saveas(fig,strcat(cd(),'/',plotTitle,'.scatter.experiment.manual.fig'));
-                close(fig);
+                save(['Sample-',num2str(currentTrackingRegion(1)),'-',num2str(currentTrackingRegion(2)),'ppm.mat'],'Sample');
+%                 fig = stackSpectra_paintRidges_3return(mathere,ppmhere,thisExp.horzshift,0.01,plotTitle,peakshere,10);
+%                 saveas(fig,strcat(cd(),'/',plotTitle,'.scatter.experiment.manual.fig'));
+%                 close(fig);
                 
     end
     cd(startpath)
