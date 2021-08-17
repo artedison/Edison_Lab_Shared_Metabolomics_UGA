@@ -124,62 +124,125 @@ function [selectedRidgeInds,logicalInds,ridgeInds,lineObjs,lineData] = clickRidg
                 
     % While ~enter
         select = 1;
-    
-    
-    while select
         
-        % Prompt for click or button press
+%% New method of ridge selection 
+% via https://www.mathworks.com/matlabcentral/answers/325754-how-to-stop-while-loop-by-right-mouse-button-click
+% This way, we just click until a button press kicks us out of the loop
+%
+
+    ax = gca;
+    fig = ancestor(ax, 'figure');
+    hold(ax, 'on');
+    
+    while true
         
-            figure(fig)
-            title({titleStr,'Press any letter key to (de-)select another ridge, or press Enter/Return to exit'})
+            % Click mouse on a point on the plot
+
+                [x,y] = ginput(1);
+                
+            % If buttonpress was 'Enter/Return', break out of the
+            % loop
+
+            % Figure out if the action was a click or a buttonpress
             
-            waitforbuttonpress;
-                key = get(gcf,'CurrentCharacter');
-                
-                if ~(key == 13)
-                
-                    % Click mouse on points on the plot
-                    
-                        [x,y] = ginput(1);
-                        
-                    % Within a given radius (euclidean distance)
-                        
-                        % Which ridge point is closest to the cursor?
-                            
-                            distances = sqrt( sum(([x,y] - lineData) .^ 2, 2) );
-                            [val,closestPtInd] = min( distances );
-                            
-                            % Is any ridge selected within radius?
-                            
-                            if val<=rad
-                                % If so, which ridge does it belong to?
-                                    selectedRidge = ridgeInds(closestPtInd);
+                sel = get(fig, 'SelectionType');
 
-                                % If zero, flip to one. If 1, flip to zero
-
-                                    bold(selectedRidge) = abs(1-bold(selectedRidge));
-
-                                % If 1, update object to be bolded
-                        
-                                    if bold(selectedRidge)
-                                        lineObjs(selectedRidge).LineWidth = 9;
-                                    else
-                                        lineObjs(selectedRidge).LineWidth = 5;
-                                    end
-                            
-                            else
-                                % if not, then jump to next iteration
-                                % (selectedridge stays set to [])
-                                continue
-                            end
-                        
-                else
-                    % If buttonpress was 'Enter/Return', break out of the
-                    % loop
+                if strcmpi(sel, 'alt')
                     break
                 end
+
+            % Within a given radius (euclidean distance)
+
+                % Which ridge point is closest to the cursor?
+
+                    distances = sqrt( sum(([x,y] - lineData) .^ 2, 2) );
+                    [val,closestPtInd] = min( distances );
+
+                    % Is any ridge selected within radius?
+
+                        if val<=rad
+                            % If so, which ridge does it belong to?
+                                selectedRidge = ridgeInds(closestPtInd);
+
+                            % If zero, flip to one. If 1, flip to zero
+
+                                bold(selectedRidge) = abs(1-bold(selectedRidge));
+
+                            % If 1, update object to be bolded
+
+                                if bold(selectedRidge)
+                                    lineObjs(selectedRidge).LineWidth = 9;
+                                else
+                                    lineObjs(selectedRidge).LineWidth = 5;
+                                end
+
+                        else
+                            % if not, then jump to next iteration
+                            % (selectedridge stays set to [])
+                            continue
+                        end
+
     end
     
+    hold(ax, 'off')   
+
+    
+%% Requires button press between each ridge and ends using "Enter/Return"
+%
+%     while select
+%         
+%         % Prompt for click or button press
+%         
+%             figure(fig)
+%             title({titleStr,'Press any letter key to (de-)select another ridge, or press Enter/Return to exit'})
+%             
+%             waitforbuttonpress;
+%                 key = get(gcf,'CurrentCharacter');
+%                 
+%                 if ~(key == 13)
+%                 
+%                     % Click mouse on points on the plot
+%                     
+%                         [x,y] = ginput(1);
+%                         
+%                     % Within a given radius (euclidean distance)
+%                         
+%                         % Which ridge point is closest to the cursor?
+%                             
+%                             distances = sqrt( sum(([x,y] - lineData) .^ 2, 2) );
+%                             [val,closestPtInd] = min( distances );
+%                             
+%                             % Is any ridge selected within radius?
+%                             
+%                             if val<=rad
+%                                 % If so, which ridge does it belong to?
+%                                     selectedRidge = ridgeInds(closestPtInd);
+% 
+%                                 % If zero, flip to one. If 1, flip to zero
+% 
+%                                     bold(selectedRidge) = abs(1-bold(selectedRidge));
+% 
+%                                 % If 1, update object to be bolded
+%                         
+%                                     if bold(selectedRidge)
+%                                         lineObjs(selectedRidge).LineWidth = 9;
+%                                     else
+%                                         lineObjs(selectedRidge).LineWidth = 5;
+%                                     end
+%                             
+%                             else
+%                                 % if not, then jump to next iteration
+%                                 % (selectedridge stays set to [])
+%                                 continue
+%                             end
+%                         
+%                 else
+%                     % If buttonpress was 'Enter/Return', break out of the
+%                     % loop
+%                     break
+%                 end
+%     end
+%%    
     % Report the ridge inds
 
         logicalInds = bold;

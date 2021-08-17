@@ -1,5 +1,7 @@
 function [filename,wavelengths,timepoints,data] = readHPLCfile(filename)
 
+% https://www.mathworks.com/help/matlab/math/interpolating-gridded-data.html
+
     fdata = readmatrix(filename);
     
 %     sample.filename = filename;
