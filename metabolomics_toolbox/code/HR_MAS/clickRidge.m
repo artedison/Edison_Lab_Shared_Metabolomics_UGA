@@ -1,4 +1,4 @@
-function [selectedRidgeInds,logicalInds,ridgeInds,lineObjs,lineData] = clickRidge(ridges,titleStr,rad,objType)
+function [selectedRidgeInds,logicalInds,ridgeInds,lineObjs,lineData] = clickRidge(ridges,titleStr,clickLimit,rad,objType)
 
 % Meant to be a more user-friendly version of selectLine() that also avoids
 % global variables (often a poor coding practice).
@@ -40,6 +40,12 @@ function [selectedRidgeInds,logicalInds,ridgeInds,lineObjs,lineData] = clickRidg
             if ~exist('titleStr','var')
                 titleStr = '';
             end
+            
+        % If there's a click limit
+            
+%             if ~exist('clickLimit','var')
+%                clickLimit = 'none';
+%             end
         
         % Get the figure handle to make sure it can be called to the top later
         
@@ -137,7 +143,7 @@ function [selectedRidgeInds,logicalInds,ridgeInds,lineObjs,lineData] = clickRidg
     while true
         
             % Click mouse on a point on the plot
-
+                
                 [x,y] = ginput(1);
                 
             % If buttonpress was 'Enter/Return', break out of the
