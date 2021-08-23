@@ -1,4 +1,4 @@
-function [catData] = basicProcessing_concatenateSamples(studyInfo,varargin)
+function [catData] = basicProcessing_concatenateSamples(studyInfo,expType,varargin)
 %%
 
 %% Handle varargin
@@ -13,13 +13,16 @@ function [catData] = basicProcessing_concatenateSamples(studyInfo,varargin)
 
 
 %% Do basic processing on everything
-
+    
+    if ~exist('expType','var')
+        expType = 1;
+    end
     
     data = struct();
     
     for s = 1:length(studyInfo.sample)
             % NOTE: may want to allow passthrough of refSpec params
-            data(s).spectra = HRMAS_nmr_runStdProc(studyInfo,s,1);
+            data(s).spectra = HRMAS_nmr_runStdProc(studyInfo,s,expType);
     end
     
     % Unlist the data struct one step
