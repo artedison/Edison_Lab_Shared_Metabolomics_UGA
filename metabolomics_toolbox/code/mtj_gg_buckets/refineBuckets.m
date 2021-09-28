@@ -46,6 +46,16 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
 %                                 a figure filename or figure handle and act accordingly.
 %                                 If not provided, it will default to empty, in which case gcf
 %                                 will be used.
+%             'tempFigure'        using this flag sets figure saving to
+%                                 'false'
+%             'optset_ind'        if plotOptBucket_optResult() step AND  
+%                                 expandBucketBounds() was skipped, an 
+%                                 optimization (parameter set) from 
+%                                 optimize_optBucket() still needs to be set using a 
+%                                 Name-value pair: use the flag, then provide the index of the
+%                                 desired parameter set as an integer in
+%                                 string format. e.g:
+%                                 (refineBuckets(matrix,ppm,buckets,...'optset_ind','4'...)
 %
 % 
 % Outputs:
@@ -70,6 +80,7 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
         expandedBuckets = false;    % default is optOB_out.results.binsWithPeaks
         previousFigure = false;     % default is optOB_out.results will be used as bucket source
         %figID = [];                 % default is gcf will be used
+        opt_ind = 1;
     
     % Set optional params to true if flag is provided
     
@@ -89,7 +100,13 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
                 % will be used.
                 [~,ind] = ismember('figID',varargin);
                 figID = varargin{ind + 1};
+                clear ind
             end
+            
+            if ismember('optset_ind',varargin) 
+                opt_ind = str2double(varargin{find(ismember('optset_ind',varargin))+1}); % must be an integer as string
+            end
+            
         end    
     
     % Record the params
@@ -117,7 +134,7 @@ function [bucketStruct] = refineBuckets(matrix,ppm,bucketStruct,varargin)
             if expandedBuckets
                 currentBuckets = bucketStruct.optimized.expandedBuckets;
             else
-                currentBuckets = bucketStruct.results(ind).binsWithPeaks;
+                currentBuckets = bucketStruct.results(opt_ind).binsWithPeaks;
             end
             
             % Make the figure
