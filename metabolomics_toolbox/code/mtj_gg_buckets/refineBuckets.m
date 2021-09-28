@@ -46,6 +46,16 @@ function [buckets,refinedBounds] = refineBuckets(matrix,ppm,buckets,varargin)
 %                                 a figure filename or figure handle and act accordingly.
 %                                 If not provided, it will default to empty, in which case gcf
 %                                 will be used.
+%             'tempFigure'        using this flag sets figure saving to
+%                                 'false'
+%             'optset_ind'        if plotOptBucket_optResult() step AND  
+%                                 expandBucketBounds() was skipped, an 
+%                                 optimization (parameter set) from 
+%                                 optimize_optBucket() still needs to be set using a 
+%                                 Name-value pair: use the flag, then provide the index of the
+%                                 desired parameter set as an integer in
+%                                 string format. e.g:
+%                                 (refineBuckets(matrix,ppm,buckets,...'optset_ind','4'...)
 %
 % 
 % Outputs:
@@ -78,6 +88,10 @@ function [buckets,refinedBounds] = refineBuckets(matrix,ppm,buckets,varargin)
         if ~isempty(varargin)
             if ismember('expandedBuckets',varargin)                          
                 expandedBuckets = true;
+            end
+            
+            if ismember('optset_ind',varargin) 
+                ind = str2double(varargin{find(ismember('optset_ind',varargin))+1}); % must be an integer as string
             end
 
             if ismember('previousFigure',varargin)                          
