@@ -1,0 +1,33 @@
+* filtering out redundant ridges *
+* append (show other ridges) * 
+
+model after refineBuckets
+
+"refineRidges"
+while not quit
+	zoom around ridges
+		'a' to add ridge
+			select multiple points to create a spline
+			local retracking 
+		'r' to redraw 
+			menu box (two entries:
+				'current horzshift: horzshift'
+				new horzshift: [data entry]
+				'current vertshift: vertshift'
+				new vertshift: [data entry]
+				
+		'u' to undo
+		'q' to quit
+		'shift-c' to cancel (no save)
+		's' to call selector
+			select n ridge points
+				figure out which ridge each point belongs to
+				highlight the points belonging to that ridge (update scatter point size)
+	
+		other letter key to determine action for selected ridge(s)
+			'l' label
+			'd' delete
+			
+
+
+

@@ -1,11 +1,5 @@
-function [h,ridgePoints] = stackSpectra_paintRidges_3return(matrix,currentppm,horzshift,vertshift,plotTitle,peaks,pointSize,nameflag,ridgeColor,ridgeLift,thickpair,varargin)
+function [h] = stackSpectra_paintRidges_3return_timespacing(matrix,currentppm,horzshift,vertshift,plotTitle,peaks,pointSize,varargin)
 %% this script plot stackspectra based on the nmr data
-% Note: in order for plotting ridges to make sense, we need to assign all
-% ridge points to spectra, not ridges. A spectrum is plotted, then all
-% ridge points for that spectrum (row ind) are added, then the next
-% spectrum etc. is plotted ON TOP of those. This must be done in order to
-% preserve the depth perspective in plotting. - MTJ
-
 %% argument:
 %%% matrix: the nmr data matrix
 %%% currentppm: ppm vector
@@ -34,9 +28,11 @@ function [h,ridgePoints] = stackSpectra_paintRidges_3return(matrix,currentppm,ho
 % nameflag=false;
 %%%%%%%%%%
 
-% if ~isemtpy(varargin)
-%    ind = cellfun(@ischar,varargin);
-% end
+if ~isemtpy(varargin)
+   ind = cellfun(@ischar,varargin);
+end
+
+
 
 if ~exist('nameflag', 'var')
   nameflag=false;
@@ -97,18 +93,15 @@ h=figure('PaperType','<custom>','PaperSize',[24 24],'Color',[1 1 1]);hold on;
             scatter(allpoints_ridgePos_shifted(thisRowRidgePoints),allpoints_ridgeInt_shifted(thisRowRidgePoints),pointSize,cmap(ridgeNumbers(thisRowRidgePoints),:),'filled');
         %find([ridgeRowInds{:}] == i)
     end
-    
-    
-%     if ~isempty(find(~cellfun(@isempty,{peaks.CompoundNames})))&&nameflag
-%         % Require both a name and data:
-%         for i = find(and(~cellfun(@isempty,{peaks.RidgeIntensities}),~cellfun(@isempty,{peaks.CompoundNames})))
-%             xpos = ridgePPMs{i}(1);
-%                 % remember that matrix is flipud'd
-%             ypos = matrix(end,matchPPMs(xpos - horzshift * size(matrix,1),currentppm)) - vertshift * size(matrix,1);
-%             text(xpos,ypos-0.1,peaks(i).CompoundNames,'Rotation',-45,'FontSize',20);
-%         end
-%     end
-
+    if ~isempty(find(~cellfun(@isempty,{peaks.CompoundNames})))&&nameflag
+        % Require both a name and data:
+        for i = find(and(~cellfun(@isempty,{peaks.RidgeIntensities}),~cellfun(@isempty,{peaks.CompoundNames})))
+            xpos = ridgePPMs{i}(1);
+                % remember that matrix is flipud'd
+            ypos = matrix(end,matchPPMs(xpos - horzshift * size(matrix,1),currentppm)) - vertshift * size(matrix,1);
+            text(xpos,ypos-0.1,peaks(i).CompoundNames,'Rotation',-45,'FontSize',20);
+        end
+    end
 %     if ~iscell(ridgeColor)
 %         rowInds = cellfun(@fliplr,{peaks.RowInds},'UniformOutput',0);
 %
@@ -146,10 +139,4 @@ h=figure('PaperType','<custom>','PaperSize',[24 24],'Color',[1 1 1]);hold on;
     set(gcf, 'InvertHardCopy', 'off');
     set(gca,'fontsize',20);
     set(gca,'box','off');
-    
-    ridgePoints.ridgeNumbers = ridgeNumbers;
-    ridgePoints.ridgeRowInds = ridgeRowInds;
-    ridgePoints.pos_shifted = allpoints_ridgePos_shifted;
-    ridgePoints.int_shifted = allpoints_ridgeInt_shifted;
-    
 end

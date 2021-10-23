@@ -125,18 +125,29 @@ function [updatedStudyInfo] = processCIVMdata(studyInfo,destinationDir,newDataDi
     
 %% Handle options
 
-    if~isempty(varargin)
+    useProvidedRefSpec = 0;
+    lastFTcomTemp = [];
+    
+    if ~isempty(varargin)
         
         % Check for repSpecName argument
         
             [~,ind] = ismember('repSpecName',varargin);
-            if ~isempty(ind)
-                repSpecName = varargin{ind+1};
+            if any(ind)
+                providedRepSpecName = varargin{find(ind)+1};
+                useProvidedRefSpec = 1;
             end
+            
+        % Pass full path of existing template ft.com file
         
-        
+            [~,ind] = ismember('useFT.com',varargin);
+            if any(ind)
+                lastFTcomTemp = varargin{find(ind)+1};
+            end
     end
 
+    
+    
 %% General workflow
 
     for s = 1:length(studyInfo.sample)
@@ -211,10 +222,12 @@ function [updatedStudyInfo] = processCIVMdata(studyInfo,destinationDir,newDataDi
 
                 % Default representative is first spectrum (natural number sort):
                 
-                    if ~exist('repSpecName','var') 
+                    if ~useProvidedRefSpec
                         repSpecName = num2str(min(cellfun(@str2num,{studyInfo.sample(s).expType(t).files.name}))); 
+                    else
+                        repSpecName = providedRepSpecName;
                     end
-                    
+                                        
                     specList.repSpecName = repSpecName;
                     
                 specList.paths.rep_spec = [specList.paths.templates ,'/representative_spectrum/',repSpecName]; % doesn't exist yet *** FLAG ***
@@ -242,9 +255,12 @@ function [updatedStudyInfo] = processCIVMdata(studyInfo,destinationDir,newDataDi
 %             % Make the ft.com file from the test.fid file and template, or
 %             % retrieve it from elsewhere
 %             
-%             % Give option to pick a .com file or generate de novo using basicFT1.com
-                  
-                  [~,~,~,cancel] = ft_comTemplate(specList,repSpecName);                  
+%             % Give option to pick a .com file or generate de novo using
+%             basicFT1.com, or use last file
+
+                  [lastFTcom,lastFTcom_path,~,cancel] = ft_comTemplate(specList,repSpecName,lastFTcomTemp);
+                      lastFTcomTemp = [lastFTcom_path,'/',lastFTcom];
+                      
                   if cancel
                       fprintf('processCIVMdata() was cancelled prematurely')
                       updatedStudyInfo = studyInfo;
@@ -309,18 +325,35 @@ function [updatedStudyInfo] = processCIVMdata(studyInfo,destinationDir,newDataDi
                             % downstream steps)
                                 cd(specList.paths.templates)
                                 specList.ftComTemplate(end+1) = convertFTcomToTemplate(['./representative_spectrum/',repSpecName],'_ft.com',repSpecName,specList);
-
+                                lastFTcomTemp = specList.ftComTemplate.fullpath;
+                                
                             % Apply to dataset
 
                                 output(end+1) = makeAndRunFT_comFiles('generateFTcoms.sh','runFTfiles.com',specList,'batchMode');
 
                     % Pass auto referencing args   
                     case 3
-
+%                             % Update phasing in the template file but only
+%                             % run for ref spec
+% 
+% %                                 updatePhasing_proc_civm(specList.paths.templates ,'proc_civm.com',repSpecName);
+%                                 updatePhasing_repSpec(specList.paths.rep_spec,repSpecName); % at this point, template_ft.com should be what we work off of. 
+% 
+%                             % Produce the ft.com file for the
+%                             % representative spectrum (template for the
+%                             % downstream steps)
+%                                 cd(specList.paths.templates)
+%                                 specList.ftComTemplate(end+1) = convertFTcomToTemplate(['./representative_spectrum/',repSpecName],'_ft.com',repSpecName,specList);
+%                                 lastFTcomTemp = specList.ftComTemplate.fullpath;
+%                                 
+%                             % Apply to dataset
+% 
+%                                 output(end+1) = makeAndRunFT_comFiles('generateFTcoms.sh','runFTfiles.com',specList,'batchMode',);
+%                 
 
                     % Pass baseline args        
                     case 4
-
+%                         finder(lastFTcomTemp)
 
                     % Apply processing to dataset
                     case 5

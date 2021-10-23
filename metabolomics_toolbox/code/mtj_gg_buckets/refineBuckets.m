@@ -241,8 +241,6 @@ function [buckets,refinedBounds] = refineBuckets(matrix,ppm,buckets,varargin)
                         % Quit/Exit the interactive part of the program
                             buckets.refinedBuckets.figure = ['Buckets_refined_',num2str(now),'.fig'];
 
-                            title('Refined Buckets - Complete. Please wait; saving and figure in current directory...')
-
                     otherwise
                         
                         % Handle non-valid keypresses
@@ -265,7 +263,10 @@ function [buckets,refinedBounds] = refineBuckets(matrix,ppm,buckets,varargin)
            
         % Remove any single-point buckets
             buckets.refinedBuckets.singlePoints = ~(cellfun(@numel,fillRegions(matchPPMs(currentBuckets,ppm)))>1);
-            currentBuckets = currentBuckets(~buckets.refinedBuckets.singlePoints,:);
+            if isempty(currentBuckets)
+                currentBuckets = buckets;
+            end
+                currentBuckets = currentBuckets(~buckets.refinedBuckets.singlePoints,:);
             
         % Sort the buckets and return them:
             [~,inds] = sort(mean(currentBuckets,2));
@@ -281,6 +282,7 @@ function [buckets,refinedBounds] = refineBuckets(matrix,ppm,buckets,varargin)
          
         if saveFig
             fig = gca;
+            title('Refined Buckets - Complete. Please wait; saving and figure in current directory...')
             saveas(fig,buckets.refinedBuckets.figure)
            % close(fig)
             msgbox({['Refinement Completed Successfully! Figure saved as ''',buckets.refinedBuckets.figure,''''];...

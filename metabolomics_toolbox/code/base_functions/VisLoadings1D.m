@@ -40,11 +40,11 @@ for k=2:size(cmap,1)
     plot(feature_sort,lines(k,:),'Color',cmap(k,:));
 end
 xlabel('Chemical Shift')
-ylabel(['Back projected correlations / loadings'])
+ylabel(['Loadings coefficients * std(data)'])
 
 colormap(cmap);
 t=colorbar;
-set(get(t,'ylabel'),'String', 'Correlations/Loadings');
+set(get(t,'ylabel'),'String', 'Loadings Coefficients');
 caxis([-1 1])
 set(gca,'XDir','rev');
 hold off

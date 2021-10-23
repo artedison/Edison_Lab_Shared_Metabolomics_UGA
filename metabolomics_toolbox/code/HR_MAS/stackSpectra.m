@@ -61,9 +61,13 @@ function [noise,p] = stackSpectra(matrix,ppm,horzshift,vertshift,plotTitle,varar
                     plotInds = varargin{ind(1)+1};               
                     matrix = matrix(plotInds,:);                 % don't flip this yet
                     timeVect = timeVect(plotInds);
-                    colors.rgb = flipud(colors.rgb(plotInds,:)); % subset them, then flip to match matrix
+                    if exist('colors','var')
+                        colors.rgb = flipud(colors.rgb(plotInds,:)); % subset them, then flip to match matrix
+                    end
                 else
-                    colors.rgb = flipud(colors.rgb);             % flip to match matrix
+                    if exist('colors','var')
+                        colors.rgb = flipud(colors.rgb);             % flip to match matrix
+                    end
                 end
             end
 
@@ -77,6 +81,7 @@ function [noise,p] = stackSpectra(matrix,ppm,horzshift,vertshift,plotTitle,varar
             if any(strcmp(varargin,'noWhiteShapes'))
                 whiteShapes = false;
             end     
+            
             
     end
 

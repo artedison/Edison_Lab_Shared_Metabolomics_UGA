@@ -45,6 +45,9 @@ interleaved = false;
 
 %%
 
+% Old method (summing)
+%   [matrixCollapsed,timesCollapsed,totalTime,resolution] = HRMAS_collapseTimes(matrix,times,binsize)
+
 % Simple
     
     if ~interleaved
@@ -54,6 +57,66 @@ interleaved = false;
         
         
     end
+    
+% Interleaved
+
+    if interleaved
+        % Use local interpolation to fill in the gaps for timepoints
+            % How many points to interp for?
+                                        
+            si = varargin{3};
+            [~,b] = ismember('noesypr1d',{si.sample(3).expType.type});
+                [~,sortInd] = sort(cellfun(@str2num,{si.sample(3).dataFiles.name}));
+                si.sample(3).expTypeIndex,
+                
+                % Check to see if exptKey matches the timepoints
+                    theseTps = si.sample(3).exptKey(sortInd) == b;
+                    ttps = double(theseTps);
+%                     sum(theseTps);  
+                    ttps(theseTps) = timepoints;
+                    
+                % *We know where the gaps are
+                % Diff the timepoints
+                    dtp = diff(timepoints);
+                    
+                % Fill each gap with round((elapsedTime) / avgdiff)
+                % timepoints
+                    % Elapsed time during each gap
+                        
+                        gaps = find(~theseTps);
+                            lgap = gaps-1;
+                            rgap = gaps+1;
+                                hasboth = lgap>0 & rgap<length(theseTps);
+                                rgap = rgap(hasboth);
+                                lgap = lgap(hasboth);
+                        gapDiffs = ttps(rgap) - ttps(lgap);
+%                             figure,plot(gapDiffs)
+                            
+                 % Avg diff for each normal tp
+                    % Remove the diffs at the gaps
+                        gaps = gaps - (1:length(gaps));
+                        dtp(gaps(gaps<length(dtp))) = [];
+                            
+                % Generate new timepoints new data
+                    meanRes = mean(dtp);
+                    newTimes = timepoints(1):meanRes:timepoints(end);
+                    
+                    
+%                     figure,plot(ttps)
+%                     figure,plot(dtp)
+%                     figure,hold on,plot(timepoints), plot(newTimes)
+%                     
+                % Interpolate the surface
+                    x = 1:size(matrix,2);
+                    y = timepoints;
+                    v = matrix;
+                    
+                    [xq,yq] = meshgrid(x, newTimes);
+                    newmat = griddata(x,y,v,xq,yq);
+                    Vq = interp2(X,Y,V,Xq,Yq);
+    end
+            
+            
         
     totalTime = num2str(round(timepoints(end)-timepoints(1),1));
     if numel(timesCollapsed)>1
@@ -62,9 +125,6 @@ interleaved = false;
         resolution = 'Resolution is not defined for a single timepoint';
         msgbox('Warning: resolution is not defined for a single timepoint');
     end
-    
-% Interleaved
-
     
     
 end
