@@ -36,7 +36,7 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
         
     % Get the Sample Name
     
-        sample(s).name = newDataDirs(s).name;     
+        sample(s).name = newDataDirs(s).name;
         
     % Make the standard new directories and name them
             
@@ -51,7 +51,7 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
                         sample(s).paths.results = [pwd,'/results'];
                         sample(s).paths.scripts = [pwd,'/scripts'];
                         
-                    cd('data');mkdir('raw');mkdir('processed');  
+                    cd('data');mkdir('raw');mkdir('processed');
                         sample(s).paths.raw = [pwd,'/raw'];
                         sample(s).paths.processed = [pwd,'/processed'];
                                 cd('./processed');mkdir('nmrpipe');
@@ -62,7 +62,7 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
 %                     mkdir('nmrPipe_templates')
 %                     cd('nmrPipe_templates')
 %                         sample(s).paths.templates = pwd;
-%                         mkdir('representative_spectrum')                        
+%                         mkdir('representative_spectrum')
 
     % Sort the Experiments into Separate Directories by Experiment Type
         
@@ -74,12 +74,12 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
                 sample(s).paramFiles.name = sample(s).name;
                 sample(s).paramFiles.fileData = readAcqusFiles(sample(s).paths.originalData);
                 
-        % Define the <expType types> 
+        % Define the <expType types>
                % Find types of expTypes from that list
                     sample(s).expTypes = unique({sample(s).paramFiles.fileData.experimentType});
                     
                     sample(s).dataFiles = dir(sample(s).paths.originalData);
-                        sample(s).dataFiles(ismember({sample(s).dataFiles.name},{'.','..','.DS_Store'})) = []; % remove unnecessary dirs                             
+                        sample(s).dataFiles(ismember({sample(s).dataFiles.name},{'.','..','.DS_Store'})) = []; % remove unnecessary dirs
                         
         % Before doing anything else, check to make sure the data exist:
             
@@ -142,7 +142,7 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
                         
                         mkdir(sample(s).expType(t).type)
                         sample(s).expType(t).paths.raw = [pwd,'/',sample(s).expType(t).type];
-                end       
+                end
                 
         % Make fid and ft directories for each <expType type> within "nmrpipe"
                 for t = 1:length(sample(s).expTypes)
@@ -155,11 +155,11 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
                             mkdir('proc_files'); sample(s).expType(t).paths.proc_files = [pwd,'/proc_files'];
                             cd('proc_files');
                                 mkdir('fid_com'); sample(s).expType(t).paths.fid_com = [pwd,'/fid_com'];
-                                mkdir('ft_com');  sample(s).expType(t).paths.ft_com = [pwd,'/ft_com'];      
+                                mkdir('ft_com');  sample(s).expType(t).paths.ft_com = [pwd,'/ft_com'];
                                 
-                end  
+                end
                 cd(sample(s).paths.nmrpipe)
-                %sample(s).expType(t) = sample(s).expType; 
+                %sample(s).expType(t) = sample(s).expType;
                 
         % Copy (Move) the expTypes and zip/tar file for each <expType type>
         
@@ -188,13 +188,13 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
                         
                         sample(s).expType(t).files = sample(s).dataFiles(inds);
                         
-                end  
+                end
                 
                 % Clean up old dir
                     cd([sample(s).paths.originalData]),cd ..
-                    system(['rm -r ',sample(s).name])
+                    % system(['rm -r ',sample(s).name])
                     
-                cd(sample(s).paths.raw) % Go back to the raw data dir 
+                cd(sample(s).paths.raw) % Go back to the raw data dir
                 
             fprintf(['\n\tSample ''',sample(s).name,''' constructed successfully...\n\n'])
     end
@@ -204,4 +204,3 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
     cd(sample(1).paths.sample),cd ..
     fprintf('\n\tconstructHRMASDirectory_4() completed. Revelant data are found in the output struct. Run processCIVMdata() next.\n\n')
 end
-
