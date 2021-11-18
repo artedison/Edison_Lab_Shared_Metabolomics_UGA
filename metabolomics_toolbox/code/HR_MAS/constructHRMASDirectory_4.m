@@ -192,7 +192,7 @@ function [output] = constructHRMASDirectory_4(destinationDir,newDataDir)
                 
                 % Clean up old dir
                     cd([sample(s).paths.originalData]),cd ..
-                    % system(['rm -r ',sample(s).name])
+                    system(['rm -r ',sample(s).name])
                     
                 cd(sample(s).paths.raw) % Go back to the raw data dir
                 
