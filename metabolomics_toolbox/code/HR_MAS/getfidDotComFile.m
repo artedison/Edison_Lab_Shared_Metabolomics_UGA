@@ -2,7 +2,7 @@ function fileInfo = getfidDotComFile(varargin)
 
 % This function should accept an fid.com file or generate one from nmrPipe,
 % then create individual fid files for each spectrum. Default is to run
-% from the location of the file that will be processed. 
+% from the location of the file that will be processed.
 %
 % 'fromSpectrum',specNumber
 % 'fromTemplate',pathToFile
@@ -11,41 +11,50 @@ function fileInfo = getfidDotComFile(varargin)
 
 %     parms = {'fromSpectrum','fromTemplate'};
 %     [ind] = strcmp(parms,varargin);
-%     
+%
 %     if ind(1)
 %         fromSpectrum = varargin{:};
 %     end
-
+[ind] = find(strcmp('auto',varargin));
+if any(ind)
+  auto=varargin{ind+1};
+else
+  auto=false;
+end
 %% If generating a new file (default)
 
     % Using a specific spectrum (fromSpectrum):
             % go to the selected file
             
-            % run bruk2pipe 
-                %!bruker        
+            % run bruk2pipe
+                %!bruker
     
-    % Using the first spectrum (default): 
+    % Using the first spectrum (default):
             % go to the first file on the list for that type
             
-            % run bruk2pipe 
+            % run bruk2pipe
+            if auto
+              !bruker -auto
+            else
                 !bruker
+            end
                 
                 % At this point, the user should Read Parameters and Save Script
         
     
-%% fromTemplate      
+%% fromTemplate
 
 %                 templist = dir(pwd);
-% 
-%                 
-% % New section to check for procParm.txt                
+%
+%
+% % New section to check for procParm.txt
 % %             % check for procParm.txt (new nmrPipe output)
 % %                 if any(contains({templist.name},'procParm.txt'))
 % %                     % Read Params
 % %                 end
-% 
-% 
-%             % If using the fid.com, extract the necessary parameters and store in a params sub struct		
+%
+%
+%             % If using the fid.com, extract the necessary parameters and store in a params sub struct
 %                 if any(contains({templist.name},'fid.com'))
 %                     pipepars = extractPipePars();
 %                 else
@@ -54,7 +63,7 @@ function fileInfo = getfidDotComFile(varargin)
 %                 end
       
 
-    % Modify the fid.com file            
+    % Modify the fid.com file
         fidData = fileread('fid.com');
         fidData = regexprep(fidData,'sleep 5','sleep 0.001');
         
@@ -64,7 +73,7 @@ function fileInfo = getfidDotComFile(varargin)
                 fprintf(f,'%s',fidData);
             fclose(f);
 
-        % Make it executable 
+        % Make it executable
             fileattrib('fid.com','+x','a');
             
         
