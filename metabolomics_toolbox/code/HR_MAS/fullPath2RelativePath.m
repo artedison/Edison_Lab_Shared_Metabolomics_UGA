@@ -10,6 +10,13 @@ function [relativePath] = fullPath2RelativePath(startPath_full,endPath_full,vara
 %   structures may change over time, since relative paths are re-calculated
 %   during each run. 
 %
+%   Optional args: 
+%                   'useEscapeCharacters'   flag that converts sloppy
+%                   filepaths (e.g. containing '(', ')', or ' ') to a
+%                   shell-friendly path by adding escape characters:
+%                       '(' -> '\('
+%                       ')' -> '\)'
+%                       ' ' -> '\ '
 %   MTJ DEC2020
 %
 %   NOTE: both dirs must actually have a common root
