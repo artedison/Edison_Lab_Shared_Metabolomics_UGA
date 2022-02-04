@@ -118,3 +118,77 @@ for isample=sampeseq
   saveas(fig_prop,[workdir,'fdapca_prop_plot_1d.',num2str(isample),'.fig']);
   close all;
 end
+
+% FPCA aerobic vs anaerobic
+% merged fpca
+new_workdir=[comp 'Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge.net/result_addition/fpca_multi_aero_vs_anerobic/'];
+cd(new_workdir);
+rng(1);
+npc=5;%maximum number of pc to calculate
+lambdapc=0.0;%lambda for pc
+plot_ylim=[-2.2,2.2];
+sampeseq=[1 2 3 4 5 6];
+condseq=[1 1 1 2 2 2];
+ymat=[];
+names={};
+replicates=[];
+for isample=sampeseq
+  ymat=[ymat matlist{isample}];
+  names=[names namelist{isample}];
+  replicates=[replicates repmat(condseq(isample),[1,length(namelist{isample})])];
+end
+%
+nridges=size(ymat,2);
+ntime=52;
+nDer=1;%maximal derivative to consider
+xvec=1:ntime;
+%% center and scale for each feature (before pca)
+for j=1:nridges
+  shiftv=ymat(:,j)-mean(ymat(:,j));
+  ymat(:,j)=shiftv./std(shiftv);
+end
+loglambda_vec= -4:0.25:4;
+res=smooth_derivative(ymat,xvec,loglambda_vec,nDer);
+fdres=res.spfd_selec;
+nsmooth=nDer+2;
+norder=nsmooth+2;
+nbasis=length(xvec)+norder-2;
+bbasis=create_bspline_basis([min(xvec) max(xvec)],nbasis,norder,xvec);
+fdParpc=fdPar(bbasis,nsmooth,lambdapc);
+close all;
+res=fda_pca(fdres,fdParpc,npc);
+harmscr=res.fdapcastr.harmscr;
+annotnames_ind=find(~cellfun(@(x) any(regexp(x,'[uU]nknown')),names,'UniformOutput',true));
+markerlist={'o' '^'};%for each conditions aerobic vs anaerobic
+names_unique_pres={'glucose', 'ethanol', 'glucose-1-phosphate', 'arginine', 'alanine'};%instead of unique(names) just select a few to show
+unsele_ind=cellfun(@(x) ~ismember(x,names_unique_pres),names,'UniformOutput',true);
+names_pres=names;
+names_pres(unsele_ind)={'unknown'};
+names_unique_all=['unknown' names_unique_pres];
+ncompd=length(names_unique_all);
+colorsmap=hsv(ncompd);
+colorsmap=colorsmap(randperm(size(colorsmap,1)),:);
+color_noanno_ind=cellfun(@(x) any(regexp(x,'[uU]nknown')),names_unique_all,'UniformOutput',true);
+colorsmap(color_noanno_ind,:)=repmat([0.5 0.5 0.5],[1,1]);
+% comparing compounds
+legends={};
+h2=figure();
+hold on;
+for namei=1:length(names_unique_all)
+  name=names_unique_all{namei};
+  for replicate=unique(replicates)
+    ind=find(replicates==replicate&strcmp(names_pres,name));
+    if strcmp(name,'unknown')
+      scatter(harmscr(ind,1),harmscr(ind,2),[],colorsmap(namei,:),markerlist{replicate});%
+    else
+      scatter(harmscr(ind,1),harmscr(ind,2),200,colorsmap(namei,:),markerlist{replicate},'filled');
+    end
+    legends=[legends ['replicate ' num2str(replicate) ' ' name]];
+  end
+end
+xlabel('pc1');
+ylabel('pc2');
+title(['pca epl']);
+legend(legends);
+saveas(h2,[new_workdir,'fdapca_score_plot.aero_vs_anaero.fig']);
+close all;
