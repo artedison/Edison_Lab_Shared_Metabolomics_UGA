@@ -192,3 +192,31 @@ title(['pca epl']);
 legend(legends);
 saveas(h2,[new_workdir,'fdapca_score_plot.aero_vs_anaero.fig']);
 close all;
+
+% plot for selected compounds
+markerlist={'o' '^'};%for each conditions high vs low density
+colorline={'r','g'};
+for compd=names_unique_pres
+  legendsrec={};
+  h2=figure();
+  hold on;
+  for replicate=unique(replicates)
+    expname=expnames{replicate};
+    ind=find(replicates==replicate&strcmp(names_pres,compd));
+    yplot=ymat(:,ind);
+    yplot=yplot(:);
+    xplot=repmat(timelist{replicate}(:,1),[length(ind),1]);
+    scatter(xplot,yplot,200,colorline{replicate},markerlist{replicate});
+    for linei=1:length(ind)
+      lineind=(((linei-1)*ntime)+1):((linei*ntime));
+      line(xplot(lineind),yplot(lineind),'LineWidth',2,'LineStyle','--','Color',colorline{replicate});
+    end
+    legendsrec=[legendsrec {[expname]}];
+  end
+  xlabel('time');
+  ylabel('quantification');
+  title([compd]);
+  % legend(legendsrec);
+  saveas(h2,[workdir,'time_series_plot.',compd{1},'_in_allsample.fig']);
+  close all;
+end
