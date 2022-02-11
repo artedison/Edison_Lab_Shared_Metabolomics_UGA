@@ -1,45 +1,45 @@
 function [FitResults,LowestError,BestStart,xi,yi,BootResults]=peakfit(signal,center,window,NumPeaks,peakshape,extra,NumTrials,start,AUTOZERO,fixedwidth)
 % Version 3.1: September, 2012. Unlimited Number of peaks. Bug fixes.
-% A command-line peak fittingds program for time-series signals, 
-% written as a self-contained Matlab function in a single m-file. 
-% Uses an non-linear optimization algorithm to decompose a complex, 
+% A command-line peak fittingds program for time-series signals,
+% written as a self-contained Matlab function in a single m-file.
+% Uses an non-linear optimization algorithm to decompose a complex,
 % overlapping-peak signal into its component parts. The objective
 % is to determine whether your signal can be represented as the sum of
 % fundamental underlying peaks shapes. Accepts signals of any length,
-% including those with non-integer and non-uniform x-values. Fits 
-% Gaussian, equal-width Gaussians, exponentially-broadened Gaussian, 
+% including those with non-integer and non-uniform x-values. Fits
+% Gaussian, equal-width Gaussians, exponentially-broadened Gaussian,
 % Lorentzian, equal-width Lorentzians, Pearson, Logistic, exponential
 % pulse, and sigmoid shapes (expandable to other shapes). This is a command
-% line version, usable from a remote terminal. It is capable of making 
+% line version, usable from a remote terminal. It is capable of making
 % multiple trial fits with sightly different starting values and taking
-% the one with the lowest mean fit error.  Version 3.1: September, 2012, 
+% the one with the lowest mean fit error.  Version 3.1: September, 2012,
 %
-% PEAKFIT(signal);       
-% Performs an iterative least-squares fit of a single Gaussian  
-% peak to the data matrix "signal", which has x values 
+% PEAKFIT(signal);
+% Performs an iterative least-squares fit of a single Gaussian
+% peak to the data matrix "signal", which has x values
 % in column 1 and Y values in column 2 (e.g. [x y])
 %
 % PEAKFIT(signal,center,window);
-% Fits a single Gaussian peak to a portion of the 
-% matrix "signal". The portion is centered on the 
+% Fits a single Gaussian peak to a portion of the
+% matrix "signal". The portion is centered on the
 % x-value "center" and has width "window" (in x units).
-% 
+%
 % PEAKFIT(signal,center,window,NumPeaks);
 % "NumPeaks" = number of peaks in the model (default is 1 if not
 % specified). No limit to maximum number of peaks in version 3.1
-% 
+%
 % PEAKFIT(signal,center,window,NumPeaks,peakshape);
 % Specifies the peak shape of the model: "peakshape" = 1-12.
-% (1=Gaussian (default), 2=Lorentzian, 3=logistic, 4=Pearson, 
+% (1=Gaussian (default), 2=Lorentzian, 3=logistic, 4=Pearson,
 % 5=exponentionally broadened Gaussian; 6=equal-width Gaussians;
 % 7=Equal-width Lorentzians; 8=exponentionally broadened equal-width
-% Gaussian, 9=exponential pulse, 10=sigmoid, 11=Fixed-width Gaussian, 
+% Gaussian, 9=exponential pulse, 10=sigmoid, 11=Fixed-width Gaussian,
 % 12=Fixed-width Lorentzian;).
 %
 % PEAKFIT(signal,center,window,NumPeaks,peakshape,extra)
 % Specifies the value of 'extra', used in the Pearson and the
-% exponentionally broadened Gaussian shapes to fine-tune the peak shape. 
-% 
+% exponentionally broadened Gaussian shapes to fine-tune the peak shape.
+%
 % PEAKFIT(signal,center,window,NumPeaks,peakshape,extra,NumTrials);
 % Performs "NumTrials" trial fits and selects the best one (with lowest
 % fitting error). NumTrials can be any positive integer (default is 1).
@@ -47,26 +47,55 @@ function [FitResults,LowestError,BestStart,xi,yi,BootResults]=peakfit(signal,cen
 % PEAKFIT(signal,center,window,NumPeaks,peakshape,extra,NumTrials,start)
 % Specifies the first guesses vector "firstguess" for the peak positions
 %  and widths, e.g. start=[position1 width1 position2 width2 ...]
-% 
+%
 % [FitResults,MeanFitError]=PEAKFIT(signal,center,window...)
 % Returns the FitResults vector in the order peak number, peak
 % position, peak height, peak width, and peak area), and the MeanFitError
 % (the percent RMS difference between the data and the model in the
 % selected segment of that data) of the best fit.
 %
-% Optional output parameters 
+% Optional output parameters
 % 1. FitResults: a table of model peak parameters, one row for each peak,
 %    listing Peak number, Peak position, Height, Width, and Peak area.
 % 2. LowestError: The rms fitting error of the best trial fit.
 % 3. BestStart: the starting guesses that gave the best fit.
-% 4. xi: vector containing 100 interploated x-values for the model peaks. 
-% 5. yi: matrix containing the y values of each model peak at each xi. 
+% 4. xi: vector containing 100 interploated x-values for the model peaks.
+% 5. yi: matrix containing the y values of each model peak at each xi.
 %    Type plot(xi,yi(1,:)) to plot peak 1 or plot(xi,yi) to plot all peaks
 % 6. BootResults: a table of bootstrap precision results for a each peak
 %    and [peak parameter.
-% T. C. O'Haver (toh@umd.edu). Version 3 
-%  
-% Example 1: 
+% T. C. O'Haver (toh@umd.edu). Version 3
+%
+% Copyright (c) 2018, Tom O'Haver
+% All rights reserved.
+%
+% Redistribution and use in source and binary forms, with or without
+% modification, are permitted provided that the following conditions are met:
+%
+% * Redistributions of source code must retain the above copyright notice, this
+%   list of conditions and the following disclaimer.
+%
+% * Redistributions in binary form must reproduce the above copyright notice,
+%   this list of conditions and the following disclaimer in the documentation
+%   and/or other materials provided with the distribution
+% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+% AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+% IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+% DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+% FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+% DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+% SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+% CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+% OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+% OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+%
+% Currently, Cite As
+% Tom O'Haver (2022). peakfit.m
+% (https://www.mathworks.com/matlabcentral/fileexchange/23611-peakfit-m)
+%  MATLAB Central File Exchange. Retrieved February 11, 2022.
+
+%
+% Example 1:
 % >> x=[0:.1:10]';y=exp(-(x-5).^2);peakfit([x y])
 % Fits exp(-x)^2 with a single Gaussian peak model.
 %
@@ -92,13 +121,13 @@ function [FitResults,LowestError,BestStart,xi,yi,BootResults]=peakfit(signal,cen
 % Create and fit Lorentzian located at x=50, height=1, width=2.
 % ans =
 %            1           50      0.99974       1.9971       3.1079
-% Example 5: 
+% Example 5:
 %   >> x=[0:.005:1];y=humps(x);peakfit([x' y'],.3,.7,1,4,3);
-%   Fits a portion of the humps function, 0.7 units wide and centered on 
+%   Fits a portion of the humps function, 0.7 units wide and centered on
 %   x=0.3, with a single (NumPeaks=1) Pearson function (peakshape=4)
 %   with extra=3 (controls shape of Pearson function).
 %
-% Example 6: 
+% Example 6:
 %  >> x=[0:.005:1];y=(humps(x)+humps(x-.13)).^3;smatrix=[x' y'];
 %  >> [FitResults,MeanFitError]=peakfit(smatrix,.4,.7,2,1,0,10)
 %  Creates a data matrix 'smatrix', fits a portion to a two-peak Gaussian
@@ -117,7 +146,7 @@ function [FitResults,LowestError,BestStart,xi,yi,BootResults]=peakfit(signal,cen
 % Example 8:
 % >> peakfit([x' y'],.4,.7,2,1,0,10,[.3 .1 .5 .1],0);
 % As above, but sets AUTOZERO mode in the last argument.
-% AUROZERO=0 does not subtract baseline from data segment. 
+% AUROZERO=0 does not subtract baseline from data segment.
 % AUROZERO=1 (default) subtracts linear baseline from data segment.
 % AUROZERO=2, subtracts quadratic baseline from data segment.
 %
@@ -126,14 +155,14 @@ function [FitResults,LowestError,BestStart,xi,yi,BootResults]=peakfit(signal,cen
 % ans =
 %             1       5.0078      0.97001       1.6079       1.6598
 % Fitting single Gaussian on a curved background, using quadratic
-% autozero (2) and specifying center and window, but using placeholders (zeros) 
+% autozero (2) and specifying center and window, but using placeholders (zeros)
 % to use default values for NumPeaks, peakshape, extra, NumTrials, and start.
 %
 % Example 9:
 % >> x=[0:.1:10];y=exp(-(x-5).^2)+.5*exp(-(x-3).^2)+.1*randn(size(x));
 % [FitResults,MeanFitError]=peakfit([x' y'],0,0,2,11,0,0,0,0,1.666)
 % Same as example 3, fit with fixed-widrh Gaussian (shape 11), width=1.666
-% 
+%
 % Example 10: (Prints out parameter error estimates; Version 3 only)
 % >> x=0:.05:9;y=exp(-(x-5).^2)+.5*exp(-(x-3).^2)+.01*randn(1,length(x));
 % >> [FitResults,LowestError,BestStart,xi,yi,BootstrapErrors]=peakfit([x;y],0,0,2,6,0,1,0,0,0);
@@ -157,7 +186,7 @@ if datasize(2)==1, %  Must be isignal(Y-vector)
     Y=signal;
 else
     % Must be isignal(DataMatrix)
-    X=signal(:,1); % Split matrix argument 
+    X=signal(:,1); % Split matrix argument
     Y=signal(:,2);
 end
 X=reshape(X,1,length(X)); % Adjust X and Y vector shape to 1 x n (rather than n x 1)
@@ -247,13 +276,13 @@ X1=min(xx);
 X2=max(xx);
 bkgsize=round(length(xx)/10);
 if bkgsize<2,bkgsize=2;end
-if AUTOZERO==1, % linear autozero operation  
+if AUTOZERO==1, % linear autozero operation
   Y1=mean(yy(1:bkgsize));
   Y2=mean(yy((length(xx)-bkgsize):length(xx)));
   yy=yy-((Y2-Y1)/(X2-X1)*(xx-X1)+Y1);
 end % if
 lxx=length(xx);
-if AUTOZERO==2, % Quadratic autozero operation  
+if AUTOZERO==2, % Quadratic autozero operation
     XX1=xx(1:round(lxx/bkgsize));
     XX2=xx((lxx-round(lxx/bkgsize)):lxx);
     Y1=yy(1:round(length(xx)/bkgsize));
@@ -299,15 +328,15 @@ switch peakshape
         ShapeString='Fixed-width Lorentzian';
     otherwise
 end % switch peakshape
-  
+
 % Perform peak fitting for selected peak shape using fminsearch function
 options = optimset('TolX',.00001,'Display','off' );
 LowestError=1000; % or any big number greater than largest error expected
-FitParameters=zeros(1,NumPeaks.*2); 
-BestStart=zeros(1,NumPeaks.*2); 
-height=zeros(1,NumPeaks); 
+FitParameters=zeros(1,NumPeaks.*2);
+BestStart=zeros(1,NumPeaks.*2);
+height=zeros(1,NumPeaks);
 bestmodel=zeros(size(yy));
-for k=1:NumTrials, 
+for k=1:NumTrials,
     % disp(['Trial number ' num2str(k) ] ) % optionally prints the current trial number as progress indicator
   switch peakshape
     case 1
@@ -325,21 +354,21 @@ for k=1:NumTrials,
     case 6
         cwnewstart(1)=newstart(1);
         for pc=2:NumPeaks,
-            cwnewstart(pc)=newstart(2.*pc-1);  
+            cwnewstart(pc)=newstart(2.*pc-1);
         end
         cwnewstart(NumPeaks+1)=(max(xx)-min(xx))/5;
         TrialParameters=fminsearch(@fitewgaussian,cwnewstart,options,xx,yy);
     case 7
         cwnewstart(1)=newstart(1);
         for pc=2:NumPeaks,
-            cwnewstart(pc)=newstart(2.*pc-1);  
+            cwnewstart(pc)=newstart(2.*pc-1);
         end
         cwnewstart(NumPeaks+1)=(max(xx)-min(xx))/5;
         TrialParameters=fminsearch(@fitlorentziancw,cwnewstart,options,xx,yy);
     case 8
         cwnewstart(1)=newstart(1);
         for pc=2:NumPeaks,
-            cwnewstart(pc)=newstart(2.*pc-1);  
+            cwnewstart(pc)=newstart(2.*pc-1);
         end
         cwnewstart(NumPeaks+1)=(max(xx)-min(xx))/5;
         TrialParameters=fminsearch(@fitexpewgaussian,cwnewstart,options,xx,yy,-extra);
@@ -361,7 +390,7 @@ for k=1:NumTrials,
           TrialParameters=fminsearch(@FitFWLorentzian,fixedstart,options,xx,yy);
       otherwise
   end % switch peakshape
-  
+
 % Construct model from Trial parameters
 A=zeros(NumPeaks,n);
 for m=1:NumPeaks,
@@ -404,7 +433,7 @@ model=PEAKHEIGHTS'*A;
 % Compare trial model to data segment and compute the fit error
   MeanFitError=100*norm(yy-model)./(sqrt(n)*max(yy));
   % Take only the single fit that has the lowest MeanFitError
-  if MeanFitError<LowestError, 
+  if MeanFitError<LowestError,
       if min(PEAKHEIGHTS)>0,  % Consider only fits with positive peak heights
         LowestError=MeanFitError;  % Assign LowestError to the lowest MeanFitError
         FitParameters=TrialParameters;  % Assign FitParameters to the fit with the lowest MeanFitError
@@ -437,9 +466,9 @@ for m=1:NumPeaks,
     case 8
         AA(m,:)=expgaussian(xxx,FitParameters(m),FitParameters(NumPeaks+1),-extra*length(xxx)./length(xx))';
     case 9
-        AA(m,:)=exppulse(xxx,FitParameters(2*m-1),FitParameters(2*m));  
+        AA(m,:)=exppulse(xxx,FitParameters(2*m-1),FitParameters(2*m));
     case 10
-        AA(m,:)=sigmoid(xxx,FitParameters(2*m-1),FitParameters(2*m));   
+        AA(m,:)=sigmoid(xxx,FitParameters(2*m-1),FitParameters(2*m));
     case 11
         AA(m,:)=gaussian(xxx,FitParameters(m),FIXEDWIDTH);
     case 12
@@ -531,7 +560,7 @@ FigureSize=get(gcf,'Position');
 if peakshape==9||peakshape==10,
     text(startx,starty+dyy/2,['Peak #          tau1           Height           tau2             Area'] );
 else
-    text(startx,starty+dyy/2,['Peak #          Position        Height         Width             Area'] ); 
+    text(startx,starty+dyy/2,['Peak #          Position        Height         Width             Area'] );
 end
 % Display FitResults using sprintf
  for peaknumber=1:NumPeaks,
@@ -594,7 +623,7 @@ end
  end
 % ----------------------------------------------------------------------
 function [FitResults,LowestError]=fitpeaks(xx,yy,NumPeaks,peakshape,extra,NumTrials,start,AUTOZERO,fixedwidth)
-% Based on peakfit Version 3: June, 2012. 
+% Based on peakfit Version 3: June, 2012.
 global PEAKHEIGHTS FIXEDWIDTH
 format short g
 format compact
@@ -614,11 +643,11 @@ end
 % Perform peak fitting for selected peak shape using fminsearch function
 options = optimset('TolX',.00001,'Display','off' );
 LowestError=1000; % or any big number greater than largest error expected
-FitParameters=zeros(1,NumPeaks.*2); 
-BestStart=zeros(1,NumPeaks.*2); 
-height=zeros(1,NumPeaks); 
+FitParameters=zeros(1,NumPeaks.*2);
+BestStart=zeros(1,NumPeaks.*2);
+height=zeros(1,NumPeaks);
 bestmodel=zeros(size(yy));
-for k=1:NumTrials, 
+for k=1:NumTrials,
   switch peakshape
     case 1
         TrialParameters=fminsearch(@fitgaussian,newstart,options,xx,yy);
@@ -635,21 +664,21 @@ for k=1:NumTrials,
     case 6
         cwnewstart(1)=newstart(1);
         for pc=2:NumPeaks,
-            cwnewstart(pc)=newstart(2.*pc-1);  
+            cwnewstart(pc)=newstart(2.*pc-1);
         end
         cwnewstart(NumPeaks+1)=(max(xx)-min(xx))/5;
         TrialParameters=fminsearch(@fitewgaussian,cwnewstart,options,xx,yy);
     case 7
         cwnewstart(1)=newstart(1);
         for pc=2:NumPeaks,
-            cwnewstart(pc)=newstart(2.*pc-1);  
+            cwnewstart(pc)=newstart(2.*pc-1);
         end
         cwnewstart(NumPeaks+1)=(max(xx)-min(xx))/5;
         TrialParameters=fminsearch(@fitlorentziancw,cwnewstart,options,xx,yy);
     case 8
         cwnewstart(1)=newstart(1);
         for pc=2:NumPeaks,
-            cwnewstart(pc)=newstart(2.*pc-1);  
+            cwnewstart(pc)=newstart(2.*pc-1);
         end
         cwnewstart(NumPeaks+1)=(max(xx)-min(xx))/5;
         TrialParameters=fminsearch(@fitexpewgaussian,cwnewstart,options,xx,yy,-extra);
@@ -671,7 +700,7 @@ for k=1:NumTrials,
           TrialParameters=fminsearch(@FitFWLorentzian,fixedstart,options,xx,yy);
       otherwise
   end % switch peakshape
-  
+
 % Construct model from Trial parameters
 A=zeros(NumPeaks,n);
 for m=1:NumPeaks,
@@ -689,17 +718,17 @@ for m=1:NumPeaks,
     case 6
         A(m,:)=gaussian(xx,TrialParameters(m),TrialParameters(NumPeaks+1));
     case 7
-        A(m,:)=lorentzian(xx,TrialParameters(m),TrialParameters(NumPeaks+1));  
+        A(m,:)=lorentzian(xx,TrialParameters(m),TrialParameters(NumPeaks+1));
     case 8
-        A(m,:)=expgaussian(xx,TrialParameters(m),TrialParameters(NumPeaks+1),-extra)';    
+        A(m,:)=expgaussian(xx,TrialParameters(m),TrialParameters(NumPeaks+1),-extra)';
     case 9
-        A(m,:)=exppulse(xx,TrialParameters(2*m-1),TrialParameters(2*m));  
+        A(m,:)=exppulse(xx,TrialParameters(2*m-1),TrialParameters(2*m));
     case 10
-        A(m,:)=sigmoid(xx,TrialParameters(2*m-1),TrialParameters(2*m)); 
+        A(m,:)=sigmoid(xx,TrialParameters(2*m-1),TrialParameters(2*m));
     case 11
         A(m,:)=gaussian(xx,TrialParameters(m),FIXEDWIDTH);
     case 12
-        A(m,:)=lorentzian(xx,TrialParameters(m),FIXEDWIDTH); 
+        A(m,:)=lorentzian(xx,TrialParameters(m),FIXEDWIDTH);
    otherwise
    end % switch
     for parameter=1:2:2*NumPeaks,
@@ -713,7 +742,7 @@ model=PEAKHEIGHTS'*A;
 % Compare trial model to data segment and compute the fit error
   MeanFitError=100*norm(yy-model)./(sqrt(n)*max(yy));
   % Take only the single fit that has the lowest MeanFitError
-  if MeanFitError<LowestError, 
+  if MeanFitError<LowestError,
       if min(PEAKHEIGHTS)>0,  % Consider only fits with positive peak heights
         LowestError=MeanFitError;  % Assign LowestError to the lowest MeanFitError
         FitParameters=TrialParameters;  % Assign FitParameters to the fit with the lowest MeanFitError
@@ -778,7 +807,7 @@ numpeaks=round(length(lambda)/2);
 A = zeros(length(t),numpeaks);
 for j = 1:numpeaks,
     A(:,j) = gaussian(t,lambda(2*j-1),lambda(2*j))';
-end 
+end
 PEAKHEIGHTS = abs(A\y');
 z = A*PEAKHEIGHTS;
 err = norm(z-y');
@@ -840,7 +869,7 @@ g = exp(-((x-pos)./(0.6005615.*wid)).^2);
 % ----------------------------------------------------------------------
 function err = fitlorentzian(lambda,t,y)
 %	Fitting function for single lorentzian, lambda(1)=position, lambda(2)=width
-%	Fitgauss assumes a lorentzian function 
+%	Fitgauss assumes a lorentzian function
 global PEAKHEIGHTS
 A = zeros(length(t),round(length(lambda)/2));
 for j = 1:length(lambda)/2,
@@ -861,7 +890,7 @@ g=ones(size(x))./(1+((x-position)./(0.5.*width)).^2);
 function err = fitlogistic(lambda,t,y)
 %	Fitting function for logistic, lambda(1)=position, lambda(2)=width
 %	between the data and the values computed by the current
-%	function of lambda.  Fitlogistic assumes a logistic function 
+%	function of lambda.  Fitlogistic assumes a logistic function
 %  T. C. O'Haver, May 2006
 global PEAKHEIGHTS
 A = zeros(length(t),round(length(lambda)/2));
@@ -876,14 +905,14 @@ function g = logistic(x,pos,wid)
 % logistic function.  pos=position; wid=half-width (both scalar)
 % logistic(x,pos,wid), where x may be scalar, vector, or matrix
 % pos=position; wid=half-width (both scalar)
-% T. C. O'Haver, 1991 
+% T. C. O'Haver, 1991
 n = exp(-((x-pos)/(.477.*wid)) .^2);
 g = (2.*n)./(1+n);
 % ----------------------------------------------------------------------
 function err = fitlognormal(lambda,t,y)
 %	Fitting function for lognormal, lambda(1)=position, lambda(2)=width
 %	between the data and the values computed by the current
-%	function of lambda.  Fitlognormal assumes a lognormal function 
+%	function of lambda.  Fitlognormal assumes a lognormal function
 %  T. C. O'Haver, May 2006
 global PEAKHEIGHTS
 A = zeros(length(t),round(length(lambda)/2));
@@ -898,7 +927,7 @@ function g = lognormal(x,pos,wid)
 % lognormal function.  pos=position; wid=half-width (both scalar)
 % lognormal(x,pos,wid), where x may be scalar, vector, or matrix
 % pos=position; wid=half-width (both scalar)
-% T. C. O'Haver, 1991  
+% T. C. O'Haver, 1991
 g = exp(-(log(x/pos)/(0.01.*wid)) .^2);
 % ----------------------------------------------------------------------
 function err = fitpearson(lambda,t,y,shapeconstant)
@@ -914,11 +943,11 @@ z = A*PEAKHEIGHTS;
 err = norm(z-y');
 % ----------------------------------------------------------------------
 function g = pearson(x,pos,wid,m)
-% Pearson VII function. 
+% Pearson VII function.
 % g = pearson7(x,pos,wid,m) where x may be scalar, vector, or matrix
 % pos=position; wid=half-width (both scalar)
 % m=some number
-%  T. C. O'Haver, 1990  
+%  T. C. O'Haver, 1990
 g=ones(size(x))./(1+((x-pos)./((0.5.^(2/m)).*wid)).^2).^m;
 % ----------------------------------------------------------------------
 function err = fitexpgaussian(lambda,t,y,timeconstant)
@@ -977,7 +1006,7 @@ z = A*PEAKHEIGHTS;
 err = norm(z-y');
 % ----------------------------------------------------------------------
 function g = exppulse(x,t1,t2)
-% Exponential pulse of the form 
+% Exponential pulse of the form
 % Height.*exp(-tau1.*x).*(1-exp(-tau2.*x)))
 e=(x-t1)./t2;
 p = 4*exp(-e).*(1-exp(-e));

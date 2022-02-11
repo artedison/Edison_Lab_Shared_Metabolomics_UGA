@@ -1,4 +1,4 @@
-function R = slidefun (FUN, W, V, windowmode, varargin) 
+function R = slidefun (FUN, W, V, windowmode, varargin)
 % SLIDEFUN - apply function to a moving window over a vector
 %
 %   R = SLIDEFUN(FUN, W, V) evaluates the function FUN to a moving window
@@ -12,7 +12,7 @@ function R = slidefun (FUN, W, V, windowmode, varargin)
 %   consecutive elemens V(x0:(x0+W)) using FEVAL, and returns the result in
 %   R(x).
 %
-%   The window [x0:(x0+W)] is positioned relative to the current point x in V. 
+%   The window [x0:(x0+W)] is positioned relative to the current point x in V.
 %   R = SLIDEFUN(FUN, W, V, WINDOWMODE) denotes the type of windowing being
 %   used. WINDOWMODE can be (the first letters of) one the following:
 %       - 'central', or '' (default): the window is centered around each point,
@@ -23,8 +23,8 @@ function R = slidefun (FUN, W, V, windowmode, varargin)
 %          so that x0 equals x
 %
 %  R = SLIDEFUN(FUN,W,V,WINDOWMODE, P1,P2,...) provides for aditional
-%  parameters which are passed to the function FUN. 
-%   
+%  parameters which are passed to the function FUN.
+%
 %   Example 1) Sliding max filter - return the maximum of every three
 %   consecutive elements:
 %      V =  [1  2  3  9  4  2  1  1  5  6] ;
@@ -35,32 +35,32 @@ function R = slidefun (FUN, W, V, windowmode, varargin)
 %
 %   Example 2) Sum every four consecutive elements
 %      V =  [1  2  3  4  3  2  1] ;
-%      R = slidefun('sum',4, V) 
+%      R = slidefun('sum',4, V)
 %      % -> [3  6 10 12 12 10  6]
 %      % So R(i) = sum(R(i-2:i+1)) ;
-%      %    R(1) = sum([1 2]) ; 
+%      %    R(1) = sum([1 2]) ;
 %      %    R(2) = sum([1 2 3]) ;
-%   
+%
 %   Example 3) Range of every three consecutive elements
 %      myfun = inline('max(x) - min(x)','x') ; % (Matlab R13)
 %      V =  [1  4  3  3  3  2  9  8] ;
-%      R = slidefun(myfun,3, V) 
+%      R = slidefun(myfun,3, V)
 %      % -> [3  3  1  0  1  7  7  1]
 %
 %   Example 4) Mimick cumsum
 %      V = 1:10 ;
-%      R = slidefun(@sum, numel(V), V, 'backward') 
+%      R = slidefun(@sum, numel(V), V, 'backward')
 %      isequal(R,cumsum(V))
 %
 %   Example 5) Inverse cumprod ignoring zeros
 %      V = [1:3 0 5:8] ;
 %      myfun = inline('prod(x(x~=0))','x') ;
-%      R = slidefun(myfun, numel(V), V, 'forward') 
+%      R = slidefun(myfun, numel(V), V, 'forward')
 %
 %   Example 6) Replace values when they are outliers given their enighbours
 %      V =   [1  1  2  3  8  4  5  4  4  6  5  7  8  9] ; % 5th value (10) is an outlier
 %      N = 2 ; % window of 2*2+1  = 5 elements, central element has index N+1
-%      isoutlier = slidefun(@(V,N) abs(V(N)-mean(V)) > 1.5*std(V), 2*N+1, V, [] ,N+1) 
+%      isoutlier = slidefun(@(V,N) abs(V(N)-mean(V)) > 1.5*std(V), 2*N+1, V, [] ,N+1)
 %      % ->  [0  0  0  0  1  0  0  0  0  0  0  0  0]
 %      V(isoutlier) = NaN
 %
@@ -75,6 +75,34 @@ function R = slidefun (FUN, W, V, windowmode, varargin)
 % version 4.0 (sep 2008)
 % (c) Jos van der Geest
 % email: jos@jasen.nl
+
+% Currently Cite As
+% Jos (10584) (2022). slidefun
+% (https://www.mathworks.com/matlabcentral/fileexchange/12550-slidefun)
+% MATLAB Central File Exchange. Retrieved February 11, 2022.
+%
+% Copyright (c) 2018, Jos van der Geest
+% All rights reserved.
+%
+% Redistribution and use in source and binary forms, with or without
+% modification, are permitted provided that the following conditions are met:
+%
+% * Redistributions of source code must retain the above copyright notice, this
+%   list of conditions and the following disclaimer.
+%
+% * Redistributions in binary form must reproduce the above copyright notice,
+%   this list of conditions and the following disclaimer in the documentation
+%   and/or other materials provided with the distribution
+% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+% AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+% IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+% DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+% FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+% DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+% SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+% CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+% OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+% OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 % History
 % 1.0 (sep 2006). This file was inspired by a post on CSSM in sep 2006.
@@ -126,10 +154,10 @@ try
     if numel(R) ~= 1,
         error('Function "%s" does not return a scalar output for a vector input.', FUNstr) ;
     end
-    
+
 catch
     % Rewrite the error, likely to be caused by feval
-    % For instance, function expects more arguments, ...    
+    % For instance, function expects more arguments, ...
     ERR = lasterror ;
     if numel(varargin)>0,
         ERR.message = sprintf('%s\r(This could be caused by the additional arguments given to %s).',ERR.message, upper(mfilename)) ;
@@ -138,7 +166,7 @@ catch
 end % try-catch
 
 % where is the first relative element
-switch windowmode 
+switch windowmode
     case 1 % central
         x0 = -floor(W/2) ;
     case 2 % backward
@@ -152,7 +180,7 @@ x = x0:x1 ; % window vector (has W elements)
 R = R(ones(size(V))) ; % pre-allocation !!
 
 % The engine: seperation in three sections is faster than using a single
-% loop with calls to min and max. 
+% loop with calls to min and max.
 
 % 1. leading elements
 iend = min(-x0,nV-x1) ; % what is the last leading element, note that this might not exist
