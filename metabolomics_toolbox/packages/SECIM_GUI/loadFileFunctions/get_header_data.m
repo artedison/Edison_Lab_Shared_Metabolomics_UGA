@@ -7,6 +7,36 @@ function header_data = get_header_data(header_in)
 %     Leigh Alzapiedi(1) and Rafael Br�schweiler (2)
 %     (1) Department of Chemistry, College of Science and Health, William Paterson University
 %     (2) Department of Chemistry and NHMFL, Florida State University
+%
+% License
+%
+% Copyright (c) 2010, David Snyder
+% All rights reserved.
+%
+% Redistribution and use in source and binary forms, with or without
+% modification, are permitted provided that the following conditions are met:
+%
+% * Redistributions of source code must retain the above copyright notice, this
+%  list of conditions and the following disclaimer.
+%
+% * Redistributions in binary form must reproduce the above copyright notice,
+%   this list of conditions and the following disclaimer in the documentation
+%   and/or other materials provided with the distribution
+% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+% AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+% IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+% DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+% FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+% DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+% SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+% CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+% OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+% OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+%
+% Currently, Cite As
+% David Snyder (2022). Covariance NMR Toolbox
+% (https://www.mathworks.com/matlabcentral/fileexchange/27264-covariance-nmr-toolbox)
+% MATLAB Central File Exchange. Retrieved February 11, 2022.
 
 UNUSED_VALUE = -666; % FD's alt. code for zero: there seems to be no SIZE for y-dim nor LB for z and a-dims
 
