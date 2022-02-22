@@ -1,4 +1,4 @@
-function [data] = HRMAS_nmr_runStdProc(sampleInfo,sample,expType,doRef,refppm,refthresh)
+function [data] = HRMAS_nmr_runStdProc(sampleInfo,sample,expType,varargin)
 %% HRMAS_nmr_runStdProc
 % 
 % Run standard basic processing on a dataset (easy to put in a loop). Facilitates
@@ -30,14 +30,50 @@ function [data] = HRMAS_nmr_runStdProc(sampleInfo,sample,expType,doRef,refppm,re
     
     specList = sampleInfo.sample(sample).expType(expType);
 
-    if ~exist('doRef','var')
-        doRef = 0;
+%     if ~exist('doRef','var')
+%         doRef = 0;
+%     end
+%     
+%     if ~exist('refppm','var')
+%         refppm = 0;
+%     end
+    
+    
+    doRef = 1; % ref
+    refppm = 0; % ppm
+    refthresh = .004; % threshold for refspectra
+    reg = []; % null initiation; maxWithin to pass ref window to ref function
+    
+    if ~isempty(varargin)
+        
+        % Referencing doesn't work for all data (e.g. data without
+        % reference peaks), so require a flag:
+            inds = strcmp(varargin,'doRef'); 
+            if ~any(inds)
+                doRef = 0;
+            end
+            
+        % set refppm if it's provided (default set above to 0)
+            inds = strcmp(varargin,'refppm'); 
+            if any(inds)
+                refppm = varargin{find(inds,1)+1};
+            end
+            
+        % reset refthresh if it's provided (default set to 0.04)
+            inds = strcmp(varargin,'refthresh'); 
+            if any(inds)
+                refthresh = varargin{find(inds,1)+1};
+            end
+        
+        % use max point within ppm region (reg) to define reference peak
+        
+            inds = strcmp(varargin,'maxWithin'); 
+            if any(inds)
+                reg = varargin{find(inds,1)+1};
+            end
+            
     end
     
-    if ~exist('refppm','var')
-        refppm = 0;
-    end
-
 %% Take care of filepath stuff
 
     data_directory = specList.paths.ft;
@@ -64,7 +100,8 @@ function [data] = HRMAS_nmr_runStdProc(sampleInfo,sample,expType,doRef,refppm,re
 
                         % Referencing
                         if doRef
-                            data.spectra = ref_spectra(spectra,refthresh,refppm);   %% need to make dynamic (deal(refparams)?)
+                            data.spectra = ref_spectra(spectra,refthresh,refppm,'maxWithin',reg);   %% need to make dynamic (deal(refparams)?)
+                            %data.spectra = ref_spectra(spectra,refthresh,refppm);   %% need to make dynamic (deal(refparams)?)
                             close(gcf)
                             % Correct the offset
                                 for s = 1:length(data.spectra)

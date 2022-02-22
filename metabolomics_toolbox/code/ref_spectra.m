@@ -1,4 +1,4 @@
-function [spectra, offsetppm] = ref_spectra(spectra,thresh,offsetppm,varargin)
+function [spectra, offsetppm, p] = ref_spectra(spectra,thresh,offsetppm,varargin)
 
     % Author: Edison Lab
     % Version: 0.2
@@ -51,10 +51,23 @@ function [spectra, offsetppm] = ref_spectra(spectra,thresh,offsetppm,varargin)
         % do nothing
     end
     
+    region = [];
+    ind = strcmp(varargin,'maxWithin');
+    if any(ind)
+        region = varargin{find(ind,1)+1};
+    else
+        % do nothing
+    end
+
+    
 %% Deal arguments
 if ~exist('thresh','var')
     thresh = 0.01;
 end
+
+% Record params
+
+    p = reportParams('exclude','spectra');
 
 %% Test to see what your threshold should be
     if exist('testThreshold','var')
@@ -112,12 +125,31 @@ end
             end
         %% Pick all peaks
 
-            for i=2:length(spectra)
-                spectra(i).ppm=spectra(i).ppm-TSP_ppm(1);
-                peaks=peakpick(spectra(i).real,30,thresh*max(spectra(i).real));
-                [~, idx] = min(abs(spectra(i).ppm(peaks)));
-                TSP_ppm(i)=spectra(i).ppm(peaks(idx));
-                spectra(i).ppm=spectra(i).ppm-TSP_ppm(i);
+            if isempty(region)
+                for i=2:length(spectra)
+                    
+                    spectra(i).ppm=spectra(i).ppm-TSP_ppm(1);
+                    peaks=peakpick(spectra(i).real,30,thresh*max(spectra(i).real));
+                    [~, idx] = min(abs(spectra(i).ppm(peaks)));
+                    TSP_ppm(i)=spectra(i).ppm(peaks(idx));
+                    spectra(i).ppm=spectra(i).ppm-TSP_ppm(i);
+                end
+                
+            else % (if region is defined) % option for selecting max value within region instead of peakpicking
+                spectra(1).ppm = spectra(1).ppm + TSP_ppm(1); % reset the ppm axis to what it was (before peakpicking code)
+                
+                for i = 1:length(spectra)
+                    reg = matchPPMs(region(2), spectra(i).ppm) : matchPPMs(region(1), spectra(i).ppm);  % get the indices for the region of interest
+%                         figure,plot(spectra(i).ppm,spectra(i).real)
+                    [~,idx] = max(spectra(i).real( reg ));                                              % pick the highest peak index in the region
+%                         figure,hold on,plot(spectra(i).ppm(reg),spectra(i).real( reg ))
+%                             plot(spectra(i).ppm(reg(idx)), spectra(i).real( reg(idx) ),'*')
+                    TSP_ppm(i) = spectra(i).ppm(reg(idx));                                              % gets reset in first loop; we don't use the 
+                                                                                                        %   one calculated by peakpicking earlier 
+                    spectra(i).ppm=spectra(i).ppm-TSP_ppm(i)+TSP_ppm(1);                                % shift the ppm axis for this spectrum so the
+                                                                                                        %   current selected ref peak ppm equals the  
+                                                                                                        %   selected ref peak in the first spectrum
+                end
             end
 
             figure;

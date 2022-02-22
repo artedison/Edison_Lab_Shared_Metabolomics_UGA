@@ -21,9 +21,10 @@ function [catData] = basicProcessing_concatenateSamples(studyInfo,varargin)
 %% Do basic processing on everything
     
     dataType = 'noesypr1d'; % typical CIVM 1d expt
-    ref = 1; % don't ref
+    ref = 1; % ref
     refppm = 0; % ppm
     refthresh = .004; % threshold for refspectra
+    maxWithin = []; % null initiation; maxWithin to pass ref window to ref function
     
     if ~isempty(varargin)
         ind = find(strcmp(varargin,'dataType'));
@@ -32,7 +33,7 @@ function [catData] = basicProcessing_concatenateSamples(studyInfo,varargin)
         end
         
         ind = any(strcmp(varargin,'noRef')); % DON'T reference the spectra
-        if ~isempty(ind)
+        if ind
             ref = 0;
         end
         
@@ -46,6 +47,10 @@ function [catData] = basicProcessing_concatenateSamples(studyInfo,varargin)
             refthresh = varargin{ind+1};
         end
         
+        ind = find(strcmp(varargin,'maxWithin'));
+        if ~isempty(ind)
+            maxWithin = varargin{ind+1};
+        end
         
         
 %         ind = find(strcmp(varargin,'refThreshold'));
@@ -64,13 +69,21 @@ function [catData] = basicProcessing_concatenateSamples(studyInfo,varargin)
 %         end
     end
 
+    %%
     data = struct();
     
     for s = 1:length(studyInfo.sample)
         
         [~,ind] = ismember({dataType},{studyInfo.sample(s).expType.type});
             % NOTE: may want to allow passthrough of refSpec params
-                data(s).spectra = HRMAS_nmr_runStdProc(studyInfo,s,ind,ref,refppm,refthresh);
+            
+%                 data(s).spectra = HRMAS_nmr_runStdProc(studyInfo,s,ind,ref,refppm,refthresh,maxWithin);
+                data(s).spectra = HRMAS_nmr_runStdProc(studyInfo,s,ind,...
+                                                        'doRef',ref,...
+                                                        'refppm',refppm,...
+                                                        'refthresh',refthresh,...
+                                                        'maxWithin',maxWithin);
+                                                    
     end
     
     % Unlist the data struct one step
