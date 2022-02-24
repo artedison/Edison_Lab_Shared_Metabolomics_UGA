@@ -13,10 +13,10 @@ load(['tracing.smoothed.mat']);
 expnames={'glucose','glucose','glucose','pyruvate (6.02 mg)','pyruvate (10 mg)','pyruvate (6.02 mg)','pyruvate (10 mg)'};
 exptypes={'H','H','H','H','H','C13','C13'};
 aerobic_ind=[1 2 3];
-matlist_comb=[matlist(aerobic_ind) matlist_comb{1}(1) matlist_comb{1}(2) matlist_comb{2}(1) matlist_comb{2}(2)];
-namelist_comb=[namelist(aerobic_ind) namelist_comb{1}(1) namelist_comb{1}(2) namelist_comb{2}(1) namelist_comb{2}(2)];
-ppmlist_comb=[ppmlist(aerobic_ind) ppmlist_comb{1}(1) ppmlist_comb{1}(2) ppmlist_comb{2}(1) ppmlist_comb{2}(2)];
-timelist_comb=[timelist(aerobic_ind) timelist_comb{1}(1) timelist_comb{1}(2) timelist_comb{2}(1) timelist_comb{2}(2)];
+matlist_comb_new=[matlist(aerobic_ind) matlist_comb{1}(1) matlist_comb{1}(2) matlist_comb{2}(1) matlist_comb{2}(2)];
+namelist_comb_new=[namelist(aerobic_ind) namelist_comb{1}(1) namelist_comb{1}(2) namelist_comb{2}(1) namelist_comb{2}(2)];
+ppmlist_comb_new=[ppmlist(aerobic_ind) ppmlist_comb{1}(1) ppmlist_comb{1}(2) ppmlist_comb{2}(1) ppmlist_comb{2}(2)];
+timelist_comb_new=[timelist(aerobic_ind) timelist_comb{1}(1) timelist_comb{1}(2) timelist_comb{2}(1) timelist_comb{2}(2)];
 %
 nsample=length(expnames);
 rng(1);
@@ -31,11 +31,11 @@ ppmmat=[];
 ind_shift_vec=[0];
 % whole data matrix
 for isample=sampseq_all
-  ymat_raw=[ymat_raw matlist_comb{isample}];
-  ppmmat=[ppmmat ppmlist_comb{isample}];
-  names=[names namelist_comb{isample}];
-  replicates=[replicates repmat(isample,[1,length(namelist_comb{isample})])];
-  ppmvec=num2cell(mean(ppmlist_comb{isample},1));
+  ymat_raw=[ymat_raw matlist_comb_new{isample}];
+  ppmmat=[ppmmat ppmlist_comb_new{isample}];
+  names=[names namelist_comb_new{isample}];
+  replicates=[replicates repmat(isample,[1,length(namelist_comb_new{isample})])];
+  ppmvec=num2cell(mean(ppmlist_comb_new{isample},1));
   ppmadd=cellfun(@(x) num2str(x),ppmvec,'UniformOutput',false);
   ppm_all=[ppm_all ppmadd];
 end
@@ -116,7 +116,7 @@ xlabel('pc1');
 ylabel('pc2');
 title(['pca epl']);
 legend(legends);
-saveas(h2,[workdir,'fdapca_score_plot.density.fig']);
+saveas(h2,[workdir,'fdapca_score_plot.fig']);
 close all;
 
 % loading plot and variance plot
@@ -149,18 +149,23 @@ for compd=selecompds
     ind=find(replicates==replicate&strcmp(names,compd));
     yplot=ymat(:,ind);
     yplot=yplot(:);
-    xplot=repmat(timelist_comb{replicate}(:,1),[length(ind),1]);
+    xplot=repmat(timelist_comb_new{replicate}(:,1),[length(ind),1]);
     scatter(xplot,yplot,200,colorline{replicate},markerlist{replicate});
+    if strcmp(colorline{replicate},'g')
+      legendsrec=[legendsrec {[expname ' C13']}];
+    else
+      legendsrec=[legendsrec {[expname ' C12']}];
+    end
     for linei=1:length(ind)
       lineind=(((linei-1)*ntime)+1):((linei*ntime));
       line(xplot(lineind),yplot(lineind),'LineWidth',2,'LineStyle','--','Color',colorline{replicate});
+      legendsrec=[legendsrec {['']}];
     end
-    legendsrec=[legendsrec {[expname]}];
   end
   xlabel('time');
   ylabel('quantification');
   title([compd]);
-  % legend(legendsrec);
+  legend(legendsrec);
   saveas(h2,[workdir,'time_series_plot.',compd{1},'_in_allsample.fig']);
   close all;
 end
@@ -198,6 +203,7 @@ for compd=quant_list_c13
   h2=figure();
   hold on;
   glob_fac=[];
+  legends={};
   for replicate=pyexp_rep
     expname=expnames{replicate};
     ind=find(replicates==replicate&strcmp(names,compd));
@@ -206,6 +212,7 @@ for compd=quant_list_c13
       ind=ind(ppmmean>ethanol_quan(1)&ppmmean<ethanol_quan(2));
     end
     yplot=ymat_raw(:,ind);
+    dataty='c13';
     if replicate==6
       yplot=yplot*scal_factor(1)/glob_fac(1);
     elseif replicate==7
@@ -214,19 +221,23 @@ for compd=quant_list_c13
       elefac=max(yplot(:));
       yplot=yplot/elefac;
       glob_fac=[glob_fac elefac];
+      dataty='c12';
     end
     yplot=yplot./max(yplot,[],1)*max(yplot(:));
     yplot=yplot(:);
-    xplot=repmat(timelist_comb{replicate}(:,1),[length(ind),1]);
+    xplot=repmat(timelist_comb_new{replicate}(:,1),[length(ind),1]);
     scatter(xplot,yplot,200,colorline{replicate},markerlist{replicate});
+    legends=[legends {[expname dataty]}];
     for linei=1:length(ind)
       lineind=(((linei-1)*ntime)+1):((linei*ntime));
       line(xplot(lineind),yplot(lineind),'LineWidth',2,'LineStyle','--','Color',colorline{replicate});
+      legends=[legends {['']}];
     end
   end
   xlabel('time');
   ylabel('quantification');
   title([compd]);
+  legend(legends);
   saveas(h2,[workdir,'time_series_plot.',compd{1},'_in_allsample_c12_vs_c13.fig']);
   close all;
 end
