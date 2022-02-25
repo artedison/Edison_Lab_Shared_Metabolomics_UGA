@@ -2,16 +2,29 @@
 set(0,'DefaultFigureVisible','on');
 close all;
 clear all;
+% ADD PATH
+% Metabolic toolbox toolbox found @  https://github.com/artedison/Edison_Lab_Shared_Metabolomics_UGA
+localPaths.public_toolbox='/Users/yuewu/Documents/GitHub/Edison_Lab_Shared_Metabolomics_UGA/';
+% some wrappers for fdaM @ https://github.com/mikeaalv/fda_learn
+localPaths.fdalearn='/Users/yuewu/Documents/GitHub/fda_learn/';
+% functiona data analysis matlab package fdaM @ https://www.psych.mcgill.ca/misc/fda/downloads/FDAfuns/
+localPaths.fdam='/Users/yuewu/Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/matalb.lib/fdaM/';
+%
+addpath(genpath(localPaths.public_toolbox));
+addpath(genpath(localPaths.fdalearn));
+addpath(genpath(localPaths.fdam));
+%
 comp='/Users/yuewu/';%the computer user location
 pardir=[comp 'Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge.net/result_addition/pyruvate_data/res/analysis/'];
 workdir=[pardir];%%the working folder
 datadir=[pardir];%the data folder
 cd(workdir);
-load(['pyruvate_exp.mat']);%the ridge tracking result as input
-load(['tracing.smoothed.mat']);
+load(['pyruvate_exp.mat']);%the new pyruvate dataset
+load(['tracing.smoothed.mat']);%the aerobic vs anaerobic dataset
 %
 expnames={'glucose','glucose','glucose','pyruvate (6.02 mg)','pyruvate (10 mg)','pyruvate (6.02 mg)','pyruvate (10 mg)'};
 exptypes={'H','H','H','H','H','C13','C13'};
+% combine data from multiple experiments
 aerobic_ind=[1 2 3];
 matlist_comb_new=[matlist(aerobic_ind) matlist_comb{1}(1) matlist_comb{1}(2) matlist_comb{2}(1) matlist_comb{2}(2)];
 namelist_comb_new=[namelist(aerobic_ind) namelist_comb{1}(1) namelist_comb{1}(2) namelist_comb{2}(1) namelist_comb{2}(2)];
@@ -62,8 +75,9 @@ loglambda_vec= -4:0.25:4;
 res=smooth_derivative(ymat,xvec,loglambda_vec,nDer);
 % Funcitonal/smoothing representation for each PC
 npc=5;%maximum number of pc to calculat
-lambdapc=0.0;%lambda for pc
+lambdapc=0.0;%lambda for pc function
 fdres=res.spfd_selec;
+% calculation for smoothing settings
 nsmooth=nDer+2;
 norder=nsmooth+2;
 nbasis=length(xvec)+norder-2;
@@ -77,9 +91,9 @@ names_unique=unique(names);
 ncompd=length(names_unique);
 %
 annotnames_ind=find(~cellfun(@(x) any(regexp(x,'[uU]nknown')),names,'UniformOutput',true));
-markerlist={'o' 'o' 'o' '^' '^' '^' '^'};%
-filledlist=[true true true true true false false];
-names_unique_pres={'uracil','alanine','choline','glucose','pyruvate','ethanol'}; %instead of unique(names) just select a few to show
+markerlist={'o' 'o' 'o' '^' '^' '^' '^'};%different carbon sources (datasets)
+filledlist=[true true true true true false false];%different NMR experiments
+names_unique_pres={'uracil','alanine','choline','glucose','pyruvate','ethanol'}; %compound to look into
 unsele_ind=cellfun(@(x) ~ismember(x,names_unique_pres),names,'UniformOutput',true);
 names_pres=names;
 names_pres(unsele_ind)={'unknown'};
@@ -91,6 +105,7 @@ colorsmap=colorsmap(randperm(size(colorsmap,1)),:);
 color_noanno_ind=cellfun(@(x) any(regexp(x,'[uU]nknown')),names_unique_all,'UniformOutput',true);
 colorsmap(color_noanno_ind,:)=repmat([0.5 0.5 0.5],[length(find(color_noanno_ind)),1]);
 legends={};
+% fpca score plot
 h2=figure();
 hold on;
 for namei=1:length(names_unique_all)
@@ -137,9 +152,7 @@ close all;
 % plot for selected compounds
 selecompds=[names_unique_pres];
 markerlist={'o' 'o' 'o' '^' '^' '^' '^'};%glucose vs pyruvate
-% colorline={'r' 'r' 'r' 'g' 'g' 'g' 'g'};
 colorline={'r' 'r' 'r' 'r' 'r' 'g' 'g'};%C12 vs C13
-% filledlist=[true true true true true false false];
 for compd=selecompds
   legendsrec={};
   h2=figure();
@@ -177,7 +190,7 @@ ref_compd='pyruvate';
 ref_ratio_low=0.1;
 % calculate the scale factor
 combexps={'pyruvate (6.02 mg)','pyruvate (10 mg)'};
-scal_factor=[];
+scal_factor=[];%use mean ratio of high enough concentration range to scale C13 data to C12
 for combexp=combexps
   replicate_comb=find(strcmp(expnames,combexp));
   % C12 parts
@@ -195,8 +208,8 @@ for combexp=combexps
 end
 % plot for compounds that have both C12 and C13 parts
 % 1. convert C13 quantification of the same level as C12 spectra, 2. scale by maximum, 3. scale each peak by maximum and to the whole maximum
-colorline={'r' 'r' 'r' 'r' 'r' 'g' 'g'};%C12 vs C13
-markerlist={'o' 'o' 'o' 'o' '^' 'o' '^'};%the two experiments
+colorline={'r' 'r' 'r' 'r' 'r' 'g' 'g'};%different NMR experiments
+markerlist={'o' 'o' 'o' 'o' '^' 'o' '^'};%the two experiments of the new dataset
 pyexp_rep=[4 5 6 7];
 ethanol_quan=[1.1 1.3];
 for compd=quant_list_c13
@@ -207,7 +220,7 @@ for compd=quant_list_c13
   for replicate=pyexp_rep
     expname=expnames{replicate};
     ind=find(replicates==replicate&strcmp(names,compd));
-    if strcmp(compd,'ethanol')
+    if strcmp(compd,'ethanol')%only plot the triplet of ethanol as the other multiplet has overlaps
       ppmmean=mean(ppmmat(:,ind),1);
       ind=ind(ppmmean>ethanol_quan(1)&ppmmean<ethanol_quan(2));
     end
