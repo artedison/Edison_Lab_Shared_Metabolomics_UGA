@@ -2,14 +2,13 @@
 
 This project provides solutions for analysis of time-series metabolic dynamics. Time dynamics were visualized by dimensionality reduction through FDA-PCA (functional data analysis principle component analysis). Functional states were found by network construction and clustering by CausalKinetiX and community clustering.
 
-./src contains functions, ./scripts contains working scripts, ./tests contains test for functions.
-
+./src contains functions, ./scripts contains working scripts, ./tests contains test for functions. The user can refer to ./scripts/new_data_compare_ana.m for their first look at the analysis. 
 
 To run the MATLAB workflow, you need to git the and add to MATLAB path for following repositories:
 
 1. [Metabolomics toolbox](https://github.com/artedison/Edison_Lab_Shared_Metabolomics_UGA) is the metabolomics toolbox of [Edison Lab](http://edison.ccrc.uga.edu) and contains many useful MATLAB functions for metabolic data preprocessing and statistic analysis
 2. [fda_learn](https://github.com/mikeaalv/fda_learn) is a wrapper for functions in functional data analysis library [fdaM](http://www.psych.mcgill.ca/misc/fda/downloads/FDAfuns/). fdaM library also need to be installed for the program to run properly.
-3. [subplot_tight](https://www.mathworks.com/matlabcentral/fileexchange/30884-controllable-tight-subplot) is needed for some process. 
+3. [subplot_tight](https://www.mathworks.com/matlabcentral/fileexchange/30884-controllable-tight-subplot) is needed for some process.
 
 To run the R workflow:
 
@@ -17,6 +16,3 @@ To run the R workflow:
 2. Cytoscape (3.8.0) need to be installed for some R script. Clustermaker (1.3.1) is needed for some pipeline.
 3. Conda (4.7.11) environment need to be constructed for network_clust_annotation.R
 4. HPC environment is needed for simulation scripts.
-
-
-
