@@ -71,7 +71,7 @@ for randi=[1 2 3 4 5 6]
 end
 
 % plot a few targeted compounds
-compdlist={'glucose-1-phosphate' 'choline' 'glucose' 'uridine' 'alanine' 'lactate' 'ethanol' 'phenylalanine' 'trehalose' 'tyrosine'};
+compdlist={'glucose-1-phosphate' 'choline' 'glucose' 'uridine' 'alanine' 'lactate' 'ethanol' 'phenylalanine' 'trehalose' 'tyrosine' 'arginine'};
 sampi=1;
 checked_ind=[];
 for compdelei=1:length(compdlist)
