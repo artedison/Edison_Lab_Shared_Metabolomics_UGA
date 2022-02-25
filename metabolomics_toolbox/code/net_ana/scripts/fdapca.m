@@ -2,6 +2,18 @@
 %% the PCA is done on each sample and different ridges is treated as different samples
 close all;
 clear all;
+% ADD PATH
+% Metabolic toolbox toolbox found @  https://github.com/artedison/Edison_Lab_Shared_Metabolomics_UGA
+localPaths.public_toolbox='/Users/yuewu/Documents/GitHub/Edison_Lab_Shared_Metabolomics_UGA/';
+% some wrappers for fdaM @ https://github.com/mikeaalv/fda_learn
+localPaths.fdalearn='/Users/yuewu/Documents/GitHub/fda_learn/';
+% functiona data analysis matlab package fdaM @ https://www.psych.mcgill.ca/misc/fda/downloads/FDAfuns/
+localPaths.fdam='/Users/yuewu/Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/matalb.lib/fdaM/';
+%
+addpath(genpath(localPaths.public_toolbox));
+addpath(genpath(localPaths.fdalearn));
+addpath(genpath(localPaths.fdam));
+%
 comp='/Users/yuewu/';%the computer user location
 pardir=[comp 'Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral.related/ridge.net/result_reprod/'];
 % OR
@@ -194,14 +206,14 @@ saveas(h2,[new_workdir,'fdapca_score_plot.aero_vs_anaero.fig']);
 close all;
 
 % plot for selected compounds
-markerlist={'o' '^'};%for each conditions high vs low density
+markerlist={'o' '^'};
 colorline={'r','g'};
 for compd=names_unique_pres
   legendsrec={};
   h2=figure();
   hold on;
   for replicate=unique(replicates)
-    expname=expnames{replicate};
+    % expname=expnames{replicate};
     ind=find(replicates==replicate&strcmp(names_pres,compd));
     yplot=ymat(:,ind);
     yplot=yplot(:);
@@ -211,7 +223,7 @@ for compd=names_unique_pres
       lineind=(((linei-1)*ntime)+1):((linei*ntime));
       line(xplot(lineind),yplot(lineind),'LineWidth',2,'LineStyle','--','Color',colorline{replicate});
     end
-    legendsrec=[legendsrec {[expname]}];
+    % legendsrec=[legendsrec {[expname]}];
   end
   xlabel('time');
   ylabel('quantification');
