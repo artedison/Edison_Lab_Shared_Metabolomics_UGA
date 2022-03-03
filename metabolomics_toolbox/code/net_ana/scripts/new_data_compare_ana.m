@@ -180,7 +180,7 @@ for compd=selecompds
   xlabel('time');
   ylabel('quantification');
   title([compd]);
-  legend(legendsrec);
+  % legend(legendsrec);
   saveas(h2,[workdir,'time_series_plot.',compd{1},'_in_allsample_nolegend.fig']);
   close all;
 end
