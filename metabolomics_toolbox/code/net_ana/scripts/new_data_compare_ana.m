@@ -90,9 +90,6 @@ harmscr=res.fdapcastr.harmscr;
 names_unique=unique(names);
 ncompd=length(names_unique);
 %
-annotnames_ind=find(~cellfun(@(x) any(regexp(x,'[uU]nknown')),names,'UniformOutput',true));
-markerlist={'o' 'o' 'o' '^' '^' '^' '^'};%different carbon sources (datasets)
-filledlist=[true true true true true false false];%different NMR experiments
 names_unique_pres={'uracil','alanine','choline','glucose','pyruvate','ethanol'}; %compound to look into
 unsele_ind=cellfun(@(x) ~ismember(x,names_unique_pres),names,'UniformOutput',true);
 names_pres=names;
@@ -100,39 +97,40 @@ names_pres(unsele_ind)={'unknown'};
 names_unique_all=['unknown' names_unique_pres];
 ncompd=length(names_unique_all);
 %
-colorsmap=hsv(ncompd);
-colorsmap=colorsmap(randperm(size(colorsmap,1)),:);
-color_noanno_ind=cellfun(@(x) any(regexp(x,'[uU]nknown')),names_unique_all,'UniformOutput',true);
-colorsmap(color_noanno_ind,:)=repmat([0.5 0.5 0.5],[length(find(color_noanno_ind)),1]);
-legends={};
+colorsmap={'r','r','r','b','b','y','y'};%glucose, pyruvate c12, pyruvate c13
+locmarker='o';
 % fpca score plot
-h2=figure();
-hold on;
-for namei=1:length(names_unique_all)
-  name=names_unique_all{namei};
-  for replicate=unique(replicates)
-    ind=find(replicates==replicate&strcmp(names_pres,name));
-    if length(ind)==0
-      continue;
-    end
-    if strcmp(name,'unknown')
-      scatter(harmscr(ind,1),harmscr(ind,2),[],colorsmap(namei,:),markerlist{replicate});%
-    else
-      if filledlist(replicate)
-        scatter(harmscr(ind,1),harmscr(ind,2),200,colorsmap(namei,:),markerlist{replicate},'filled');
-      else
-        scatter(harmscr(ind,1),harmscr(ind,2),200,colorsmap(namei,:),markerlist{replicate});
+for namei=1:length(names_unique_all)%plot for each compound one fpca
+  h2=figure();
+  hold on;
+  legends={};
+  for namej=1:length(names_unique_all)
+    name=names_unique_all{namej};
+    for replicate=unique(replicates)
+      ind=find(replicates==replicate&strcmp(names_pres,name));
+      if length(ind)==0
+        continue;
       end
+      if strcmp(name,'pyruvate')
+        loccolor='y';
+      else
+        loccolor=colorsmap{replicate};
+      end
+      if strcmp(name,'unknown') || namei~=namej
+        scatter(harmscr(ind,1),harmscr(ind,2),[],[0.5 0.5 0.5],locmarker,'filled');%
+      else
+        scatter(harmscr(ind,1),harmscr(ind,2),200,loccolor,locmarker,'filled');
+      end
+      legends=[legends [expnames{replicate} ' ' exptypes{replicate} ' ' name]];
     end
-    legends=[legends [expnames{replicate} ' ' exptypes{replicate} ' ' name]];
   end
+  xlabel('pc1');
+  ylabel('pc2');
+  title(['pca epl']);
+  % legend(legends);
+  saveas(h2,[workdir,'fdapca_score_plot_' names_unique_all{namei} '_nolegend.fig']);
+  close all;
 end
-xlabel('pc1');
-ylabel('pc2');
-title(['pca epl']);
-legend(legends);
-saveas(h2,[workdir,'fdapca_score_plot.fig']);
-close all;
 
 % loading plot and variance plot
 plot_pca_fd(res.fdapcastr,1,[1 2]);
@@ -151,8 +149,7 @@ close all;
 
 % plot for selected compounds
 selecompds=[names_unique_pres];
-markerlist={'o' 'o' 'o' '^' '^' '^' '^'};%glucose vs pyruvate
-colorline={'r' 'r' 'r' 'r' 'r' 'g' 'g'};%C12 vs C13
+colorline=colorsmap;
 for compd=selecompds
   legendsrec={};
   h2=figure();
@@ -163,15 +160,20 @@ for compd=selecompds
     yplot=ymat(:,ind);
     yplot=yplot(:);
     xplot=repmat(timelist_comb_new{replicate}(:,1),[length(ind),1]);
-    scatter(xplot,yplot,200,colorline{replicate},markerlist{replicate});
-    if strcmp(colorline{replicate},'g')
+    if strcmp(compd,'pyruvate')
+      colorhere='y';
+    else
+      colorhere=colorline{replicate};
+    end
+    scatter(xplot,yplot,200,colorhere,locmarker);
+    if strcmp(colorhere,'y')
       legendsrec=[legendsrec {[expname ' C13']}];
     else
       legendsrec=[legendsrec {[expname ' C12']}];
     end
     for linei=1:length(ind)
       lineind=(((linei-1)*ntime)+1):((linei*ntime));
-      line(xplot(lineind),yplot(lineind),'LineWidth',2,'LineStyle','--','Color',colorline{replicate});
+      line(xplot(lineind),yplot(lineind),'LineWidth',2,'LineStyle','--','Color',colorhere);
       legendsrec=[legendsrec {['']}];
     end
   end
@@ -179,7 +181,7 @@ for compd=selecompds
   ylabel('quantification');
   title([compd]);
   legend(legendsrec);
-  saveas(h2,[workdir,'time_series_plot.',compd{1},'_in_allsample.fig']);
+  saveas(h2,[workdir,'time_series_plot.',compd{1},'_in_allsample_nolegend.fig']);
   close all;
 end
 
@@ -207,9 +209,7 @@ for combexp=combexps
   scal_factor=[scal_factor mean(py_sum_vec_c12(seleseq)./py_sum_vec_c13(seleseq))];
 end
 % plot for compounds that have both C12 and C13 parts
-% 1. convert C13 quantification of the same level as C12 spectra, 2. scale by maximum, 3. scale each peak by maximum and to the whole maximum
-colorline={'r' 'r' 'r' 'r' 'r' 'g' 'g'};%different NMR experiments
-markerlist={'o' 'o' 'o' 'o' '^' 'o' '^'};%the two experiments of the new dataset
+% 1. convert C13 quantification of the same level as C12 spectra, 2. scale by maximum in C12, 3. scale each peak by maximum and to the whole maximum
 pyexp_rep=[4 5 6 7];
 ethanol_quan=[1.1 1.3];
 for compd=quant_list_c13
@@ -239,7 +239,7 @@ for compd=quant_list_c13
     yplot=yplot./max(yplot,[],1)*max(yplot(:));
     yplot=yplot(:);
     xplot=repmat(timelist_comb_new{replicate}(:,1),[length(ind),1]);
-    scatter(xplot,yplot,200,colorline{replicate},markerlist{replicate});
+    scatter(xplot,yplot,200,colorline{replicate},locmarker);
     legends=[legends {[expname dataty]}];
     for linei=1:length(ind)
       lineind=(((linei-1)*ntime)+1):((linei*ntime));
