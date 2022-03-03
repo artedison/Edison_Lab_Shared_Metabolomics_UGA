@@ -165,7 +165,7 @@ for compd=selecompds
     else
       colorhere=colorline{replicate};
     end
-    scatter(xplot,yplot,200,colorhere,locmarker);
+    % scatter(xplot,yplot,200,colorhere,locmarker);
     if strcmp(colorhere,'y')
       legendsrec=[legendsrec {[expname ' C13']}];
     else
@@ -173,7 +173,7 @@ for compd=selecompds
     end
     for linei=1:length(ind)
       lineind=(((linei-1)*ntime)+1):((linei*ntime));
-      line(xplot(lineind),yplot(lineind),'LineWidth',2,'LineStyle','--','Color',colorhere);
+      line(xplot(lineind),yplot(lineind),'LineWidth',2,'Color',colorhere);
       legendsrec=[legendsrec {['']}];
     end
   end
@@ -243,14 +243,14 @@ for compd=quant_list_c13
     legends=[legends {[expname dataty]}];
     for linei=1:length(ind)
       lineind=(((linei-1)*ntime)+1):((linei*ntime));
-      line(xplot(lineind),yplot(lineind),'LineWidth',2,'LineStyle','--','Color',colorline{replicate});
+      line(xplot(lineind),yplot(lineind),'LineWidth',2,'Color',colorline{replicate});
       legends=[legends {['']}];
     end
   end
   xlabel('time');
   ylabel('quantification');
   title([compd]);
-  legend(legends);
+  % legend(legends);
   saveas(h2,[workdir,'time_series_plot.',compd{1},'_in_allsample_c12_vs_c13.fig']);
   close all;
 end
