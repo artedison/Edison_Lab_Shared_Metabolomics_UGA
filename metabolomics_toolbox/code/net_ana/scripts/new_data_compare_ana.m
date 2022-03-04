@@ -19,8 +19,8 @@ pardir=[comp 'Dropbox (Edison_Lab@UGA)/Projects/Bioinformatics_modeling/spectral
 workdir=[pardir];%%the working folder
 datadir=[pardir];%the data folder
 cd(workdir);
-load(['pyruvate_exp.mat']);%the new pyruvate dataset
-load(['tracing.smoothed.mat']);%the aerobic vs anaerobic dataset
+load(['pyruvate_exp.mat']);%the new pyruvate dataset S2_File.mat
+load(['tracing.smoothed.mat']);%the aerobic vs anaerobic dataset S3_File.mat
 %
 expnames={'glucose','glucose','glucose','pyruvate (6.02 mg)','pyruvate (10 mg)','pyruvate (6.02 mg)','pyruvate (10 mg)'};
 exptypes={'H','H','H','H','H','C13','C13'};
