@@ -90,7 +90,7 @@ harmscr=res.fdapcastr.harmscr;
 names_unique=unique(names);
 ncompd=length(names_unique);
 %
-names_unique_pres={'uracil','alanine','choline','glucose','pyruvate','ethanol'}; %compound to look into
+names_unique_pres={'uracil','choline','glucose','pyruvate','ethanol'}; %compound to look into
 unsele_ind=cellfun(@(x) ~ismember(x,names_unique_pres),names,'UniformOutput',true);
 names_pres=names;
 names_pres(unsele_ind)={'unknown'};
@@ -187,7 +187,7 @@ end
 
 % plot C12 vs C13 quantification of the same compound
 % normalize by pyruvate quantification
-quant_list_c13={'alanine','ethanol'}
+quant_list_c13={'ethanol'}
 ref_compd='pyruvate';
 ref_ratio_low=0.1;
 % calculate the scale factor
