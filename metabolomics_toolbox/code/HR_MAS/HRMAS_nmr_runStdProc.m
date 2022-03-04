@@ -103,10 +103,17 @@ function [data] = HRMAS_nmr_runStdProc(sampleInfo,sample,expType,varargin)
                             data.spectra = ref_spectra(spectra,refthresh,refppm,'maxWithin',reg);   %% need to make dynamic (deal(refparams)?)
                             %data.spectra = ref_spectra(spectra,refthresh,refppm);   %% need to make dynamic (deal(refparams)?)
                             close(gcf)
+                            if ~isempty(reg) % due to an oddity about the way ref_spectra is implemented,it is 
+                                             % sometimes necessary to
+                                             % correct the offset after the
+                                             % fact. However, the newer
+                                             % 'maxWithin' argument does
+                                             % not have this issue. 
                             % Correct the offset
                                 for s = 1:length(data.spectra)
                                     data.spectra(s).ppm = data.spectra(s).ppm + refppm;
                                 end
+                            end
                         else
                             data.spectra = spectra;
                         end
