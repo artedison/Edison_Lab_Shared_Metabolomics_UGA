@@ -57,7 +57,10 @@ function [ROIs,patches,fig] = extractROIs(varargin)
     
         D=get(gcf,'Children'); %get the handle of the line object
         patches = findall(D,'Type','Patch');  % make a list of all patch boxes in the figure
-        verts = [patches.Vertices];
-        ROIs = flipud([verts(3:8:(numel(verts)));verts(1:8:(numel(verts)))])';
-
+        if ~isempty(patches)
+            verts = [patches.Vertices];
+            ROIs = flipud([verts(3:8:(numel(verts)));verts(1:8:(numel(verts)))])';
+        else
+            ROIs = [];
+        end
 end

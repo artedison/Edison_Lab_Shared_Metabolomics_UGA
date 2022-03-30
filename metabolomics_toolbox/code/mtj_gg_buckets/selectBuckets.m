@@ -31,6 +31,14 @@ function [bucketInds,xbounds]  = selectBuckets(currentBuckets)
     %       
     %
 %%    
+    % Check to make sure there are even buckets
+    
+        if isempty(currentBuckets)
+            bucketInds = [];
+            xbounds = [];
+            return
+        end
+
     % Draw the ROI
             
                 [xbounds,~] = drawROI();

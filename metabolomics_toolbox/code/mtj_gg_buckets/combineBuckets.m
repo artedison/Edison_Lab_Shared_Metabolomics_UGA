@@ -32,6 +32,12 @@ function [updatedBuckets] = combineBuckets(currentBuckets)
 %                 
 % MTJ 2020
 
+    % Check to make sure there are even buckets
+    
+        if isempty(currentBuckets)
+            updatedBuckets = currentBuckets;
+            return
+        end
 
     % Select one or more buckets by drawing box
         combBuckets  = selectBuckets(currentBuckets);

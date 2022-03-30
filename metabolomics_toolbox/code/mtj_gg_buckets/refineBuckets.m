@@ -258,42 +258,46 @@ function [buckets,refinedBounds] = refineBuckets(matrix,ppm,buckets,varargin)
         
     %% Clean up results, save the figure, 
     
-        % Report params
-            buckets.refinedBuckets.params = p; % pass the params now
-           
-        % Remove any single-point buckets
-            buckets.refinedBuckets.singlePoints = ~(cellfun(@numel,fillRegions(matchPPMs(currentBuckets,ppm)))>1);
-            if isempty(currentBuckets)
-                currentBuckets = buckets;
+        if ~isempty(currentBuckets) % allow escape with no buckets
+            % Report params
+                buckets.refinedBuckets.params = p; % pass the params now
+
+            % Remove any single-point buckets
+                buckets.refinedBuckets.singlePoints = ~(cellfun(@numel,fillRegions(matchPPMs(currentBuckets,ppm)))>1);
+                if isempty(currentBuckets)
+                    currentBuckets = buckets;
+                end
+                    currentBuckets = currentBuckets(~buckets.refinedBuckets.singlePoints,:);
+
+            % Sort the buckets and return them:
+                [~,inds] = sort(mean(currentBuckets,2));
+                currentBuckets = currentBuckets(inds,:);
+
+                buckets.refinedBuckets.originalBuckets = bins;
+                buckets.refinedBuckets.refinedBuckets = currentBuckets;
+                buckets.refinedBuckets.removedBuckets = bins(~ismember(bins,currentBuckets,'rows'),:);
+                buckets.refinedBuckets.addedBuckets = currentBuckets(~ismember(currentBuckets,bins,'rows'),:);
+                refinedBounds = currentBuckets;
+            
+            % Save 
+
+            if saveFig
+                fig = gca;
+                title('Refined Buckets - Complete. Please wait; saving and figure in current directory...')
+                saveas(fig,buckets.refinedBuckets.figure)
+               % close(fig)
+                msgbox({['Refinement Completed Successfully! Figure saved as ''',buckets.refinedBuckets.figure,''''];...
+                        [];...
+                        [' in'];...
+                        [];...
+                        [' ''',cd(),'''']})
+                fprintf(['\n\tRefinement Completed Successfully! Figure saved as \n\t\t''',buckets.refinedBuckets.figure,'''\n','\tin\n\t\t','''',cd(),'''.\n'])
+                fprintf('\n\tResults saved in optOB_out.results.refinedBuckets.\n\n')
             end
-                currentBuckets = currentBuckets(~buckets.refinedBuckets.singlePoints,:);
-            
-        % Sort the buckets and return them:
-            [~,inds] = sort(mean(currentBuckets,2));
-            currentBuckets = currentBuckets(inds,:);
-            
-            buckets.refinedBuckets.originalBuckets = bins;
-            buckets.refinedBuckets.refinedBuckets = currentBuckets;
-            buckets.refinedBuckets.removedBuckets = bins(~ismember(bins,currentBuckets,'rows'),:);
-            buckets.refinedBuckets.addedBuckets = currentBuckets(~ismember(currentBuckets,bins,'rows'),:);
-            refinedBounds = currentBuckets;
-            
-        % Save 
-         
-        if saveFig
-            fig = gca;
-            title('Refined Buckets - Complete. Please wait; saving and figure in current directory...')
-            saveas(fig,buckets.refinedBuckets.figure)
-           % close(fig)
-            msgbox({['Refinement Completed Successfully! Figure saved as ''',buckets.refinedBuckets.figure,''''];...
-                    [];...
-                    [' in'];...
-                    [];...
-                    [' ''',cd(),'''']})
-            fprintf(['\n\tRefinement Completed Successfully! Figure saved as \n\t\t''',buckets.refinedBuckets.figure,'''\n','\tin\n\t\t','''',cd(),'''.\n'])
-            fprintf('\n\tResults saved in optOB_out.results.refinedBuckets.\n\n')
+        else
+            refinedBounds = [];
+            return
         end
-        
 end
 
 function txt = helpText()
