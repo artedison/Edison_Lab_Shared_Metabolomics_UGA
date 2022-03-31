@@ -33,7 +33,14 @@ function [bucketInd,breakPoint] = selectBucket(currentBuckets)
 %%
 %             title('Click a bucket to select it') % provide instructions
 
-            [breakPoint,~] = ginput(1);
+    % Check to make sure there are even buckets
+    
+        if isempty(currentBuckets) % skip and return empties
+            breakPoint = [];
+            bucketInd = [];
+            return
+        end
+        [breakPoint,~] = ginput(1);
 
         % Find the FIRST bucket in the list that matches the selection
 
