@@ -1,14 +1,12 @@
 function [ant] = newAnt(matrix,noiseLevel,startPoint,halfWindow,varargin)
 
 % Starting point
-        
+
         % Default is random start point
-        if ~exist('startPoint','var')
-            startPoint = round(rand(1) * numel(matrix)); % linear index of startpoint in matrix
-        end
-        if ~exist('halfWindow','var')
-            halfWindow = 100;
-        end
+%         if ~exist('startPoint','var') 
+%             startPoint = round(rand(1) * numel(matrix)); % linear index of startpoint in matrix
+%         end
+
         
         [m,n] = size(matrix);
         ant.r = zeros(m,1);
@@ -23,15 +21,35 @@ function [ant] = newAnt(matrix,noiseLevel,startPoint,halfWindow,varargin)
          ant.r(r) = r;
          ant.c(r) = c;
          r = r+1;
-         
-        for i = r:m
-            [ant.r(i),...
-             ant.c(i)] = ant_nextPos(ant.r(i-1),...     % changes, updates inside this fn
-                                        ant.c(i-1),...     % changes
-                                        n,matrix,noiseLevel,... % stays the same each iteration
-                                        halfWindow); % half window for new point selection (stochastic)
+  
+        if isempty(halfWindow)
+            % Run deterministic
+            % .01 s / 200 iterations
+%             tic
+            for i = r:m
+                [ant.r(i),...
+                 ant.c(i)] = ant_nextPos(ant.r(i-1),...     % changes, updates inside this fn
+                                            ant.c(i-1),...     % changes
+                                            n,matrix,...
+                                            noiseLevel,...
+                                            []); % half window for new point selection (empty = null)
+            end
+%             toc
+            
+        else
+            % Run Stochastic
+            rlist = rand(m,1); % pre-compute rand vals. outside of loop
+            
+%         tic
+            for i = r:m
+                [ant.r(i),...
+                 ant.c(i)] = ant_nextPos(ant.r(i-1),...     % changes, updates inside this fn
+                                            ant.c(i-1),...     % changes
+                                            n,matrix,noiseLevel,... % stays the same each iteration
+                                            halfWindow,rlist(i)); % half window for new point selection (stochastic)
+            end
+%         toc
         end
-        
         inds = ant.r>0;
         ant.r = ant.r(inds);
         ant.c = ant.c(inds);
