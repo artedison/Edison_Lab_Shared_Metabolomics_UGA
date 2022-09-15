@@ -39,7 +39,6 @@ function [X,ppm,XTitles]=Setup1D(spectra,shiftpoints,resolution)
             first(ind)=[spectra(ind).ppm(length(spectra(ind).ppm))]; % get min ppm value
             spectres(ind)=length(spectra(ind).real);    % get the number of data points
         end
-        
         shiftpoints=[max(first), min(last)]; % get the intersection of ppm values across all spectra
         resolution=max(spectres);   % get the highest number of datapoints across all spectra
     end

@@ -75,6 +75,18 @@ function [catData] = basicProcessing_concatenateSamples(studyInfo,varargin)
     for s = 1:length(studyInfo.sample)
         
         [~,ind] = ismember({dataType},{studyInfo.sample(s).expType.type});
+        if ind == 0
+            warning(['Supplied or default argument for ''dataType'' "',dataType,...
+                    '" was not found in current sample "', studyInfo.sample(s).name,'"',...
+                    ' ... Trying data type found ("',studyInfo.sample(s).expType(1).type,'")....',...
+                    ' If this works, consider changing the call to basicProcessing_concatenateSamples()',...
+                    ' to include name-value pair argument: ''dataType'', ''',studyInfo.sample(s).expType(1).type,''''])
+                dataType = studyInfo.sample(s).expType(1).type;
+                [~,ind] = ismember({dataType},{studyInfo.sample(s).expType.type});
+                if ind == 0
+                    error(['dataType ',studyInfo.sample(s).expType(1).type,' not found. Quitting.'])
+                end
+        end
             % NOTE: may want to allow passthrough of refSpec params
             
 %                 data(s).spectra = HRMAS_nmr_runStdProc(studyInfo,s,ind,ref,refppm,refthresh,maxWithin);
